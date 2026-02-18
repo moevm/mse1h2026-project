@@ -25,7 +25,9 @@ coverage/
 Thumbs.db
 
 # Редакторы
-.vscode/
+.vscode/*
+!.vscode/extensions.json
+
 .idea/
 *.swp
 *.swo

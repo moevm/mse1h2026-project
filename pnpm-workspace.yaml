@@ -1,0 +1,9 @@
+packages:
+  - backend
+  - frontend
+  - database
+  - infrastructure
+  - docs
+
+onlyBuiltDependencies:
+  - esbuild

@@ -1,0 +1,48 @@
+{
+  "name": "mse1h2026-project",
+  "version": "1.0.0",
+  "private": true,
+  "description": "This is an application for assignment students to groups and projects",
+  "contributors": [
+    "Jvirblinski Yaroslav",
+    "Korshkov Aleksandr",
+    "Lobova Catherine",
+    "Gelman Polina",
+    "Pivoev Nikita",
+    "Otmakhob Danil"
+  ],
+  "workspaces": [
+    "backend",
+    "frontend",
+    "database",
+    "infrastructure",
+    "docs"
+  ],
+  "scripts": {
+    "b": "pnpm --filter @mse/backend",
+    "f": "pnpm --filter @mse/frontend",
+    "d": "pnpm --filter @mse/database",
+    "i": "pnpm --filter @mse/infrastructure",
+    "docs": "pnpm --filter @mse/docs",
+    "typecheck": "pnpm -r --if-present typecheck",
+    "lint": "pnpm -r --if-present lint",
+    "format": "pnpm -r --if-present format",
+    "format:check": "pnpm -r --if-present format:check",
+    "dev": "concurrently \"pnpm f dev\" \"pnpm b dev\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.30.0",
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "concurrently": "^9.2.1",
+    "eslint": "^10.0.0",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.3.0",
+    "jiti": "^2.6.1",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.56.0"
+  }
+}

@@ -1,0 +1,6 @@
+# Prettier игнорирует файлы из .gitignore
+build
+coverage
+dist
+docs
+node_modules

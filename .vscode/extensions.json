@@ -1,0 +1,15 @@
+{
+    "recommendations": [
+        "github.copilot-chat",
+        "streetsidesoftware.code-spell-checker",
+        "ms-azuretools.vscode-docker",
+        "editorconfig.editorconfig",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "streetsidesoftware.code-spell-checker-russian",
+        "wayou.vscode-todo-highlight",
+        "tomoki1207.pdf",
+        "redhat.vscode-yaml",
+        "redhat.vscode-xml"
+    ]
+}
