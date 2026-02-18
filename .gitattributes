@@ -1,0 +1,18 @@
+# Автоматически нормализовать окончания строк
+* text=auto
+
+# Для скриптов и файлов, где нужны linefeed
+*.sh text eol=lf
+*.js text eol=lf
+*.ts text eol=lf
+*.json text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.md text eol=lf
+
+# Бинарные файлы
+*.png binary
+*.jpg binary
+*.ico binary
+*.pdf binary
+*.mp4 binary
