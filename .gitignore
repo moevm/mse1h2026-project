@@ -42,3 +42,6 @@ docker-compose*.yml
 # Временные файлы тестов
 *.log
 .temp
+
+# Кэш ESLint
+.eslintcache
