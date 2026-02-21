@@ -6,4 +6,5 @@ packages:
   - docs
 
 onlyBuiltDependencies:
+  - '@nestjs/core'
   - esbuild
