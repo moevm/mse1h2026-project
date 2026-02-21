@@ -2,7 +2,6 @@
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
-
     "module": "commonjs",
     "target": "esnext",
     "types": ["node"],
@@ -19,9 +18,6 @@
     "exactOptionalPropertyTypes": true,
 
     "strict": true,
-    "isolatedModules": true,
-    "noUncheckedSideEffectImports": true,
-    "moduleDetection": "force",
     "skipLibCheck": true
   },
   "include": ["src"],
