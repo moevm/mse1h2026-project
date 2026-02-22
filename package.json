@@ -23,13 +23,13 @@
     "f": "pnpm --filter @mse/frontend",
     "d": "pnpm --filter @mse/database",
     "i": "pnpm --filter @mse/infrastructure",
-
     "docs": "pnpm --filter @mse/docs",
+
     "typecheck": "pnpm -r --if-present typecheck",
     "lint": "pnpm -r --if-present lint",
     "format": "pnpm -r --if-present format",
     "format:check": "pnpm -r --if-present format:check",
-    
+
     "build": "concurrently \"pnpm b build\" \"pnpm f build\"",
     "dev": "concurrently \"pnpm f dev\" \"pnpm b start:dev\"",
     "preview": "concurrently \"pnpm f preview\" \"pnpm b start:prod\""
