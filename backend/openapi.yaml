@@ -76,7 +76,29 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Project'
-#  /assignments:
+  /assignments:
+    get:
+      summary: Распределение студентов по проектам
+      responses:
+        '200':
+          description: Распределение
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    studentId:
+                      type: integer
+                    projectId:
+                      type: integer
+                    assignedAt:
+                      type: string
+                      format: date-time
+                    courseId:
+                      type: integer
+
 
 components:
   schemas:
