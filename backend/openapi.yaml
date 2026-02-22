@@ -1,0 +1,107 @@
+openapi: 3.0.0
+info:
+  title: Assignment of projects API
+  description: API
+  version: 1.0.0
+servers:
+  - url: 'https://localhost:3000'
+paths:
+  /auth/login:
+    post:
+      summary: Авторизация
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string }
+      responses:
+        '200':
+          description: Токен авторизации
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token: { type:string }
+                  user: { $ref: '#/components/schemas/User' }
+
+  /courses:
+    get:
+      summary: Список курсов
+      responses:
+        '200':
+          description: Список курсов
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Course'
+
+    post:
+      summary: Создание курса
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ title ]
+              properties:
+                title: { type: string }
+                description: { type: string }
+
+      responses:
+        '201':
+          description: Курс создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Course'
+
+  /projects:
+    get:
+      summary: Список проектов
+      responses:
+        '200':
+          description: Список проектов
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Project'
+#  /assignments:
+
+components:
+  schemas:
+    User:
+      type: object
+      required: [id, username, email, role]
+      properties:
+        id: { type: integer }
+        username: { type: string }
+        email: { type: string, format: email }
+        role:
+          type: string
+          enum: [student, teacher, admin]
+    Course:
+      type: object
+      required: [id, title]
+      properties:
+        id: { type: integer }
+        title: { type: string }
+        description: { type: string }
+    Project:
+      type: object
+      required: [id, title, teacherId]
+      properties:
+        id: { type: integer }
+        title: { type: string }
+        description: { type: string }
+        teacherId: { $ref: '#/components/schemas/User/properties/id' }
