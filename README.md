@@ -43,6 +43,8 @@
         pnpm f build
         pnpm f preview
         ```
+    
+    На данный момент фронтенд доступен по адресу `http://localhost:5173`, а бэкенд - `http://localhost:3000`.
 
 ### Запуск с помощью **Docker**
 
