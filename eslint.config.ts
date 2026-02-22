@@ -3,7 +3,7 @@
  * @description Конфигурация ESLint для фронтенда и бэкенда проекта.
  * @author @KorzikAlex @katerina2121 @nhitar @sawsurd @DanilOtmakhov @Zoomby2
  */
-import { defineConfig } from 'eslint/config';
+import { defineConfig, globalIgnores } from 'eslint/config';
 import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import eslintConfigPrettier from 'eslint-config-prettier/flat';
@@ -20,6 +20,7 @@ export default defineConfig([
   ...pluginVue.configs['flat/recommended'],
   // отключаем правила, которые конфликтуют с Prettier
   eslintConfigPrettier,
+  globalIgnores(['node_modules/**', 'dist/**', 'build/**', 'coverage/**']),
   // frontend
   {
     files: ['frontend/**/*.{ts,tsx,vue,mts}', '**/*.{ts,tsx,vue,mts}'],
