@@ -98,17 +98,16 @@ paths:
                       format: date-time
                     courseId:
                       type: integer
-
-
 components:
   schemas:
     User:
       type: object
-      required: [id, username, email, role]
+      required: [id, fullName, email, role]
       properties:
         id: { type: integer }
-        username: { type: string }
+        fullName: { type: string }
         email: { type: string, format: email }
+        group: { type: integer }
         role:
           type: string
           enum: [student, teacher, admin]
@@ -121,9 +120,10 @@ components:
         description: { type: string }
     Project:
       type: object
-      required: [id, title, teacherId]
+      required: [id, title, teacherId, courseId]
       properties:
         id: { type: integer }
         title: { type: string }
         description: { type: string }
         teacherId: { $ref: '#/components/schemas/User/properties/id' }
+        courseId: { $ref: '#/components/schemas/Course/properties/id' }
