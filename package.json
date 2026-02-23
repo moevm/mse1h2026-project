@@ -24,25 +24,35 @@
     "d": "pnpm --filter @mse/database",
     "i": "pnpm --filter @mse/infrastructure",
     "docs": "pnpm --filter @mse/docs",
+
     "typecheck": "pnpm -r --if-present typecheck",
     "lint": "pnpm -r --if-present lint",
     "format": "pnpm -r --if-present format",
     "format:check": "pnpm -r --if-present format:check",
-    "dev": "concurrently \"pnpm f dev\" \"pnpm b dev\""
+
+    "build": "concurrently \"pnpm b build\" \"pnpm f build\"",
+    "dev": "concurrently \"pnpm f dev\" \"pnpm b start:dev\"",
+    "preview": "concurrently \"pnpm f preview\" \"pnpm b start:prod\""
+  },
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "packageManager": "pnpm@10.30.0",
+  "packageManager": "pnpm@10.30.1+sha512.3590e550d5384caa39bd5c7c739f72270234b2f6059e13018f975c313b1eb9fefcc09714048765d4d9efe961382c312e624572c0420762bdc5d5940cdf9be73a",
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@types/node": "^25.3.0",
     "concurrently": "^9.2.1",
-    "eslint": "^10.0.0",
+    "eslint": "^10.0.1",
     "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-vue": "~10.8.0",
     "globals": "^17.3.0",
     "jiti": "^2.6.1",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.56.0"
+    "typescript-eslint": "^8.56.0",
+    "vue-eslint-parser": "^10.4.0"
   }
 }
