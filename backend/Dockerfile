@@ -17,11 +17,20 @@ RUN corepack enable
 # Копируем конфигурацию workspace и lockfile (контекст = корень монорепо)
 COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
 
-# Копируем package.json backend для установки зависимостей
+# Копируем package.json backend и database для установки зависимостей
 COPY backend/package.json ./backend/
+COPY database/package.json ./database/
 
-# Устанавливаем ВСЕ зависимости backend (вкл. devDependencies для сборки)
+# Устанавливаем ВСЕ зависимости backend + database (вкл. devDependencies для сборки)
 RUN pnpm install --frozen-lockfile --filter @mse/backend...
+
+# Копируем Prisma-схему и генерируем клиент
+COPY database/prisma ./database/prisma
+RUN pnpm --filter @mse/database run generate
+
+# Копируем исходный код database (экспорты)
+COPY database/src ./database/src
+COPY database/tsconfig.json ./database/
 
 # Копируем исходный код backend
 COPY backend ./backend
