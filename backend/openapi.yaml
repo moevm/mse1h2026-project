@@ -6,7 +6,7 @@ info:
 servers:
   - url: 'https://localhost:3000'
 paths:
-  /auth/login:
+  /api/auth/login:
     post:
       summary: Авторизация
       requestBody:
@@ -30,7 +30,7 @@ paths:
                   token: { type:string }
                   user: { $ref: '#/components/schemas/User' }
 
-  /courses:
+  /api/courses:
     get:
       summary: Список курсов
       responses:
@@ -64,7 +64,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Course'
 
-  /projects:
+  /api/projects:
     get:
       summary: Список проектов
       responses:
@@ -76,7 +76,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Project'
-  /assignments:
+  /api/assignments:
     get:
       summary: Распределение студентов по проектам
       responses:
@@ -110,7 +110,7 @@ components:
         group: { type: integer }
         role:
           type: string
-          enum: [student, teacher, admin]
+          enum: [bachelor, master, teacher, admin]
     Course:
       type: object
       required: [id, title]
