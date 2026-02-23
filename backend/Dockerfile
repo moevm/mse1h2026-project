@@ -32,6 +32,8 @@ RUN pnpm --filter @mse/backend run build
 # pnpm deploy: создаёт автономную копию пакета с prod-зависимостями
 RUN pnpm --filter @mse/backend deploy --prod /app/deploy
 
+# ----
+
 # Этап 2: Запуск приложения
 # Финальный образ для запуска приложения
 FROM node:24-alpine
