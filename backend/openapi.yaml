@@ -4,9 +4,9 @@ info:
   description: API
   version: 1.0.0
 servers:
-  - url: 'https://localhost:3000'
+  - url: 'https://localhost:3000/api'
 paths:
-  /api/auth/login:
+  /auth/login:
     post:
       summary: Авторизация
       requestBody:
@@ -27,9 +27,9 @@ paths:
               schema:
                 type: object
                 properties:
-                  token: { type:string }
+                  token: { type: string }
                   user: { $ref: '#/components/schemas/User' }
-  /api/courses:
+  /courses:
     get:
       summary: Список курсов
       security:
@@ -66,7 +66,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Course'
-  /api/courses/{id}:
+  /courses/{id}:
     get:
       summary: Получение одного курса
       security:
@@ -84,7 +84,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Course'
-  /api/courses/{id}/distribution:
+  /courses/{id}/distribution:
     get:
       summary: Визуализация распределения по курсу
       security:
@@ -102,7 +102,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DistributionResult'
-  /api/projects:
+  /projects:
     get:
       summary: Список проектов
       security:
@@ -116,7 +116,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Project'
-  /api/assignments:
+  /assignments:
     get:
       summary: Общее распределение студентов по проектам
       security:
