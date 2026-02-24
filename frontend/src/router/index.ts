@@ -3,7 +3,7 @@
  * @author @KorzikAlex @katerina2121
  * @description Конфигурация маршрутизации для фронтенда
  */
-import { createMemoryHistory, createRouter, type RouterOptions } from 'vue-router';
+import { createWebHistory, createRouter, type RouterOptions } from 'vue-router';
 
 // TODO: добавить маршруты в соответствии с требованиями проекта
 
@@ -12,6 +12,6 @@ const routes: RouterOptions['routes'] = [];
 
 // Создание экземпляра маршрутизатора с использованием истории в памяти
 export const router = createRouter({
-  history: createMemoryHistory(),
+  history: createWebHistory(),
   routes,
 });
