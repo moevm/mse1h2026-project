@@ -39,6 +39,23 @@ paths:
       summary: Список курсов
       security:
         - bearerAuth: [ ]
+      parameters:
+        - name: semester
+          in: query
+          schema: { type: integer }
+        - name: isActive
+          in: query
+          schema: { type: boolean }
+        - name: sortBy
+          in: query
+          schema:
+            type: string
+            enum: [ title, semester, createdAt ]
+        - name: order
+          in: query
+          schema:
+            type: string
+            enum: [ asc, desc ]
       responses:
         '200':
           description: Список курсов
@@ -193,6 +210,20 @@ paths:
           required: true
           schema:
             type: integer
+        - name: teacherId
+          in: query
+          schema: { type: integer }
+        - name: title
+          in: query
+          schema: { type: string }
+        - name: sortBy
+          in: query
+          schema:
+            type: string
+            enum: [ title, createdAt ]
+        - name: order
+          in: query
+          schema: { type: string, enum: [ asc, desc ] }
       responses:
         '200':
           description: Список проектов
@@ -212,6 +243,24 @@ paths:
       summary: Список всех проектов
       security:
         - bearerAuth: [ ]
+      parameters:
+        - name: courseId
+          in: query
+          schema: { type: integer }
+        - name: teacherId
+          in: query
+          schema: { type: integer }
+        - name: title
+          in: query
+          schema: { type: string }
+        - name: sortBy
+          in: query
+          schema:
+            type: string
+            enum: [ title, createdAt ]
+        - name: order
+          in: query
+          schema: { type: string, enum: [ asc, desc ] }
       responses:
         '200':
           description: Список проектов
@@ -343,6 +392,20 @@ paths:
   /assignments:
     get:
       summary: Общее распределение студентов по проектам
+      parameters:
+        - name: courseId
+          in: query
+          schema: { type: integer }
+        - name: sortBy
+          in: query
+          schema:
+            type: string
+            enum: [ assignedAt, createdAt ]
+        - name: order
+          in: query
+          schema:
+            type: string
+            enum: [ asc, desc ]
       security:
         - bearerAuth: [ ]
       responses:
