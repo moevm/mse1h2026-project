@@ -1,0 +1,24 @@
+{
+  "name": "@mse/database",
+  "version": "0.0.1",
+  "private": true,
+  "description": "MSE database.",
+  "scripts": {
+    "lint": "eslint --cache . --config ../eslint.config.ts",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "format": "prettier --cache --write . --config ../.prettierrc.yaml --ignore-path ../.prettierignore",
+    "format:check": "prettier --cache --check . --config ../.prettierrc.yaml --ignore-path ../.prettierignore",
+    "prisma:generate": "prisma generate",
+    "prisma:push": "prisma db push",
+    "prisma:migrate": "prisma migrate dev",
+    "dev": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "@prisma/adapter-mariadb": "^7.4.1",
+    "@prisma/client": "^7.4.1"
+  },
+  "devDependencies": {
+    "dotenv": "^17.3.1",
+    "prisma": "^7.4.1"
+  }
+}
