@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "rootDir": "./src",
+    "rootDir": ".",
     "outDir": "./dist",
     "module": "commonjs",
     "target": "esnext",
@@ -20,6 +20,6 @@
     "strict": true,
     "skipLibCheck": true
   },
-  "include": ["src"],
+  "include": ["src", "mocks"],
   "exclude": ["node_modules", "dist", "build"]
 }

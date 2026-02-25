@@ -38,7 +38,7 @@ paths:
     get:
       summary: Список курсов
       security:
-        - bearerAuth: [ ]
+        - bearerAuth: []
       parameters:
         - name: semester
           in: query
@@ -50,12 +50,12 @@ paths:
           in: query
           schema:
             type: string
-            enum: [ title, semester, createdAt ]
+            enum: [title, semester, createdAt]
         - name: order
           in: query
           schema:
             type: string
-            enum: [ asc, desc ]
+            enum: [asc, desc]
       responses:
         '200':
           description: Список курсов
@@ -71,14 +71,14 @@ paths:
     post:
       summary: Создание курса
       security:
-        - bearerAuth: [ ]
+        - bearerAuth: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              required: [ title ]
+              required: [title]
               properties:
                 title: { type: string }
                 description: { type: string }
@@ -122,7 +122,7 @@ paths:
     put:
       summary: Обновление курса
       security:
-        - bearerAuth: [ ]
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -141,25 +141,25 @@ paths:
                 description:
                   type: string
       responses:
-          '200':
-            description: Курс обновлен
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/Course'
-          '404':
-            description: Курс не найден
-          '400':
-            description: Неверные данные
-          '401':
-            description: Не авторизован
-          '403':
-            description: Нет прав на редактирование
+        '200':
+          description: Курс обновлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Course'
+        '404':
+          description: Курс не найден
+        '400':
+          description: Неверные данные
+        '401':
+          description: Не авторизован
+        '403':
+          description: Нет прав на редактирование
 
     delete:
       summary: Удаление курса
       security:
-        - bearerAuth: [ ]
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -167,20 +167,20 @@ paths:
           schema:
             type: integer
       responses:
-          '204':
-            description: Курс удален
-          '404':
-            description: Курс не найден
-          '401':
-            description: Не авторизован
-          '403':
-            description: Нет прав на удаление
+        '204':
+          description: Курс удален
+        '404':
+          description: Курс не найден
+        '401':
+          description: Не авторизован
+        '403':
+          description: Нет прав на удаление
 
   /courses/{id}/distribution:
     get:
       summary: Визуализация распределения по курсу
       security:
-        - bearerAuth: [ ]
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -203,7 +203,7 @@ paths:
     get:
       summary: Список проектов определенного курса
       security:
-        - bearerAuth: [ ]
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -220,10 +220,10 @@ paths:
           in: query
           schema:
             type: string
-            enum: [ title, createdAt ]
+            enum: [title, createdAt]
         - name: order
           in: query
-          schema: { type: string, enum: [ asc, desc ] }
+          schema: { type: string, enum: [asc, desc] }
       responses:
         '200':
           description: Список проектов
@@ -242,7 +242,7 @@ paths:
     get:
       summary: Список всех проектов
       security:
-        - bearerAuth: [ ]
+        - bearerAuth: []
       parameters:
         - name: courseId
           in: query
@@ -257,10 +257,10 @@ paths:
           in: query
           schema:
             type: string
-            enum: [ title, createdAt ]
+            enum: [title, createdAt]
         - name: order
           in: query
-          schema: { type: string, enum: [ asc, desc ] }
+          schema: { type: string, enum: [asc, desc] }
       responses:
         '200':
           description: Список проектов
@@ -276,14 +276,14 @@ paths:
     post:
       summary: Создание проекта
       security:
-        - bearerAuth: [ ]
+        - bearerAuth: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              required: [ title, teacherId, courseId ]
+              required: [title, teacherId, courseId]
               properties:
                 title:
                   type: string
@@ -313,7 +313,7 @@ paths:
     get:
       summary: Получение проекта
       security:
-        - bearerAuth: [ ]
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -335,7 +335,7 @@ paths:
     put:
       summary: Обновление проекта
       security:
-        - bearerAuth: [ ]
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -372,7 +372,7 @@ paths:
     delete:
       summary: Удаление проекта
       security:
-        - bearerAuth: [ ]
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -400,14 +400,14 @@ paths:
           in: query
           schema:
             type: string
-            enum: [ assignedAt, createdAt ]
+            enum: [assignedAt, createdAt]
         - name: order
           in: query
           schema:
             type: string
-            enum: [ asc, desc ]
+            enum: [asc, desc]
       security:
-        - bearerAuth: [ ]
+        - bearerAuth: []
       responses:
         '200':
           description: Распределение
@@ -415,8 +415,7 @@ paths:
             application/json:
               schema:
                 type: array
-                items:
-                  { $ref: '#/components/schemas/Assignment' }
+                items: { $ref: '#/components/schemas/Assignment' }
         '401':
           description: Не авторизован
 
@@ -465,7 +464,7 @@ components:
         updatedAt: { type: string, format: date-time }
     Assignment:
       type: object
-      required: [ studentId, projectId, courseId ]
+      required: [studentId, projectId, courseId]
       properties:
         studentId: { type: integer }
         projectId: { type: integer }
@@ -474,11 +473,11 @@ components:
         createdAt: { type: string, format: date-time }
         updatedAt: { type: string, format: date-time }
     DistributionResult:
-        type: object
-        properties:
-          course:
-            $ref: '#/components/schemas/Course'
-          assignments:
-            type: array
-            items:
-              $ref: '#/components/schemas/Assignment'
+      type: object
+      properties:
+        course:
+          $ref: '#/components/schemas/Course'
+        assignments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Assignment'
