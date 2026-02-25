@@ -1,5 +1,6 @@
-import { Injectable } from '@nestjs/common';
-import { mockProjects } from "../../mocks/projects.mock"
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { mockProjects } from '../../mocks/projects.mock';
+import { Project } from '../common/interfaces/project.interface';
 
 @Injectable()
 export class ProjectService {
@@ -8,10 +9,32 @@ export class ProjectService {
   }
 
   getProjectById(id: number) {
-    mockProjects.forEach(project => {
-      if (project.uid === id) {  
-        return project;
-      }
-    });
+    return mockProjects.find((project) => project.uid === id);
+  }
+
+  createProject(projectData: Project) {
+    const newUid = Math.max(...mockProjects.map((c) => c.uid)) + 1;
+
+    const newProject: Project = {
+      uid: newUid,
+      title: projectData.title || 'New project',
+      description: projectData.description || '',
+    };
+
+    mockProjects.push(newProject);
+    return newProject;
+  }
+
+  updateProject(id: number, projectData: Project) {
+    const project = mockProjects.find((p) => p.uid === id);
+    if (!project) throw new Error('Not found');
+    Object.assign(project, projectData);
+    return project;
+  }
+
+  deleteProject(id: number) {
+    const index = mockProjects.findIndex((p) => p.uid === id);
+    if (index === -1) throw new NotFoundException(`Project ${id} not found`);
+    return mockProjects.splice(index, 1)[0];
   }
 }

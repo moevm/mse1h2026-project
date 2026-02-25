@@ -1,5 +1,5 @@
 import { CoursesService } from './courses.service';
-import { Controller, Get, Post, Param, Query, Put, Delete, Body } from '@nestjs/common';
+import { Controller, Get, Post, Param, Put, Delete, Body, ParseIntPipe } from '@nestjs/common';
 import { Course } from '../common/interfaces/course.interface';
 
 @Controller('courses')
@@ -7,12 +7,12 @@ export class CoursesController {
   constructor(private readonly coursesService: CoursesService) {}
 
   @Get()
-  findAll(@Query() query: unknown) {
+  findAll() {
     return this.coursesService.getAllCourses();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: number) {
+  findOne(@Param('id', ParseIntPipe) id: number) {
     return this.coursesService.getCourseById(id);
   }
 
@@ -21,7 +21,15 @@ export class CoursesController {
     return this.coursesService.createCourse(courseData);
   }
 
-  // @Put(':id')
-  // @Delete(':id')
+  @Put(':id')
+  update(@Param('id', ParseIntPipe) id: number, @Body() data: Course) {
+    return this.coursesService.updateCourse(id, data);
+  }
+
+  @Delete(':id')
+  delete(@Param('id', ParseIntPipe) id: number) {
+    return this.coursesService.deleteCourse(id);
+  }
+
   // @Get(':id/distribution')
 }

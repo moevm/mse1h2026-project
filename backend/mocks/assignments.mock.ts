@@ -16,5 +16,5 @@ export const mockAssignments: Assignment[] = [
     assignedAt: new Date('2026-03-20T23:59:59'),
     createdAt: new Date('2026-03-20T23:59:59'),
     updatedAt: new Date('2026-03-20T23:59:59'),
-  }
+  },
 ];
