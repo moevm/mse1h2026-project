@@ -13,7 +13,7 @@ export class ProjectService {
   }
 
   createProject(projectData: Project) {
-    const newUid = Math.max(...mockProjects.map((c) => c.uid)) + 1;
+    const newUid = mockProjects.length === 0 ? 1 : Math.max(...mockProjects.map((c) => c.uid)) + 1;
 
     const newProject: Project = {
       uid: newUid,

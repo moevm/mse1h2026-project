@@ -13,16 +13,16 @@ export class CoursesService {
   }
 
   createCourse(course: Course) {
-    const newUid = Math.max(...mockCourses.map((c) => c.uid)) + 1;
+    const newUid = mockCourses.length === 0 ? 1 : Math.max(...mockCourses.map((c) => c.uid)) + 1;
 
     const newCourse: Course = {
       uid: newUid,
       name: course.name || 'New course',
       semester: course.semester || 6,
-      max_team_size: course.max_team_size || 5,
-      min_team_size: course.min_team_size || 2,
-      is_active: course.is_active !== undefined ? course.is_active : true,
-      registration_deadline: new Date(),
+      maxTeamSize: course.maxTeamSize || 5,
+      minTeamSize: course.minTeamSize || 2,
+      isActive: course.isActive !== undefined ? course.isActive : true,
+      registrationDeadline: new Date(),
     };
 
     mockCourses.push(newCourse);
