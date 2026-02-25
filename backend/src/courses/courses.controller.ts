@@ -1,5 +1,6 @@
 import { CoursesService } from './courses.service';
 import { Controller, Get, Post, Param, Query, Put, Delete, Body } from '@nestjs/common';
+import { Course } from '../common/interfaces/course.interface';
 
 @Controller('courses')
 export class CoursesController {
@@ -15,12 +16,11 @@ export class CoursesController {
     return this.coursesService.getCourseById(id);
   }
 
+  @Post()
+  async create(@Body() courseData: Course) {
+    return this.coursesService.createCourse(courseData);
+  }
 
-  // TODO:
-  // @Post()
-  // async create(@Body() unknown: unknown) {
-  //   return this.coursesService.createCourse();
-  // }
   // @Put(':id')
   // @Delete(':id')
   // @Get(':id/distribution')
