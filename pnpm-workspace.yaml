@@ -5,11 +5,12 @@ packages:
   - infrastructure
   - docs
 
+injectWorkspacePackages: true
+
 onlyBuiltDependencies:
   - '@nestjs/core'
+  - '@parcel/watcher'
   - '@prisma/engines'
   - esbuild
   - prisma
   - unrs-resolver
-
-injectWorkspacePackages: true
