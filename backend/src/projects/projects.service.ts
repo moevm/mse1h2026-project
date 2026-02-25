@@ -27,7 +27,7 @@ export class ProjectService {
 
   updateProject(id: number, projectData: Project) {
     const project = mockProjects.find((p) => p.uid === id);
-    if (!project) throw new Error('Not found');
+    if (!project) throw new NotFoundException(`Project ${id} not found`);
     Object.assign(project, projectData);
     return project;
   }

@@ -31,7 +31,7 @@ export class CoursesService {
 
   updateCourse(id: number, data: unknown) {
     const course = mockCourses.find((c) => c.uid === id);
-    if (!course) throw new Error('Not found');
+    if (!course) throw new NotFoundException(`Course ${id} not found`);
     Object.assign(course, data);
     return course;
   }
