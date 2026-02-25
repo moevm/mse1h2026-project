@@ -1,17 +1,27 @@
-import { mockCourses } from "../../mocks/courses.mock"
-import { Controller, Get, Post, Param, Query } from '@nestjs/common';
+import { CoursesService } from './courses.service';
+import { Controller, Get, Post, Param, Query, Put, Delete, Body } from '@nestjs/common';
 
 @Controller('courses')
 export class CoursesController {
+  constructor(private readonly coursesService: CoursesService) {}
+
   @Get()
   findAll(@Query() query: unknown) {
-    return mockCourses
+    return this.coursesService.getAllCourses();
   }
-
-  @Post()
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-
+  findOne(@Param('id') id: number) {
+    return this.coursesService.getCourseById(id);
   }
+
+
+  // TODO:
+  // @Post()
+  // async create(@Body() unknown: unknown) {
+  //   return this.coursesService.createCourse();
+  // }
+  // @Put(':id')
+  // @Delete(':id')
+  // @Get(':id/distribution')
 }
