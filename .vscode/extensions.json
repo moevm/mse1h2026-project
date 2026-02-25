@@ -11,6 +11,7 @@
         "tomoki1207.pdf",
         "redhat.vscode-yaml",
         "redhat.vscode-xml",
-        "prisma.prisma"
+        "prisma.prisma",
+        "william-voyek.vscode-nginx"
     ]
 }
