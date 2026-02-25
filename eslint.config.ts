@@ -18,13 +18,10 @@ export default defineConfig([
   ...tseslint.configs.recommended,
   // базовые правила для Vue.js
   ...pluginVue.configs['flat/recommended'],
-  // отключаем правила, которые конфликтуют с Prettier
-  eslintConfigPrettier,
   globalIgnores(['node_modules/**', 'dist/**', 'build/**', 'coverage/**']),
   // frontend
   {
-    files: ['frontend/**/*.{ts,tsx,vue,mts}', '**/*.{ts,tsx,vue,mts}'],
-    ignores: ['backend/**'],
+    files: ['frontend/**/*.{ts,tsx,vue,mts}'],
     languageOptions: {
       // используем парсер для Vue.js, который поддерживает TypeScript
       parser: vueParser,
@@ -41,8 +38,7 @@ export default defineConfig([
   },
   // backend
   {
-    files: ['backend/**/*.{ts,tsx,mts}', '**/*.{ts,tsx,mts}'],
-    ignores: ['frontend/**', '**/*.vue'],
+    files: ['backend/**/*.{ts,tsx,mts}'],
     languageOptions: {
       // используем парсер TypeScript ESLint для бэкенда
       parser: tseslint.parser,
@@ -63,8 +59,7 @@ export default defineConfig([
     },
   },
   {
-    files: ['database/**/*.{ts,mts}', '**/*.{ts,mts}'],
-    ignores: ['frontend/**', 'backend/**', '**/*.vue'],
+    files: ['database/**/*.{ts,mts}'],
     languageOptions: {
       parser: tseslint.parser,
       parserOptions: {
@@ -75,4 +70,6 @@ export default defineConfig([
       },
     },
   },
+  // отключаем правила, которые конфликтуют с Prettier
+  eslintConfigPrettier,
 ]);
