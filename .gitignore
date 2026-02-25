@@ -33,12 +33,6 @@ Thumbs.db
 *.swo
 *~
 
-# Docker
-.dockerignore
-Dockerfile*
-docker-compose*.yml
-!docker-compose.yml
-
 # Временные файлы тестов
 *.log
 .temp

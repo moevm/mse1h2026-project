@@ -1,0 +1,32 @@
+**/node_modules/
+.pnpm-store/
+
+# Сборки
+**/dist/
+**/build/
+**/coverage/
+
+# Git
+.git/
+.gitattributes
+.gitignore
+
+# IDE / OS
+.vscode/
+.DS_Store
+Thumbs.db
+*.swp
+
+# Env
+.env
+.env.*
+
+# Docs & configs не нужные для сборки
+docs/
+infrastructure/
+README.md
+*.md
+eslint.config.ts
+.prettierrc.yaml
+.prettierignore
+.nvmrc

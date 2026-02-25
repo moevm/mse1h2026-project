@@ -10,6 +10,7 @@
         "wayou.vscode-todo-highlight",
         "tomoki1207.pdf",
         "redhat.vscode-yaml",
-        "redhat.vscode-xml"
+        "redhat.vscode-xml",
+        "william-voyek.vscode-nginx"
     ]
 }
