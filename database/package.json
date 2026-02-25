@@ -11,7 +11,9 @@
     "prisma:generate": "prisma generate",
     "prisma:push": "prisma db push",
     "prisma:migrate": "prisma migrate dev",
-    "dev": "tsx src/index.ts"
+    "prisma:deploy": "prisma deploy",
+    "smoke": "tsx src/scripts/hello_world.ts",
+    "dev": "tsx src/scripts/hello_world.ts"
   },
   "dependencies": {
     "@prisma/adapter-mariadb": "^7.4.1",
