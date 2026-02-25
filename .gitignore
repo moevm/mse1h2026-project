@@ -45,3 +45,6 @@ docker-compose*.yml
 
 # Кэш ESLint
 .eslintcache
+
+# Prisma
+database/generated/prisma
