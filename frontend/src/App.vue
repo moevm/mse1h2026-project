@@ -11,11 +11,11 @@ import { dateRuRU, NConfigProvider, ruRU, NGlobalStyle, NAlert} from 'naive-ui';
       </n-alert>
     </div>
     <router-view />
-    <n-global-style /> 
+    <n-global-style />
   </n-config-provider>
 </template>
 
-<style scoped lang="css">
+<style scoped lang="scss">
 .container {
   padding: 40px;
 }

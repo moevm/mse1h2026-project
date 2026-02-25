@@ -11,3 +11,5 @@ onlyBuiltDependencies:
   - esbuild
   - prisma
   - unrs-resolver
+
+injectWorkspacePackages: true
