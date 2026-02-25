@@ -39,30 +39,46 @@
 6. **Команда инициирует обмен** – отправляет запрос другой команде, преподаватель подтверждает.
 7. **Просмотр дашборда** – графики и таблицы с распределением.
 
-## Инструкция по запуску (без Docker)
-1. Клонировать репозиторий:
-    ```bash
-    git clone <url>
-    cd <project>
-2. Установить pnpm (если не установлен):
-    ```bash
-    npm install -g pnpm
-3. Установить зависимости в корне:
-    ```bash
-    pnpm install
-4. Настроить переменные окружения:
+## Запуск без **Docker**
+
+1. Клонируйте репозиторий:
    ```bash
-   Скопировать infrastructure/.env.example в backend/.env и frontend/.env.
-6. Запустить базу данных (например, через Docker):
+   git clone https://github.com/moevm/mse1h2026-project
+   ```
+2. Перейдите в директорию проекта:
     ```bash
-    docker-compose up db -d  или использовать локальный MySQL.
-7. Применить миграции (если есть):
+    cd mse1h2026-project
+    ```
+3. Установите зависимости:
     ```bash
-    pnpm --filter @mse/database migrate
-8. Запустить бэкенд:
-    ```bash
-    pnpm --filter @mse/backend start:dev
-9. Запустить фронтенд:
-    ```bash
-    pnpm --filter @mse/frontend dev
-10. Открыть браузер по адресу http://localhost:5173 (или другому, указанному в конфиге).
+    pnpm i
+    ```
+4. Запустите проект
+   1. Dev:
+        ```bash
+        pnpm dev
+        ```
+    2. Production:
+        ```bash
+        pnpm build
+        pnpm preview
+        ```
+    3. Для запуска по отдельности фронтенда и бэкенда, используйте команды:
+
+        `b` - бэкенд, `f` - фронтенд
+        
+        Dev:
+        ```bash
+        pnpm b dev
+        pnpm f dev
+        ```
+
+        Production:
+        ```bash
+        pnpm b build
+        pnpm b start
+        pnpm f build
+        pnpm f preview
+        ```
+    
+    На данный момент фронтенд доступен по адресу `http://localhost:5173`, а бэкенд - `http://localhost:3000`.
