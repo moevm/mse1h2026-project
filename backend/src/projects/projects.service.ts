@@ -19,6 +19,8 @@ export class ProjectService {
       uid: newUid,
       title: projectData.title || 'New project',
       description: projectData.description || '',
+      teacherId: projectData.teacherId || 12,
+      courseId: projectData.courseId || 1,
     };
 
     mockProjects.push(newProject);

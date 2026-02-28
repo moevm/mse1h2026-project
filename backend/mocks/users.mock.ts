@@ -8,6 +8,7 @@ export const mockUsers: User[] = [
     group: 3343,
     role: 'student',
     email: 'ivan.ivanov@university.edu',
+    ldapUid: 1,
   },
   {
     uid: 2,
@@ -16,6 +17,7 @@ export const mockUsers: User[] = [
     group: 3344,
     role: 'student',
     email: 'maria.marieva@university.edu',
+    ldapUid: 23,
   },
   {
     uid: 3,
@@ -23,6 +25,7 @@ export const mockUsers: User[] = [
     secondName: 'Сергеев',
     role: 'teacher',
     email: 's.sergeev@university.edu',
+    ldapUid: 123,
   },
   {
     uid: 4,
@@ -30,5 +33,6 @@ export const mockUsers: User[] = [
     secondName: 'Михаилов',
     role: 'admin',
     email: 'm.mihailov@university.edu',
+    ldapUid: 100,
   },
 ];
