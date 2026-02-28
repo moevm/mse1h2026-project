@@ -23,6 +23,7 @@ export class CoursesService {
       minTeamSize: course.minTeamSize || 2,
       isActive: course.isActive !== undefined ? course.isActive : true,
       registrationDeadline: new Date(),
+      createdAt: new Date(),
     };
 
     mockCourses.push(newCourse);

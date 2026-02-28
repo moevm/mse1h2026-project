@@ -9,6 +9,7 @@ export const mockCourses: Course[] = [
     minTeamSize: 5,
     isActive: true,
     registrationDeadline: new Date('2026-03-15T23:59:59'),
+    createdAt: new Date('2026-03-15T23:59:59'),
   },
   {
     uid: 102,
@@ -18,5 +19,6 @@ export const mockCourses: Course[] = [
     minTeamSize: 2,
     isActive: true,
     registrationDeadline: new Date('2026-03-20T23:59:59'),
+    createdAt: new Date('2026-03-20T23:59:59'),
   },
 ];
