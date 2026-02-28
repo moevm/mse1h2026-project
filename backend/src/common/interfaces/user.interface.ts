@@ -5,4 +5,5 @@ export interface User {
   group?: number;
   role: 'student' | 'teacher' | 'admin';
   email: string;
+  ldapUid: number;
 }
