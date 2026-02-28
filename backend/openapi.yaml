@@ -454,7 +454,7 @@ components:
         registrationDeadline: { type: string, format: date-time }
     Project:
       type: object
-      required: [id, title, teacherId, courseId]
+      required: [id, title, teacherId, courseId, teacherFirstName, teacherLastName, courseName]
       properties:
         id: { type: integer }
         title: { type: string }
@@ -468,10 +468,14 @@ components:
         updatedAt: { type: string, format: date-time }
     Assignment:
       type: object
-      required: [studentId, projectId, courseId]
+      required: [studentId, projectId, courseId, studentFirstName, studentSecondName, projectName, courseName]
       properties:
         studentId: { type: integer }
+        studentFirstName: { type: string }
+        studentSecondName: { type: string }
+        projectName: { type: string }
         projectId: { type: integer }
+        courseName: { type: string }
         courseId: { type: integer }
         assignedAt: { type: string, format: date-time }
         createdAt: { type: string, format: date-time }
