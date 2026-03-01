@@ -3,9 +3,9 @@ export interface Project {
   title: string;
   description?: string;
   teacherId: number;
-  teacherFirstName: string,
-  teacherLastName: string,
-  courseName: string,
+  teacherFirstName: string;
+  teacherLastName: string;
+  courseName: string;
   courseId: number;
   createdAt?: Date;
   updatedAt?: Date;
