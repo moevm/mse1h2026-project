@@ -16,6 +16,7 @@
 
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
+    "strictPropertyInitialization": false,
 
     "strict": true,
     "skipLibCheck": true
