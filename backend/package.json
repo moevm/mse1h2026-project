@@ -18,11 +18,19 @@
     "@nestjs/common": "^11.1.14",
     "@nestjs/config": "^4.0.3",
     "@nestjs/core": "^11.1.14",
-    "@nestjs/platform-express": "^11.1.14"
+    "@nestjs/jwt": "^11.0.2",
+    "@nestjs/passport": "^11.0.5",
+    "@nestjs/platform-express": "^11.1.14",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.15.1",
+    "passport": "^0.7.0",
+    "passport-local": "^1.0.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^11.0.16",
+    "@types/express": "^5.0.6",
     "@types/node": "^25.3.0",
+    "@types/passport-local": "^1.0.38",
     "dotenv": "^17.3.1",
     "prettier": "^3.8.1",
     "typescript": "^5.9.3"
