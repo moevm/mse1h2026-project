@@ -1,0 +1,17 @@
+name: CI
+on: push
+#     branches:
+#       - main
+#   pull_request:
+#     types: [opened, synchronize, reopened, edited, ready_for_review]
+
+jobs:
+  lint:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Run lint
+        run: pnpm lint
