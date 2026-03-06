@@ -21,7 +21,7 @@ jobs:
           fetch-depth: 1
       - run: git fetch origin main --depth=1
       - uses: ./.github/actions/setup
-      - run: pnpm --filter "...[origin/main]" -r --if-present ${{ matrix.task }}
+      - run: pnpm --filter "...[origin/main]" --filter "!mse1h2026-project" -r --if-present ${{ matrix.task }}
 
   build:
     needs: [check]
@@ -32,4 +32,4 @@ jobs:
           fetch-depth: 1
       - run: git fetch origin main --depth=1
       - uses: ./.github/actions/setup
-      - run: pnpm --filter "...[origin/main]" -r build
+      - run: pnpm --filter "...[origin/main]" --filter "!mse1h2026-project" -r build
