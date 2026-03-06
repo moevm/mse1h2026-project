@@ -9,52 +9,27 @@ on:
   workflow_dispatch:
 
 jobs:
-  format_check:
+  check:
     runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        task: [format:check, lint, typecheck]
     steps:
       - uses: actions/checkout@v6
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v6
         with:
-          node-version-file: ".nvmrc"
-          cache: "pnpm"
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm format:check
-
-  lint:
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v6
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v6
-        with:
-          node-version-file: ".nvmrc"
-          cache: "pnpm"
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm lint
-
-  typecheck:
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v6
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v6
-        with:
-          node-version-file: ".nvmrc"
-          cache: "pnpm"
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm typecheck
+          fetch-depth: 1
+      - run: git fetch origin main --depth=1
+      - uses: ./.github/actions/setup
+      - run: pnpm --filter "...[origin/main]" -r --if-present ${{ matrix.task }}
 
   build:
-    needs: [format_check, lint, typecheck]
+    needs: [check]
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v6
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v6
         with:
-          node-version-file: ".nvmrc"
-          cache: "pnpm"
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm build
-
+          fetch-depth: 1
+      - run: git fetch origin main --depth=1
+      - uses: ./.github/actions/setup
+      - run: pnpm --filter "...[origin/main]" -r build
