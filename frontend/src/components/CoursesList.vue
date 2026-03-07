@@ -144,7 +144,7 @@ const handleConfirm = async () => {
     console.error('Ошибка:', error);
     
     if (error instanceof Error) {
-      alert(`Ошибка: ${error.message}`);
+      alert('Ошибка сервера. Пожалуйста, попробуйте позже.');
     } else {
       alert('Произошла неизвестная ошибка');
     }
