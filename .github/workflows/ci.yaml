@@ -15,7 +15,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        task: [format:check, lint, typecheck]
+        include:
+          - task: 'format:check'
+            name: 'Format Check'
+          - task: 'lint'
+            name: 'Lint'
+          - task: 'typecheck'
+            name: 'Typecheck'
 
     steps:
       - name: 'Checkout Code'
