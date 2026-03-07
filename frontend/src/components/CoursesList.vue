@@ -28,7 +28,8 @@
       </div>
     </div>
 
-    <div class="courses-list">
+    <LoadingSpinner v-if="loading" text="Загрузка курсов..." />
+    <div v-else class="courses-list">
       <CourseCard
         v-for="course in visibleCourses" 
         :key="course.uid"
@@ -57,16 +58,23 @@ import CourseCard from './CourseCard.vue';
 import ConfirmDialog from './ConfirmDialog.vue';
 import { coursesApi } from '@/api';
 import type { Course } from '../types/index';
+import LoadingSpinner from './LoadingSpinner.vue';
 
 const courses = ref<Course[]>([]);
 const currentRole = ref<'admin' | 'student'>('student');
 const courseToAction = ref<number | null>(null);
 const showDialog = ref(false);
-const dialogAction = ref<'delete' | 'show'>('delete'); // типизировали
+const dialogAction = ref<'delete' | 'show'>('delete');
+const loading = ref(true);
 
 // Загрузка курсов
 const fetchCourses = async () => {
-  courses.value = await coursesApi.getAll();
+  loading.value = true;
+  try {
+    courses.value = await coursesApi.getAll();
+  } finally {
+    loading.value = false;
+  }
 };
 
 // Оставляем только активные курсы для учеников, для админа показываем все
