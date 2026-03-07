@@ -28,7 +28,6 @@
       </div>
     </div>
 
-    <!-- Вертикальный список курсов (во всю ширину) -->
     <div class="courses-list">
       <CourseCard
         v-for="course in visibleCourses" 
@@ -56,7 +55,7 @@
 import { ref, onMounted, computed } from 'vue';
 import CourseCard from './CourseCard.vue';
 import ConfirmDialog from './ConfirmDialog.vue';
-import { api } from '@/api';
+import { coursesApi } from '@/api';
 import type { Course } from '../types/index';
 
 const courses = ref<Course[]>([]);
@@ -67,7 +66,7 @@ const dialogAction = ref<'delete' | 'show'>('delete'); // типизировал
 
 // Загрузка курсов
 const fetchCourses = async () => {
-  courses.value = await api.getCourses();
+  courses.value = await coursesApi.getAll();
 };
 
 // Оставляем только активные курсы для учеников, для админа показываем все
@@ -109,21 +108,41 @@ const closeDialog = () => {
   courseToAction.value = null;
 };
 
-const handleConfirm = () => {
-  if (courseToAction.value) {
+const handleConfirm = async () => {
+  if (!courseToAction.value) return;
+  
+  try {
     if (dialogAction.value === 'delete') {
-      // Скрыть курс
-      console.log('Скрытие курса:', courseToAction.value);
-      // запрос к апи
+      // Скрыть курс (isActive = false)
+      await coursesApi.update(courseToAction.value, { isActive: false });
+      
+      // Обновляем локальное состояние
+      const course = courses.value.find(c => c.uid === courseToAction.value);
+      if (course) course.isActive = false;
+      
       alert('Курс скрыт');
     } else {
-      // Показать курс
-      console.log('Показ курса:', courseToAction.value);
-      // запрос к апи
+      // Показать курс (isActive = true)
+      await coursesApi.update(courseToAction.value, { isActive: true });
+      
+      // Обновляем локальное состояние
+      const course = courses.value.find(c => c.uid === courseToAction.value);
+      if (course) course.isActive = true;
+      
       alert('Курс показан');
     }
+  } catch (error) {
+    // Ловим исключения от API
+    console.error('Ошибка:', error);
+    
+    if (error instanceof Error) {
+      alert(`Ошибка: ${error.message}`);
+    } else {
+      alert('Произошла неизвестная ошибка');
+    }
+  } finally {
+    closeDialog();
   }
-  closeDialog();
 };
 
 onMounted(fetchCourses);
