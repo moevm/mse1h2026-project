@@ -33,6 +33,9 @@ importers:
       jiti:
         specifier: ^2.6.1
         version: 2.6.1
+      prettier:
+        specifier: ^3.8.1
+        version: 3.8.1
       tsx:
         specifier: ^4.21.0
         version: 4.21.0

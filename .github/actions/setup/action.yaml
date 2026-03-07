@@ -1,0 +1,23 @@
+name: 'Setup Project'
+description: 'Sets up the project for CI workflows.'
+
+runs:
+  using: 'composite'
+  
+  steps:
+    - name: 'Setup Node.js'
+      uses: pnpm/action-setup@v4
+
+    - name: 'Setup pnpm'
+      uses: actions/setup-node@v6
+      with:
+        node-version-file: '.nvmrc'
+        cache: 'pnpm'
+
+    - name: 'Fetch Dependencies'
+      run: pnpm fetch
+      shell: bash
+
+    - name: 'Install Dependencies'
+      run: pnpm install --offline --frozen-lockfile
+      shell: bash

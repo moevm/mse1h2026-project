@@ -1,0 +1,52 @@
+name: CI
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+
+    strategy:
+      fail-fast: false
+      matrix:
+        task: [format:check, lint, typecheck]
+
+    steps:
+      - name: 'Checkout Code'
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+
+      - name: 'Fetch Latest Main Branch'
+        run: git fetch origin main --depth=1
+
+      - name: 'Setup Project'
+        uses: ./.github/actions/setup
+
+      - name: 'Run Checks'
+        run: pnpm --filter "...[origin/main]" --filter "!mse1h2026-project" -r --if-present ${{ matrix.task }}
+
+  build:
+    needs: [check]
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: 'Checkout Code'
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+
+      - name: 'Fetch Latest Main Branch'
+        run: git fetch origin main --depth=1
+
+      - name: 'Setup Project'
+        uses: ./.github/actions/setup
+
+      - name: 'Build Project'
+        run: pnpm --filter "...[origin/main]" --filter "!mse1h2026-project" -r build
