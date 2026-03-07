@@ -1,4 +1,4 @@
-import { Assignment } from '../src/common/interfaces/assignment.interface';
+import { Assignment } from '@/common/interfaces/assignment.interface';
 
 export const mockAssignments: Assignment[] = [
   {
