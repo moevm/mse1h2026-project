@@ -1,22 +1,15 @@
 <script setup lang="ts">
-import { dateRuRU, NConfigProvider, ruRU, NGlobalStyle, NAlert} from 'naive-ui';
+import { dateRuRU, NConfigProvider, ruRU, NGlobalStyle } from 'naive-ui';
+import CoursesList from './components/CoursesList.vue';
 </script>
 
 <template>
   <!-- Все Naive UI компоненты внутри будут на русском -->
   <n-config-provider :locale="ruRU" :date-locale="dateRuRU">
-    <div class="container">
-      <n-alert title="Статус" type="success" :closable="false">
-        Приложение успешно запущено!
-      </n-alert>
-    </div>
+    <CoursesList />
     <router-view />
     <n-global-style />
   </n-config-provider>
 </template>
 
-<style scoped lang="scss">
-.container {
-  padding: 40px;
-}
-</style>
+<style scoped lang="scss"></style>

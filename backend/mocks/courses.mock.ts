@@ -7,7 +7,7 @@ export const mockCourses: Course[] = [
     semester: 6,
     maxTeamSize: 5,
     minTeamSize: 5,
-    isActive: true,
+    isActive: false,
     registrationDeadline: new Date('2026-03-15T23:59:59'),
     createdAt: new Date('2026-03-15T23:59:59'),
   },

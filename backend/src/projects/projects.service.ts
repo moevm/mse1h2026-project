@@ -21,13 +21,16 @@ export class ProjectService {
       description: projectData.description || '',
       teacherId: projectData.teacherId || 12,
       courseId: projectData.courseId || 1,
+      teacherFirstName: projectData.teacherFirstName || 'Иван',
+      teacherLastName: projectData.teacherLastName || 'Иванов',
+      courseName: 'MSE',
     };
 
     mockProjects.push(newProject);
     return newProject;
   }
 
-  updateProject(id: number, projectData: Project) {
+  updateProject(id: number, projectData: Partial<Project>) {
     const project = mockProjects.find((p) => p.uid === id);
     if (!project) throw new NotFoundException(`Project ${id} not found`);
     Object.assign(project, projectData);

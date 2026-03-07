@@ -2,7 +2,7 @@ import { ProjectService } from './projects.service';
 import { Controller, Get, Post, Param, Put, Delete, Body, ParseIntPipe } from '@nestjs/common';
 import { Project } from '../common/interfaces/project.interface';
 
-@Controller('projects')
+@Controller('api/projects')
 export class ProjectController {
   constructor(private readonly projectsService: ProjectService) {}
 
@@ -22,7 +22,7 @@ export class ProjectController {
   }
 
   @Put(':id')
-  update(@Param('id', ParseIntPipe) id: number, @Body() projectData: Project) {
+  update(@Param('id', ParseIntPipe) id: number, @Body() projectData: Partial<Project>) {
     return this.projectsService.updateProject(id, projectData);
   }
 

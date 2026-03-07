@@ -2,7 +2,7 @@ import { CoursesService } from './courses.service';
 import { Controller, Get, Post, Param, Put, Delete, Body, ParseIntPipe } from '@nestjs/common';
 import { Course } from '../common/interfaces/course.interface';
 
-@Controller('courses')
+@Controller('api/courses')
 export class CoursesController {
   constructor(private readonly coursesService: CoursesService) {}
 
@@ -22,7 +22,7 @@ export class CoursesController {
   }
 
   @Put(':id')
-  update(@Param('id', ParseIntPipe) id: number, @Body() data: Course) {
+  update(@Param('id', ParseIntPipe) id: number, @Body() data: Partial<Course>) {
     return this.coursesService.updateCourse(id, data);
   }
 
