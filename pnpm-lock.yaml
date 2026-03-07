@@ -33,6 +33,9 @@ importers:
       jiti:
         specifier: ^2.6.1
         version: 2.6.1
+      prettier:
+        specifier: ^3.8.1
+        version: 3.8.1
       tsx:
         specifier: ^4.21.0
         version: 4.21.0
@@ -70,9 +73,6 @@ importers:
       dotenv:
         specifier: ^17.3.1
         version: 17.3.1
-      prettier:
-        specifier: ^3.8.1
-        version: 3.8.1
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
