@@ -1,4 +1,4 @@
-import { User } from '../src/common/interfaces/user.interface';
+import { User } from '@/common/interfaces/user.interface';
 
 export const mockUsers: User[] = [
   {
