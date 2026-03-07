@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { dateRuRU, NConfigProvider, ruRU, NGlobalStyle} from 'naive-ui';
+import { dateRuRU, NConfigProvider, ruRU, NGlobalStyle } from 'naive-ui';
 import CoursesList from './components/CoursesList.vue';
 </script>
 
@@ -12,6 +12,4 @@ import CoursesList from './components/CoursesList.vue';
   </n-config-provider>
 </template>
 
-<style scoped lang="scss">
-
-</style>
+<style scoped lang="scss"></style>

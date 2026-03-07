@@ -4,23 +4,15 @@
       <h3>{{ title }}</h3>
       <p>{{ message }}</p>
       <div class="dialog-actions">
-        <BaseButton 
-          text="Отмена"
-          btn-class="cancel-btn"
-          @click="$emit('cancel')"
-        />
-        <BaseButton 
-          :text="confirmText"
-          btn-class="confirm-btn"
-          @click="$emit('confirm')"
-        />
+        <BaseButton text="Отмена" btn-class="cancel-btn" @click="$emit('cancel')" />
+        <BaseButton :text="confirmText" btn-class="confirm-btn" @click="$emit('confirm')" />
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-  import BaseButton from './BaseButton.vue';
+import BaseButton from './BaseButton.vue';
 defineProps<{
   show: boolean;
   title: string;
@@ -63,5 +55,4 @@ defineEmits<{
   gap: 12px;
   margin-top: 20px;
 }
-
 </style>

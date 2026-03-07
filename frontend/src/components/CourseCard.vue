@@ -1,9 +1,5 @@
 <template>
-  <div 
-    class="course-card"
-    :class="{ 'inactive': !course.isActive, 'clickable': true }"
-    @click="handleCardClick"
-  >
+  <div class="course-card" :class="{ inactive: !course.isActive, clickable: true }" @click="handleCardClick">
     <div class="card-header">
       <h3 class="card-title">{{ course.name }}</h3>
       <div class="header-extra">
@@ -36,7 +32,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'click', course: Course): void;
   (e: 'delete', courseId: number): void;
-  (e: 'show',  courseId: number): void;
+  (e: 'show', courseId: number): void;
 }>();
 
 const handleCardClick = () => {
@@ -52,7 +48,6 @@ const handleShow = (e: MouseEvent) => {
   e.stopPropagation();
   emit('show', props.course.uid);
 };
-
 </script>
 
 <style scoped>
@@ -62,7 +57,7 @@ const handleShow = (e: MouseEvent) => {
   width: 100%;
   border-radius: 15px;
   overflow: hidden;
-  background: #D9D9D9;
+  background: #d9d9d9;
 }
 
 .course-card:hover {
@@ -81,14 +76,14 @@ const handleShow = (e: MouseEvent) => {
   position: relative;
   font-size: 1.5rem;
   font-weight: 500;
-  padding-left: 18px; /* место под индикатор */ 
+  padding-left: 18px; /* место под индикатор */
 }
 
-/* индикатор активности курса */ 
+/* индикатор активности курса */
 .card-title::before {
   width: 10px;
-  left: 0;              /* Размещаем слева */
-  top: 50%;             /* Центрируем по вертикали */
+  left: 0; /* Размещаем слева */
+  top: 50%; /* Центрируем по вертикали */
   transform: translateY(-50%); /* Точное вертикальное центрирование */
   height: 10px;
   border-radius: 100%;
@@ -106,5 +101,4 @@ const handleShow = (e: MouseEvent) => {
   gap: 4px;
   flex-shrink: 0;
 }
-
 </style>

@@ -7,21 +7,16 @@
       <div class="role-selector">
         <div class="radio-group">
           <label class="radio-button">
-            <input 
-              type="radio" 
-              value="student" 
+            <input
+              type="radio"
+              value="student"
               :checked="currentRole === 'student'"
               @change="currentRole = 'student'"
-            >
+            />
             <span>Ученик</span>
           </label>
           <label class="radio-button">
-            <input 
-              type="radio" 
-              value="admin" 
-              :checked="currentRole === 'admin'"
-              @change="currentRole = 'admin'"
-            >
+            <input type="radio" value="admin" :checked="currentRole === 'admin'" @change="currentRole = 'admin'" />
             <span>Админ</span>
           </label>
         </div>
@@ -31,7 +26,7 @@
     <LoadingSpinner v-if="loading" text="Загрузка курсов..." />
     <div v-else class="courses-list">
       <CourseCard
-        v-for="course in visibleCourses" 
+        v-for="course in visibleCourses"
         :key="course.uid"
         :course="course"
         :role="currentRole"
@@ -82,7 +77,7 @@ const visibleCourses = computed(() => {
   if (currentRole.value === 'admin') {
     return courses.value;
   } else {
-    return courses.value.filter(course => course.isActive);
+    return courses.value.filter((course) => course.isActive);
   }
 });
 
@@ -104,12 +99,8 @@ const handleCourseShow = (courseId: number) => {
 
 // Вычисляемые свойства для диалога
 const dialogTitle = 'Подтверждение';
-const dialogMessage = computed(() => 
-  dialogAction.value === 'delete' ? 'Скрыть курс?' : 'Показать курс?'
-);
-const dialogConfirmText = computed(() => 
-  dialogAction.value === 'delete' ? 'Скрыть' : 'Показать'
-);
+const dialogMessage = computed(() => (dialogAction.value === 'delete' ? 'Скрыть курс?' : 'Показать курс?'));
+const dialogConfirmText = computed(() => (dialogAction.value === 'delete' ? 'Скрыть' : 'Показать'));
 
 const closeDialog = () => {
   showDialog.value = false;
@@ -118,31 +109,31 @@ const closeDialog = () => {
 
 const handleConfirm = async () => {
   if (!courseToAction.value) return;
-  
+
   try {
     if (dialogAction.value === 'delete') {
       // Скрыть курс (isActive = false)
       await coursesApi.update(courseToAction.value, { isActive: false });
-      
+
       // Обновляем локальное состояние
-      const course = courses.value.find(c => c.uid === courseToAction.value);
+      const course = courses.value.find((c) => c.uid === courseToAction.value);
       if (course) course.isActive = false;
-      
+
       alert('Курс скрыт');
     } else {
       // Показать курс (isActive = true)
       await coursesApi.update(courseToAction.value, { isActive: true });
-      
+
       // Обновляем локальное состояние
-      const course = courses.value.find(c => c.uid === courseToAction.value);
+      const course = courses.value.find((c) => c.uid === courseToAction.value);
       if (course) course.isActive = true;
-      
+
       alert('Курс показан');
     }
   } catch (error) {
     // Ловим исключения от API
     console.error('Ошибка:', error);
-    
+
     if (error instanceof Error) {
       alert('Ошибка сервера. Пожалуйста, попробуйте позже.');
     } else {
@@ -199,7 +190,7 @@ onMounted(fetchCourses);
   user-select: none;
 }
 
-.radio-button input[type="radio"] {
+.radio-button input[type='radio'] {
   position: absolute;
   opacity: 0;
   width: 0;

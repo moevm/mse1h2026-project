@@ -1,10 +1,6 @@
 <!-- BaseButton.vue -->
 <template>
-  <button
-    :class="['base-btn', btnClass]"
-    v-bind="$attrs"
-    @click="$emit('click', $event)"
-  >
+  <button :class="['base-btn', btnClass]" v-bind="$attrs" @click="$emit('click', $event)">
     {{ text }}
   </button>
 </template>
@@ -36,8 +32,7 @@ defineEmits<{
 }
 
 .confirm-btn {
-    background-color: red;
-    color: white;
+  background-color: red;
+  color: white;
 }
-
 </style>
