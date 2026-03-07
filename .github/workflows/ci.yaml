@@ -11,25 +11,38 @@ on:
 jobs:
   check:
     runs-on: ubuntu-24.04
+
     strategy:
       fail-fast: false
       matrix:
         task: [format:check, lint, typecheck]
+
     steps:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 1
-      - run: git fetch origin main --depth=1
+
+      - name: 'Fetch Latest Main Branch'
+        run: git fetch origin main --depth=1
+
       - uses: ./.github/actions/setup
-      - run: pnpm --filter "...[origin/main]" --filter "!mse1h2026-project" -r --if-present ${{ matrix.task }}
+
+      - name: 'Run Checks'
+        run: pnpm --filter "...[origin/main]" --filter "!mse1h2026-project" -r --if-present ${{ matrix.task }}
 
   build:
     needs: [check]
     runs-on: ubuntu-24.04
+
     steps:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 1
-      - run: git fetch origin main --depth=1
+
+      - name: 'Fetch Latest Main Branch'
+        run: git fetch origin main --depth=1
+
       - uses: ./.github/actions/setup
-      - run: pnpm --filter "...[origin/main]" --filter "!mse1h2026-project" -r build
+
+      - name: 'Build Project'
+        run: pnpm --filter "...[origin/main]" --filter "!mse1h2026-project" -r build
