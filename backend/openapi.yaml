@@ -86,7 +86,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Course'
         '400':
-          description: Пустой title обязателен
+          description: Неверные данные
         '401':
           description: Не авторизован
         '403':
