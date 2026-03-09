@@ -50,7 +50,7 @@ paths:
           in: query
           schema:
             type: string
-            enum: [title, semester, createdAt]
+            enum: [name, semester, createdAt]
         - name: order
           in: query
           schema:
@@ -77,11 +77,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              required: [title]
-              properties:
-                title: { type: string }
-                description: { type: string }
+              $ref: '#/components/schemas/CreateCourseDto'
       responses:
         '201':
           description: Курс создан
@@ -134,12 +130,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                title:
-                  type: string
-                description:
-                  type: string
+              $ref: '#/components/schemas/UpdateCourseDto'
       responses:
         '200':
           description: Курс обновлен
@@ -439,16 +430,18 @@ components:
         createdAt: { type: string, format: date-time }
         role:
           type: string
-          enum: [student, teacher, admin]
+          enum: [student, admin]
     Course:
       type: object
-      required: [id, title]
+      required: [id, name, semester, maxTeamSize, minTeamSize, isActive]
       properties:
         id: { type: integer }
-        title: { type: string }
+        name: { type: string }
         semester: { type: integer }
         isActive: { type: boolean }
         description: { type: string }
+        maxTeamSize: { type: integer }
+        minTeamSize: { type: integer }
         createdAt: { type: string, format: date-time }
         updatedAt: { type: string, format: date-time }
         registrationDeadline: { type: string, format: date-time }
@@ -482,3 +475,25 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Assignment'
+    CreateCourseDto:
+      type: object
+      required: [name, semester, maxTeamSize, minTeamSize, isActive]
+      properties:
+        name: { type: string, minLength: 3 }
+        semester: { type: integer, minimum: 1 }
+        maxTeamSize: { type: integer, minimum: 1 }
+        minTeamSize: { type: integer, minimum: 1 }
+        isActive: { type: boolean }
+        description: { type: string }
+        registrationDeadline: { type: string, format: date-time }
+    UpdateCourseDto:
+      type: object
+      properties:
+        name: { type: string, minLength: 3 }
+        semester: { type: integer, minimum: 1 }
+        maxTeamSize: { type: integer, minimum: 1 }
+        minTeamSize: { type: integer, minimum: 1 }
+        isActive: { type: boolean }
+        description: { type: string }
+        registrationDeadline: { type: string, format: date-time }
+
