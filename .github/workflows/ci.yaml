@@ -49,4 +49,4 @@ jobs:
         uses: ./.github/actions/setup
 
       - name: 'Build Project'
-        run: pnpm --filter "...[origin/main]" --filter "!mse1h2026-project" -r build
+        run: pnpm run build
