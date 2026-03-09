@@ -1,6 +1,6 @@
 import { CoursesService } from './courses.service';
 import { Controller, Get, Post, Param, Put, Delete, Body, ParseIntPipe } from '@nestjs/common';
-import { Course } from '../common/interfaces/course.interface';
+import type { Course } from '@/common/interfaces/course.interface';
 
 @Controller('courses')
 export class CoursesController {

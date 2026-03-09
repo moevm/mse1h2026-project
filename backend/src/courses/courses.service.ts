@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { mockCourses } from '../../mocks/courses.mock';
-import { Course } from '../common/interfaces/course.interface';
+import { mockCourses } from '@/mocks/courses.mock';
+import { Course } from '@/common/interfaces/course.interface';
 
 @Injectable()
 export class CoursesService {
