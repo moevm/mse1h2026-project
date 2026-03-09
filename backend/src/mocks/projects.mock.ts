@@ -1,4 +1,4 @@
-import { Project } from '../src/common/interfaces/project.interface';
+import { Project } from '@/common/interfaces/project.interface';
 
 export const mockProjects: Project[] = [
   {

@@ -5,7 +5,7 @@
   "description": "MSE database.",
   "scripts": {
     "lint": "eslint --cache . --config ../eslint.config.ts",
-    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "typecheck": "pnpm run prisma:generate && tsc --noEmit -p tsconfig.json",
     "format": "prettier --cache --write . --config ../.prettierrc.yaml --ignore-path ../.prettierignore",
     "format:check": "prettier --cache --check . --config ../.prettierrc.yaml --ignore-path ../.prettierignore",
     "prisma:generate": "prisma generate",

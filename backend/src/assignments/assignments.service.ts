@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { mockAssignments } from '../../mocks/assignments.mock';
+import { mockAssignments } from '@/mocks/assignments.mock';
 
 @Injectable()
 export class AssignmentsService {
