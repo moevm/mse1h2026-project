@@ -496,4 +496,3 @@ components:
         isActive: { type: boolean }
         description: { type: string }
         registrationDeadline: { type: string, format: date-time }
-
