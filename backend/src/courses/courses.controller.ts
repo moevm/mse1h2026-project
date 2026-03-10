@@ -2,7 +2,7 @@ import { CoursesService } from './courses.service';
 import { Controller, Get, Post, Param, Put, Delete, Body, ParseIntPipe } from '@nestjs/common';
 import type { Course } from '@/common/interfaces/course.interface';
 
-@Controller('courses')
+@Controller('api/courses')
 export class CoursesController {
   constructor(private readonly coursesService: CoursesService) {}
 
