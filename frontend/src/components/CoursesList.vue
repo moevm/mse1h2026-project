@@ -16,7 +16,12 @@
             <span>Ученик</span>
           </label>
           <label class="radio-button">
-            <input type="radio" value="admin" :checked="currentRole === 'admin'" @change="currentRole = 'admin'" />
+            <input
+              type="radio"
+              value="admin"
+              :checked="currentRole === 'admin'"
+              @change="currentRole = 'admin'"
+            />
             <span>Админ</span>
           </label>
         </div>
@@ -101,7 +106,9 @@ const handleCourseShow = (course: Course) => {
 
 // Вычисляемые свойства для диалога
 const dialogTitle = 'Подтверждение';
-const dialogMessage = computed(() => (dialogAction.value === 'delete' ? 'Скрыть курс?' : 'Показать курс?'));
+const dialogMessage = computed(() =>
+  dialogAction.value === 'delete' ? 'Скрыть курс?' : 'Показать курс?',
+);
 const dialogConfirmText = computed(() => (dialogAction.value === 'delete' ? 'Скрыть' : 'Показать'));
 
 const closeDialog = () => {
@@ -116,8 +123,8 @@ const handleConfirm = async () => {
     if (dialogAction.value === 'delete') {
       // Скрыть курс (isActive = false)
       const updatedData = {
-        ...courseToAction.value,  // все поля из courseToAction
-        isActive: false           // изменённое поле
+        ...courseToAction.value, // все поля из courseToAction
+        isActive: false, // изменённое поле
       };
       await coursesApi.update(courseToAction.value.uid, updatedData);
 
@@ -130,13 +137,13 @@ const handleConfirm = async () => {
         title: 'Курс скрыт',
         content: 'Курс успешно скрыт из публичного доступа',
         duration: 3000,
-        keepAliveOnHover: true
+        keepAliveOnHover: true,
       });
     } else {
       // Показать курс (isActive = true)
       const updatedData = {
-        ...courseToAction.value,  // все поля из courseToAction
-        isActive: true          // изменённое поле
+        ...courseToAction.value, // все поля из courseToAction
+        isActive: true, // изменённое поле
       };
       await coursesApi.update(courseToAction.value.uid, updatedData);
 
@@ -149,7 +156,7 @@ const handleConfirm = async () => {
         title: 'Курс опубликован',
         content: 'Курс теперь виден всем пользователям',
         duration: 3000,
-        keepAliveOnHover: true
+        keepAliveOnHover: true,
       });
     }
   } catch (error) {
@@ -162,14 +169,14 @@ const handleConfirm = async () => {
         title: 'Ошибка сервера',
         content: error.message || 'Пожалуйста, попробуйте позже',
         duration: 5000,
-        keepAliveOnHover: true
+        keepAliveOnHover: true,
       });
     } else {
       notification.error({
         title: 'Неизвестная ошибка',
         content: 'Произошла неизвестная ошибка',
         duration: 5000,
-        keepAliveOnHover: true
+        keepAliveOnHover: true,
       });
     }
   } finally {

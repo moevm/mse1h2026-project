@@ -1,5 +1,9 @@
 <template>
-  <div class="course-card" :class="{ inactive: !course.isActive, clickable: true }" @click="handleCardClick">
+  <div
+    class="course-card"
+    :class="{ inactive: !course.isActive, clickable: true }"
+    @click="handleCardClick"
+  >
     <div class="card-header">
       <h3 class="card-title">{{ course.name }}</h3>
       <div class="header-extra">

@@ -34,16 +34,20 @@ const handleEsc = (e: KeyboardEvent) => {
   }
 };
 
-watch(() => props.show, (visible) => {
-  if (visible) {
-    window.addEventListener('keydown', handleEsc);
-    // Блокируем прокрутку body под диалогом
-    document.body.style.overflow = 'hidden';
-  } else {
-    window.removeEventListener('keydown', handleEsc);
-    document.body.style.overflow = '';
-  }
-}, { immediate: true });
+watch(
+  () => props.show,
+  (visible) => {
+    if (visible) {
+      window.addEventListener('keydown', handleEsc);
+      // Блокируем прокрутку body под диалогом
+      document.body.style.overflow = 'hidden';
+    } else {
+      window.removeEventListener('keydown', handleEsc);
+      document.body.style.overflow = '';
+    }
+  },
+  { immediate: true },
+);
 </script>
 
 <style scoped>
