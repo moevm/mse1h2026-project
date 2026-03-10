@@ -12,6 +12,8 @@
         "redhat.vscode-yaml",
         "redhat.vscode-xml",
         "prisma.prisma",
-        "william-voyek.vscode-nginx"
+        "william-voyek.vscode-nginx",
+        "github.vscode-github-actions",
+        "github.vscode-pull-request-github"
     ]
 }
