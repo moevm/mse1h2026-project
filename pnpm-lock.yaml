@@ -21,9 +21,6 @@ importers:
       '@types/node':
         specifier: ^25.3.0
         version: 25.3.0
-      '@vue/compiler-sfc':
-        specifier: ^3.5.30
-        version: 3.5.30
       concurrently:
         specifier: ^9.2.1
         version: 9.2.1
@@ -4428,6 +4425,7 @@ snapshots:
       entities: 7.0.1
       estree-walker: 2.0.2
       source-map-js: 1.2.1
+    optional: true
 
   '@vue/compiler-dom@3.5.29':
     dependencies:
@@ -4438,6 +4436,7 @@ snapshots:
     dependencies:
       '@vue/compiler-core': 3.5.30
       '@vue/shared': 3.5.30
+    optional: true
 
   '@vue/compiler-sfc@3.5.29':
     dependencies:
@@ -4462,6 +4461,7 @@ snapshots:
       magic-string: 0.30.21
       postcss: 8.5.8
       source-map-js: 1.2.1
+    optional: true
 
   '@vue/compiler-ssr@3.5.29':
     dependencies:
@@ -4472,6 +4472,7 @@ snapshots:
     dependencies:
       '@vue/compiler-dom': 3.5.30
       '@vue/shared': 3.5.30
+    optional: true
 
   '@vue/devtools-api@6.6.4': {}
 
@@ -4527,7 +4528,8 @@ snapshots:
 
   '@vue/shared@3.5.29': {}
 
-  '@vue/shared@3.5.30': {}
+  '@vue/shared@3.5.30':
+    optional: true
 
   '@vue/tsconfig@0.8.1(typescript@5.9.3)(vue@3.5.29(typescript@5.9.3))':
     optionalDependencies:
@@ -5873,6 +5875,7 @@ snapshots:
       nanoid: 3.3.11
       picocolors: 1.1.1
       source-map-js: 1.2.1
+    optional: true
 
   postgres@3.4.7: {}
 
