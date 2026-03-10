@@ -21,7 +21,6 @@ defineEmits<{
   padding: 6px 12px;
   border: none;
   border-radius: 6px;
-  font-size: 0.9rem;
   cursor: pointer;
   transition: all 0.2s;
   font-size: 1rem;
