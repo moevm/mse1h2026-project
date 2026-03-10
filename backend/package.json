@@ -6,12 +6,13 @@
   "license": "ISC",
   "packageManager": "pnpm@10.30.0",
   "scripts": {
-    "build": "nest build",
-    "start": "nest start",
-    "start:dev": "nest start --watch",
+    "build": "nest build --preserveWatchOutput",
+    "start": "nest start --preserveWatchOutput",
+    "start:dev": "nest start --watch --preserveWatchOutput",
     "start:prod": "node dist/main.js",
-    "lint": "eslint --cache . --config ../eslint.config.ts",
-    "format": "prettier --cache --write . --config ../.prettierrc.yaml --ignore-path ../.prettierignore",
+    "lint": "eslint --cache src",
+    "format": "prettier --cache --write src",
+    "format:check": "prettier --cache --check src",
     "typecheck": "tsc --noEmit -p tsconfig.build.json"
   },
   "dependencies": {

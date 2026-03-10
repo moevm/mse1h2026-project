@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { dateRuRU, NConfigProvider, ruRU, NGlobalStyle } from 'naive-ui';
 import CoursesList from './components/CoursesList.vue';
+
 </script>
 
 <template>
