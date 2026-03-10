@@ -2,7 +2,7 @@
 
 # Этап 1: Сборка приложения
 # Образ Node.js для сборки
-FROM node:24-alpine AS builder
+FROM node:lts-alpine AS builder
 
 # Устанавливаем переменные окружения для pnpm
 ENV PNPM_HOME="/pnpm"
@@ -33,7 +33,7 @@ RUN pnpm --filter @mse/frontend run build
 
 # Этап 2: Запуск приложения
 # Финальный образ для запуска приложения
-FROM nginx:1.28.2-alpine
+FROM nginx:stable-alpine
 
 # Копируем собранные файлы из этапа сборки в директорию Nginx
 COPY --from=builder /app/frontend/dist /usr/share/nginx/html
