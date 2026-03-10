@@ -13,21 +13,40 @@
 
 <script setup lang="ts">
 import BaseButton from './BaseButton.vue';
-defineProps<{
+import { watch } from 'vue';
+
+const props = defineProps<{
   show: boolean;
   title: string;
   message: string;
   confirmText: string;
 }>();
 
-defineEmits<{
+const emit = defineEmits<{
   (e: 'confirm'): void;
   (e: 'cancel'): void;
 }>();
+
+const handleEsc = (e: KeyboardEvent) => {
+  if (e.key === 'Escape') {
+    e.preventDefault(); // Предотвращаем стандартное поведение браузера
+    emit('cancel');
+  }
+};
+
+watch(() => props.show, (visible) => {
+  if (visible) {
+    window.addEventListener('keydown', handleEsc);
+    // Блокируем прокрутку body под диалогом
+    document.body.style.overflow = 'hidden';
+  } else {
+    window.removeEventListener('keydown', handleEsc);
+    document.body.style.overflow = '';
+  }
+}, { immediate: true });
 </script>
 
 <style scoped>
-/* Стили для модального окна */
 .dialog-overlay {
   position: fixed;
   top: 0;
