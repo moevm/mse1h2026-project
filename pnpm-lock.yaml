@@ -94,9 +94,6 @@ importers:
       '@types/passport-local':
         specifier: ^1.0.38
         version: 1.0.38
-      dotenv:
-        specifier: ^17.3.1
-        version: 17.3.1
       prettier:
         specifier: ^3.8.1
         version: 3.8.1
