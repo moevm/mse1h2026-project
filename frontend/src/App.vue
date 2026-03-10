@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { dateRuRU, NConfigProvider, ruRU, NGlobalStyle, NAlert} from 'naive-ui';
+import { dateRuRU, NConfigProvider, ruRU, NGlobalStyle, NAlert } from 'naive-ui';
 </script>
 
 <template>

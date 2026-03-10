@@ -7,3 +7,4 @@ node_modules
 .vscode
 *.md
 database/generated
+tsconfig*.json
