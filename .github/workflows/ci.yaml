@@ -30,7 +30,7 @@ jobs:
         uses: ./.github/actions/setup
 
       - name: 'Run Checks'
-        run: pnpm --filter "...[origin/main]" --filter "!mse1h2026-project" -r --if-present ${{ matrix.task }}
+        run: pnpm --filter "...[origin/main]" --filter "!mse1h2026-project" -r ${{ matrix.task }}
 
   build:
     needs: [check]
