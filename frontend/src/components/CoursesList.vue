@@ -54,6 +54,7 @@ import ConfirmDialog from './ConfirmDialog.vue';
 import { coursesApi } from '@/api';
 import type { Course } from '../types/index';
 import LoadingSpinner from './LoadingSpinner.vue';
+import { useNotification } from 'naive-ui';
 
 const courses = ref<Course[]>([]);
 const currentRole = ref<'admin' | 'student'>('student');
@@ -61,6 +62,7 @@ const courseToAction = ref<number | null>(null);
 const showDialog = ref(false);
 const dialogAction = ref<'delete' | 'show'>('delete');
 const loading = ref(true);
+const notification = useNotification();
 
 // Загрузка курсов
 const fetchCourses = async () => {
@@ -119,7 +121,13 @@ const handleConfirm = async () => {
       const course = courses.value.find((c) => c.uid === courseToAction.value);
       if (course) course.isActive = false;
 
-      alert('Курс скрыт');
+      // Уведомление об успехе
+      notification.success({
+        title: 'Курс скрыт',
+        content: 'Курс успешно скрыт из публичного доступа',
+        duration: 3000,
+        keepAliveOnHover: true
+      });
     } else {
       // Показать курс (isActive = true)
       await coursesApi.update(courseToAction.value, { isActive: true });
@@ -128,16 +136,33 @@ const handleConfirm = async () => {
       const course = courses.value.find((c) => c.uid === courseToAction.value);
       if (course) course.isActive = true;
 
-      alert('Курс показан');
+      // Уведомление об успехе
+      notification.success({
+        title: 'Курс опубликован',
+        content: 'Курс теперь виден всем пользователям',
+        duration: 3000,
+        keepAliveOnHover: true
+      });
     }
   } catch (error) {
     // Ловим исключения от API
     console.error('Ошибка:', error);
 
+    // Уведомление об ошибке
     if (error instanceof Error) {
-      alert('Ошибка сервера. Пожалуйста, попробуйте позже.');
+      notification.error({
+        title: 'Ошибка сервера',
+        content: error.message || 'Пожалуйста, попробуйте позже',
+        duration: 5000,
+        keepAliveOnHover: true
+      });
     } else {
-      alert('Произошла неизвестная ошибка');
+      notification.error({
+        title: 'Неизвестная ошибка',
+        content: 'Произошла неизвестная ошибка',
+        duration: 5000,
+        keepAliveOnHover: true
+      });
     }
   } finally {
     closeDialog();
