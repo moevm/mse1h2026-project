@@ -2,7 +2,7 @@
 
 # Этап 1: Сборка приложения
 # Образ Node.js для сборки
-FROM node:24-alpine AS builder
+FROM node:lts-alpine AS builder
 
 # Устанавливаем переменные окружения для pnpm
 ENV PNPM_HOME="/pnpm"
@@ -22,11 +22,11 @@ COPY backend/package.json ./backend/
 COPY database/package.json ./database/
 
 # Устанавливаем ВСЕ зависимости backend + database (вкл. devDependencies для сборки)
-RUN pnpm install --frozen-lockfile --filter @mse/backend...
+RUN pnpm install --frozen-lockfile --filter @mse/backend --filter @mse/database
 
 # Копируем Prisma-схему и генерируем клиент
 COPY database/prisma ./database/prisma
-RUN pnpm --filter @mse/database run generate
+RUN pnpm --filter @mse/database run prisma:generate
 
 # Копируем исходный код database (экспорты)
 COPY database/src ./database/src
@@ -45,7 +45,15 @@ RUN pnpm --filter @mse/backend deploy --prod /app/deploy
 
 # Этап 2: Запуск приложения
 # Финальный образ для запуска приложения
-FROM node:24-alpine
+FROM node:lts-alpine
+
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+ENV NODE_ENV=production
+
+RUN corepack enable
+
+RUN apk add --no-cache curl
 
 # Устанавливаем рабочую директорию
 WORKDIR /app
