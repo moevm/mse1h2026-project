@@ -1,20 +1,29 @@
 import { Injectable } from '@nestjs/common';
 
-export type User = any;
+export type UserRole = 'admin' | 'user';
+
+export type User = {
+  userId: number;
+  username: string;
+  password: string;
+  roles: UserRole[];
+};
 
 // Переделать в данные БД
 @Injectable()
 export class UsersService {
-  private readonly users = [
+  private readonly users: User[] = [
     {
       userId: 1,
       username: 'ivan',
       password: 'ivan',
+      roles: ['admin'],
     },
     {
       userId: 2,
       username: 'maria',
       password: 'maria',
+      roles: ['user'],
     },
   ];
 
