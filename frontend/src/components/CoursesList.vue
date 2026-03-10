@@ -58,7 +58,7 @@ import { useNotification } from 'naive-ui';
 
 const courses = ref<Course[]>([]);
 const currentRole = ref<'admin' | 'student'>('student');
-const courseToAction = ref<number | null>(null);
+const courseToAction = ref<Course | null>(null);
 const showDialog = ref(false);
 const dialogAction = ref<'delete' | 'show'>('delete');
 const loading = ref(true);
@@ -87,14 +87,14 @@ const handleCourseClick = (course: Course) => {
   console.log('Переход на курс:', course.uid);
 };
 
-const handleCourseDelete = (courseId: number) => {
-  courseToAction.value = courseId;
+const handleCourseDelete = (course: Course) => {
+  courseToAction.value = course;
   dialogAction.value = 'delete';
   showDialog.value = true;
 };
 
-const handleCourseShow = (courseId: number) => {
-  courseToAction.value = courseId;
+const handleCourseShow = (course: Course) => {
+  courseToAction.value = course;
   dialogAction.value = 'show';
   showDialog.value = true;
 };
@@ -115,10 +115,14 @@ const handleConfirm = async () => {
   try {
     if (dialogAction.value === 'delete') {
       // Скрыть курс (isActive = false)
-      await coursesApi.update(courseToAction.value, { isActive: false });
+      const updatedData = {
+        ...courseToAction.value,  // все поля из courseToAction
+        isActive: false           // изменённое поле
+      };
+      await coursesApi.update(courseToAction.value.uid, updatedData);
 
       // Обновляем локальное состояние
-      const course = courses.value.find((c) => c.uid === courseToAction.value);
+      const course = courses.value.find((c) => c.uid === courseToAction.value?.uid);
       if (course) course.isActive = false;
 
       // Уведомление об успехе
@@ -130,10 +134,14 @@ const handleConfirm = async () => {
       });
     } else {
       // Показать курс (isActive = true)
-      await coursesApi.update(courseToAction.value, { isActive: true });
+      const updatedData = {
+        ...courseToAction.value,  // все поля из courseToAction
+        isActive: true          // изменённое поле
+      };
+      await coursesApi.update(courseToAction.value.uid, updatedData);
 
       // Обновляем локальное состояние
-      const course = courses.value.find((c) => c.uid === courseToAction.value);
+      const course = courses.value.find((c) => c.uid === courseToAction.value?.uid);
       if (course) course.isActive = true;
 
       // Уведомление об успехе

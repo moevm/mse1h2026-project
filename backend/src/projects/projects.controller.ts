@@ -22,7 +22,7 @@ export class ProjectController {
   }
 
   @Put(':id')
-  update(@Param('id', ParseIntPipe) id: number, @Body() projectData: Partial<Project>) {
+  update(@Param('id', ParseIntPipe) id: number, @Body() projectData: Project) {
     return this.projectsService.updateProject(id, projectData);
   }
 

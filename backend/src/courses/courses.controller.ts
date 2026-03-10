@@ -22,7 +22,7 @@ export class CoursesController {
   }
 
   @Put(':id')
-  update(@Param('id', ParseIntPipe) id: number, @Body() data: Partial<Course>) {
+  update(@Param('id', ParseIntPipe) id: number, @Body() data: Course) {
     return this.coursesService.updateCourse(id, data);
   }
 

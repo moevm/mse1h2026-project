@@ -8,7 +8,7 @@ export const coursesApi = {
 
   create: (data: Partial<Course>) => apiClient.post<Course>('/courses', data),
 
-  update: (uid: number, data: Partial<Course>) => apiClient.put<Course>(`/courses/${uid}`, data),
+  update: (uid: number, data: Course) => apiClient.put<Course>(`/courses/${uid}`, data),
 
   delete: (uid: number) => apiClient.delete<Course>(`/courses/${uid}`),
 };

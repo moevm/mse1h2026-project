@@ -31,8 +31,8 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'click', course: Course): void;
-  (e: 'delete', courseId: number): void;
-  (e: 'show', courseId: number): void;
+  (e: 'delete', course: Course): void;
+  (e: 'show', course: Course): void;
 }>();
 
 const handleCardClick = () => {
@@ -41,12 +41,12 @@ const handleCardClick = () => {
 
 const handleDelete = (e: MouseEvent) => {
   e.stopPropagation();
-  emit('delete', props.course.uid);
+  emit('delete', props.course);
 };
 
 const handleShow = (e: MouseEvent) => {
   e.stopPropagation();
-  emit('show', props.course.uid);
+  emit('show', props.course);
 };
 </script>
 
