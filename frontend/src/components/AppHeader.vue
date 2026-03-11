@@ -31,6 +31,7 @@ import { NIcon } from 'naive-ui';
   justify-content: space-between;
   align-items: center;
   padding: 30px 60px;
+  width: 100%;
 }
 
 .nav-link {

@@ -62,6 +62,7 @@ const handleShow = (e: MouseEvent) => {
   border-radius: 15px;
   overflow: hidden;
   background: #d9d9d9;
+  padding: 1.5rem 0;
 }
 
 .course-card:hover {
@@ -97,7 +98,7 @@ const handleShow = (e: MouseEvent) => {
 }
 
 .course-card.inactive .card-title::before {
-  background-color: #f44336; /* или red */
+  background-color: #f44336;
 }
 
 .header-extra {
