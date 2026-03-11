@@ -75,6 +75,7 @@
     ```bash
     git clone https://github.com/moevm/mse1h2026-project
     ```
+
 - Перейдите в директорию проекта:
   
     ```bash
