@@ -133,18 +133,6 @@
     cp .env.example .env
     ```
 
-#### Production:
-
-1. Запустите docker compose:
-
-    ```bash
-    docker compose up
-    ```
-
-2. Дождитесь сборки и запуска контейнеров. Чтобы открыть сайт напишите `http://localhost:80` или `http://localhost` в адресной строке браузера. 
-   
-   [Прямая ссылка](http://localhost)
-
 #### Development:
 
 1. Запустите docker compose для разработки:
@@ -158,6 +146,18 @@
    - [Прямая ссылка на фронтенд](http://localhost:5173)
 
    - [Прямая ссылка на бэкенд](http://localhost:3000)
+
+#### Production:
+
+1. Запустите docker compose:
+
+    ```bash
+    docker compose up
+    ```
+
+2. Дождитесь сборки и запуска контейнеров. Чтобы открыть сайт напишите `http://localhost:80` или `http://localhost` в адресной строке браузера. 
+   
+   [Прямая ссылка](http://localhost)
 
 ### Переменные окружения
 
