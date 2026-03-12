@@ -5,7 +5,7 @@
       <p>{{ message }}</p>
       <div class="dialog-actions">
         <n-button class="secondary-btn" @click="$emit('cancel')"> Отмена </n-button>
-        <n-button class="confirm-btn secondary-btn" @click="$emit('confirm')">
+        <n-button type="error" @click="$emit('confirm')">
           {{ confirmText }}
         </n-button>
       </div>
@@ -79,11 +79,5 @@ watch(
   justify-content: flex-end;
   gap: 12px;
   margin-top: 20px;
-}
-.confirm-btn {
-  --n-color: rgb(213, 46, 46) !important;
-  --n-color-hover: rgb(175, 40, 40) !important;
-  --n-text-color-hover: #fff !important;
-  --n-text-color: #fff !important;
 }
 </style>
