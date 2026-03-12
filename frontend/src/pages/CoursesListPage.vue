@@ -171,7 +171,7 @@ onMounted(() => {
 
 <style scoped>
 .courses-page {
-  max-width: 1200px;
+  max-width: 1000px;
   margin: 0 auto;
   padding: 24px;
   width: 100%;

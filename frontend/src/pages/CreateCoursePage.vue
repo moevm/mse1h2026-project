@@ -28,8 +28,6 @@ const notification = useNotification();
 const handleCreate = async (formData: Course): Promise<void> => {
 
     try {
-        console.log('Создание курса:', formData);
-
         // Вызов API для создания курса
         const createdCourse = await coursesApi.create(formData);
 

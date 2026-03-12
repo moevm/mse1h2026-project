@@ -5,7 +5,8 @@
  */
 import { createWebHistory, createRouter, type RouterOptions } from 'vue-router';
 import DefaultLayout from '@/layout/DefaultLayout.vue';
-import CoursesPage from '@/pages/CoursesPage.vue';
+import CoursesListPage from '@/pages/CoursesListPage.vue';
+import CourseDetailPage from '@/pages/CourseDetailPage.vue';
 
 // Массив маршрутов для приложения
 const routes: RouterOptions['routes'] = [
@@ -17,13 +18,14 @@ const routes: RouterOptions['routes'] = [
         path: 'courses',
         alias: '', 
         name: 'courses',
-        component: CoursesPage
+        component: CoursesListPage
       },
       { 
         path: 'courses/create', 
         component: () => import('@/pages/CreateCoursePage.vue'), // Ленивая загрузка
         name: 'course-create'
-      }
+      },
+      { path: 'courses/:id', component: CourseDetailPage },
     ],
   },
 ];
