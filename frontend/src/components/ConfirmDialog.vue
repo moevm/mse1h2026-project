@@ -4,16 +4,18 @@
       <h3>{{ title }}</h3>
       <p>{{ message }}</p>
       <div class="dialog-actions">
-        <BaseButton text="Отмена" btn-class="cancel-btn" @click="$emit('cancel')" />
-        <BaseButton :text="confirmText" btn-class="confirm-btn" @click="$emit('confirm')" />
+        <n-button @click="$emit('cancel')"> Отмена </n-button>
+        <n-button class="confirm-btn" @click="$emit('confirm')">
+          {{ confirmText }}
+        </n-button>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import BaseButton from './BaseButton.vue';
 import { watch } from 'vue';
+import { NButton } from 'naive-ui';
 
 const props = defineProps<{
   show: boolean;
@@ -77,5 +79,11 @@ watch(
   justify-content: flex-end;
   gap: 12px;
   margin-top: 20px;
+}
+.confirm-btn {
+  --n-color: rgb(213, 46, 46) !important;
+  --n-color-hover: rgb(175, 40, 40) !important;
+  --n-text-color-hover: #fff !important;
+  --n-text-color: #fff !important;
 }
 </style>

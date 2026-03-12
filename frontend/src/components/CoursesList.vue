@@ -5,7 +5,7 @@
     </div>
 
     <LoadingSpinner v-if="loading" text="Загрузка курсов..." />
-    
+
     <div v-else-if="!visibleCourses.length" class="center-wrapper">
       <n-empty :description="emptyStateMessage" class="empty">
         <template #icon>
@@ -15,7 +15,7 @@
         </template>
       </n-empty>
     </div>
-    
+
     <!-- Список курсов -->
     <div v-else class="courses-list">
       <CourseCard
@@ -34,9 +34,9 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import CourseCard from './CourseCard.vue';
-import { SentimentDissatisfiedRound } from '@vicons/material'
-import LoadingSpinner from '@/components/LoadingSpinner.vue';
-import { NEmpty, NIcon} from 'naive-ui';
+import { SentimentDissatisfiedRound } from '@vicons/material';
+import LoadingSpinner from '@/components/common/LoadingSpinner.vue';
+import { NEmpty, NIcon } from 'naive-ui';
 import type { Course } from '@/types';
 
 // Пропсы

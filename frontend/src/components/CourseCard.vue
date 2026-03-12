@@ -7,18 +7,20 @@
     <div class="card-header">
       <h3 class="card-title">{{ course.name }}</h3>
       <div class="header-extra">
-        <BaseButton
+        <n-button
           v-if="role === 'admin' && course.isActive"
-          text="Скрыть курс"
-          btn-class="delete-btn"
-          @click="handleDelete"
-        />
-        <BaseButton
+          class="delete-btn"
+          @click.stop="handleDelete"
+        >
+          Скрыть курс
+        </n-button>
+        <n-button
           v-if="role === 'admin' && !course.isActive"
-          text="Показать курс"
-          btn-class="show-btn"
-          @click="handleShow"
-        />
+          class="show-btn"
+          @click.stop="handleShow"
+        >
+          Показать курс
+        </n-button>
       </div>
     </div>
   </div>
@@ -26,7 +28,7 @@
 
 <script setup lang="ts">
 import type { Course } from '../types/index';
-import BaseButton from './BaseButton.vue';
+import { NButton } from 'naive-ui';
 
 const props = defineProps<{
   course: Course;

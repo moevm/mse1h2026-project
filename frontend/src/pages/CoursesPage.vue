@@ -1,25 +1,26 @@
 <template>
   <div class="courses-page">
     <div class="role-selector">
-        <div class="radio-group">
-          <label class="radio-button">
-            <input
-              type="radio"
-              value="student"
-              :checked="currentRole === 'student'"
-              @change="currentRole = 'student'"
-            />            <span>Ученик</span>
-          </label>
-          <label class="radio-button">
-            <input
-              type="radio"
-              value="admin"
-              :checked="currentRole === 'admin'"
-              @change="currentRole = 'admin'"
-            />
-            <span>Админ</span>
-          </label>
-        </div>
+      <div class="radio-group">
+        <label class="radio-button">
+          <input
+            type="radio"
+            value="student"
+            :checked="currentRole === 'student'"
+            @change="currentRole = 'student'"
+          />
+          <span>Ученик</span>
+        </label>
+        <label class="radio-button">
+          <input
+            type="radio"
+            value="admin"
+            :checked="currentRole === 'admin'"
+            @change="currentRole = 'admin'"
+          />
+          <span>Админ</span>
+        </label>
+      </div>
     </div>
     <!-- Компонент списка курсов -->
     <CoursesList
@@ -124,7 +125,7 @@ const handleConfirm = async () => {
 
   try {
     const newActiveState = dialogAction.value === 'show';
-    
+
     // Обновляем на сервере
     const updatedData = {
       ...courseToAction.value,
@@ -137,15 +138,15 @@ const handleConfirm = async () => {
     // Уведомление об успехе
     notification.success({
       title: newActiveState ? 'Курс опубликован' : 'Курс скрыт',
-      content: newActiveState 
-        ? 'Курс теперь виден всем пользователям' 
+      content: newActiveState
+        ? 'Курс теперь виден всем пользователям'
         : 'Курс успешно скрыт из публичного доступа',
       duration: 3000,
       keepAliveOnHover: true,
     });
   } catch (error) {
     console.error('Ошибка:', error);
-    
+
     notification.error({
       title: 'Ошибка сервера',
       content: error instanceof Error ? error.message : 'Пожалуйста, попробуйте позже',
