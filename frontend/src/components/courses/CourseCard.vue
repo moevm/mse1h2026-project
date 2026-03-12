@@ -27,7 +27,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Course } from '../types/index';
+import type { Course } from '../../types/index';
 import { NButton } from 'naive-ui';
 
 const props = defineProps<{

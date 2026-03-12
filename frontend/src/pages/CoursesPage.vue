@@ -50,7 +50,7 @@
 import { ref, onMounted, computed } from 'vue';
 import { useNotification } from 'naive-ui';
 import { useRouter } from 'vue-router';
-import CoursesList from '@/components/CoursesList.vue';
+import CoursesList from '@/components/courses/CoursesList.vue';
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue';
 import { coursesApi } from '@/api';
 import type { Course } from '@/types';

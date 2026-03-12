@@ -12,7 +12,19 @@ const routes: RouterOptions['routes'] = [
   {
     path: '/',
     component: DefaultLayout,
-    children: [{ path: '', component: CoursesPage }],
+    children: [
+      { 
+        path: 'courses',
+        alias: '', 
+        name: 'courses',
+        component: CoursesPage
+      },
+      { 
+        path: 'courses/create', 
+        component: () => import('@/pages/CreateCoursePage.vue'), // Ленивая загрузка
+        name: 'course-create'
+      }
+    ],
   },
 ];
 

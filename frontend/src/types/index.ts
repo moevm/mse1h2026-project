@@ -8,6 +8,15 @@ export interface Course {
   registrationDeadline?: Date;
 }
 
+export interface FormData {
+  name: string;
+  semester: number;
+  minTeamSize: number;
+  maxTeamSize: number;
+  registrationDeadline: number | null;
+  isActive: boolean;
+}
+
 export interface Project {
   uid: number;
   title: string;
