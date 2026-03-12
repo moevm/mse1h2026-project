@@ -1,0 +1,33 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.n-button {
+  --n-color: #fff !important;
+  --n-border-radius: 8px !important;
+  --n-color-hover: #fff !important;
+  --n-color-pressed: #fff !important;
+  --n-color-focus: #fff !important;
+  --n-text-color-hover: #000 !important;
+  --n-text-color-focus: #000 !important;
+  --n-text-color-pressed: #000 !important;
+  --n-border-hover: transparent !important;
+  --n-border-focus: transparent !important;
+  --n-border-pressed: transparent !important;
+  --n-border-disabled: transparent !important;
+  --n-ripple-color: #000 !important;
+  transition: all 0.3s !important;
+}
+
+.n-button:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}

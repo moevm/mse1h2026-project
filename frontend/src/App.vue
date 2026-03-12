@@ -13,17 +13,4 @@ import { dateRuRU, NConfigProvider, NNotificationProvider, ruRU, NGlobalStyle } 
   </n-config-provider>
 </template>
 
-<style lang="css">
-  *,
-  *::before,
-  *::after {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-  }
-
-  a {
-    text-decoration: none;
-    color: inherit;
-  }
-</style>
+<style lang="scss"></style>
