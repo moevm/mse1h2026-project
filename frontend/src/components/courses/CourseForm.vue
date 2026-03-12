@@ -119,7 +119,7 @@ const props = withDefaults(defineProps<{
 });
 
 const emit = defineEmits<{
-  (e: 'submit', data: FormData): void;
+  (e: 'submit', data: Course): void;
   (e: 'cancel'): void;
 }>();
 
@@ -159,7 +159,7 @@ const rules: FormRules = {
       trigger: ['blur', 'change']
     },
     {
-      validator: (rule, value) => value >= 1,
+      validator: (_, value) => value >= 1,
       message: 'Минимальный размер не может быть меньше 1',
       trigger: ['blur', 'change']
     }
@@ -172,14 +172,14 @@ const rules: FormRules = {
       trigger: ['blur', 'change']
     },
     {
-      validator: (rule, value) => {
+      validator: (_, value) => {
         return value >= formData.value.minTeamSize;
       },
       message: 'Максимальный размер не может быть меньше минимального',
       trigger: ['blur', 'change']
     },
     {
-      validator: (rule, value) => value <= 20,
+      validator: (_, value) => value <= 20,
       message: 'Максимальный размер не может быть больше 20',
       trigger: ['blur', 'change']
     }
@@ -223,7 +223,7 @@ const handleSubmit = async () => {
   try {
     await formRef.value?.validate();
     submitting.value = true;
-    emit('submit', formData.value);
+    emit('submit', convertFormDataToCourse(formData.value, 1));
   } catch (error) {
     console.error('Ошибка валидации:', error);
   } finally {
@@ -251,6 +251,20 @@ const mapCourseToFormData = (course: Partial<Course> | null | undefined): FormDa
     maxTeamSize: course.maxTeamSize ?? 5,
     registrationDeadline: course.registrationDeadline ? new Date(course.registrationDeadline).getTime() : null,
     isActive: course.isActive ?? true
+  };
+};
+
+const convertFormDataToCourse = (formData: FormData, uid: number): Course => {
+  return {
+    uid,
+    name: formData.name,
+    semester: formData.semester,
+    minTeamSize: formData.minTeamSize,
+    maxTeamSize: formData.maxTeamSize,
+    isActive: formData.isActive,
+    registrationDeadline: formData.registrationDeadline 
+      ? new Date(formData.registrationDeadline) 
+      : undefined
   };
 };
 

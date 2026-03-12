@@ -18,35 +18,20 @@
 import { useRouter } from 'vue-router';
 import { useNotification, NPageHeader } from 'naive-ui';
 import CourseForm from '@/components/courses/CourseForm.vue';
-import type { FormData, Course } from '@/types'; 
+import type { Course } from '@/types'; 
 import { coursesApi } from '@/api'
 
 
 const router = useRouter();
 const notification = useNotification();
 
-const convertFormDataToCourse = (formData: FormData, uid: number): Course => {
-  return {
-    uid,
-    name: formData.name,
-    semester: formData.semester,
-    minTeamSize: formData.minTeamSize,
-    maxTeamSize: formData.maxTeamSize,
-    isActive: formData.isActive,
-    registrationDeadline: formData.registrationDeadline 
-      ? new Date(formData.registrationDeadline) 
-      : undefined
-  };
-};
-
-const handleCreate = async (formData: FormData): Promise<void> => {
+const handleCreate = async (formData: Course): Promise<void> => {
 
     try {
-        const convertedFormData = convertFormDataToCourse(formData, 1);
         console.log('Создание курса:', formData);
 
         // Вызов API для создания курса
-        const createdCourse = await coursesApi.create(convertedFormData);
+        const createdCourse = await coursesApi.create(formData);
 
         console.log('Курс успешно создан:', createdCourse);
 
