@@ -31,6 +31,7 @@
       @course-click="handleCourseClick"
       @course-delete="handleCourseDelete"
       @course-show="handleCourseShow"
+      @course-add="handleAddCourse"
     />
 
     <!-- Диалог подтверждения -->
@@ -50,7 +51,7 @@ import { ref, onMounted, computed } from 'vue';
 import { useNotification } from 'naive-ui';
 import { useRouter } from 'vue-router';
 import CoursesList from '@/components/CoursesList.vue';
-import ConfirmDialog from '@/components/ConfirmDialog.vue';
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue';
 import { coursesApi } from '@/api';
 import type { Course } from '@/types';
 
@@ -98,6 +99,11 @@ const handleCourseShow = (course: Course) => {
   courseToAction.value = course;
   dialogAction.value = 'show';
   showDialog.value = true;
+};
+
+const handleAddCourse = () => {
+  console.log('Добавить новый курс');
+  router.push('/courses/create');
 };
 
 // Вычисляемые свойства для диалога

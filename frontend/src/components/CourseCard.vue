@@ -9,14 +9,14 @@
       <div class="header-extra">
         <n-button
           v-if="role === 'admin' && course.isActive"
-          class="delete-btn"
+          class="delete-btn primary-btn"
           @click.stop="handleDelete"
         >
           Скрыть курс
         </n-button>
         <n-button
           v-if="role === 'admin' && !course.isActive"
-          class="show-btn"
+          class="show-btn primary-btn"
           @click.stop="handleShow"
         >
           Показать курс

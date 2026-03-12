@@ -2,6 +2,18 @@
   <div class="courses-container">
     <div class="courses-list_header">
       <h2 class="courses-list_title">Список курсов</h2>
+      <n-button
+        v-if="currentRole === 'admin'"
+        class="secondary-btn"
+        @click="$emit('course-add')"
+      >
+        <template #icon>
+          <n-icon>
+            <AddRound />
+          </n-icon>
+        </template>
+        Добавить курс
+      </n-button>
     </div>
 
     <LoadingSpinner v-if="loading" text="Загрузка курсов..." />
@@ -34,9 +46,9 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import CourseCard from './CourseCard.vue';
-import { SentimentDissatisfiedRound } from '@vicons/material';
+import { SentimentDissatisfiedRound, AddRound } from '@vicons/material';
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue';
-import { NEmpty, NIcon } from 'naive-ui';
+import { NEmpty, NIcon, NButton } from 'naive-ui';
 import type { Course } from '@/types';
 
 // Пропсы
@@ -51,6 +63,7 @@ defineEmits<{
   (e: 'course-click', course: Course): void;
   (e: 'course-delete', course: Course): void;
   (e: 'course-show', course: Course): void;
+  (e: 'course-add'): void;
 }>();
 
 // Сообщение для пустого состояния в зависимости от роли
@@ -84,6 +97,9 @@ const visibleCourses = computed(() => {
 .courses-list_header {
   grid-row: 1;
   margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .courses-list_title {
