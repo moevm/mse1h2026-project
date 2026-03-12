@@ -4,7 +4,7 @@
       <h2 class="courses-list_title">Список курсов</h2>
       <n-button
         v-if="currentRole === 'admin'"
-        class="secondary-btn"
+        class="primary-btn"
         @click="$emit('course-add')"
       >
         <template #icon>

@@ -4,8 +4,8 @@
       <h3>{{ title }}</h3>
       <p>{{ message }}</p>
       <div class="dialog-actions">
-        <n-button class="primary-btn" @click="$emit('cancel')"> Отмена </n-button>
-        <n-button class="confirm-btn primary-btn" @click="$emit('confirm')">
+        <n-button class="secondary-btn" @click="$emit('cancel')"> Отмена </n-button>
+        <n-button class="confirm-btn secondary-btn" @click="$emit('confirm')">
           {{ confirmText }}
         </n-button>
       </div>

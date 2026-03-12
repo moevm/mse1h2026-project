@@ -10,38 +10,3 @@ a {
   text-decoration: none;
   color: inherit;
 }
-
-.n-button {
-  --n-border-radius: 8px !important;
-  --n-border-hover: transparent !important;
-  --n-border-focus: transparent !important;
-  --n-border-pressed: transparent !important;
-  --n-border-disabled: transparent !important;
-  --n-ripple-color: #000 !important;
-  transition: all 0.3s !important;
-}
-
-.n-button:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.primary-btn {
-  --n-color: #fff !important;
-  --n-color-hover: #fff !important;
-  --n-color-pressed: #fff !important;
-  --n-color-focus: #fff !important;
-  --n-text-color-hover: #000 !important;
-  --n-text-color-focus: #000 !important;
-  --n-text-color-pressed: #000 !important;
-}
-
-.secondary-btn {
-  --n-color: var(--primary-color) !important;
-  --n-color-focus: var(--primary-color-lighter) !important;
-  --n-color-hover: var(--primary-color-lighter) !important;
-  --n-color-pressed: var(--primary-color-lighter) !important;
-  --n-text-color: #fff !important;
-  --n-text-color-hover: #fff !important;
-  --n-text-color-focus: #fff !important;
-  --n-text-color-pressed: #fff !important;
-}
