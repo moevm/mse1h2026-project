@@ -19,12 +19,15 @@
     "@nestjs/common": "^11.1.14",
     "@nestjs/config": "^4.0.3",
     "@nestjs/core": "^11.1.14",
-    "@nestjs/platform-express": "^11.1.14"
+    "@nestjs/platform-express": "^11.1.14",
+    "@prisma/adapter-mariadb": "^7.4.1",
+    "@prisma/client": "^7.4.1"
   },
   "devDependencies": {
     "@nestjs/cli": "^11.0.16",
     "@types/node": "^25.3.0",
     "dotenv": "^17.3.1",
+    "prisma": "^7.4.1",
     "typescript": "^5.9.3"
   }
 }
