@@ -10,7 +10,6 @@ datasource db {
 enum UserRole {
   student
   teacher
-  admin
 }
 
 enum TeamStatus {

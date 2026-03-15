@@ -2,23 +2,20 @@ import 'dotenv/config';
 import { prisma } from '../index';
 
 async function main(): Promise<void> {
-  await prisma.user.deleteMany({
-    where: {
-      email: 'test@example.com',
-    },
-  });
-
   const createdUser = await prisma.user.create({
     data: {
+      firstName: 'Test',
+      secondName: 'User',
       email: 'test@example.com',
-      name: 'Test User',
+      groupNumber: 1,
+      role: 'student',
     },
   });
 
   console.log('Created user:', createdUser);
 
-  const users = await prisma.user.findMany();
-  console.log('All users:', users);
+  await prisma.user.delete({ where: { id: createdUser.id } });
+  console.log('Success');
 }
 
 void main()
