@@ -1,13 +1,15 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaClient } from '../../../database/generated/prisma/client';
+import { Injectable, OnModuleInit, Logger } from '@nestjs/common';
+import { PrismaClient } from '@mse/database/generated/prisma/client';
 import { PrismaMariaDb } from '@prisma/adapter-mariadb';
 
 @Injectable()
-export class PrismaService extends PrismaClient {
+export class PrismaService extends PrismaClient implements OnModuleInit {
+  private readonly logger = new Logger(PrismaService.name);
+
   constructor() {
     const adapter = new PrismaMariaDb({
       host: process.env.MYSQL_HOST || 'localhost',
-      port: parseInt(process.env.MSQL_PORT || '3306'),
+      port: parseInt(process.env.MYSQL_PORT || '3306'),
       user: process.env.MYSQL_USER,
       password: process.env.MYSQL_PASSWORD,
       database: process.env.MYSQL_DATABASE,
@@ -18,5 +20,15 @@ export class PrismaService extends PrismaClient {
     });
 
     super({ adapter });
+  }
+
+  async onModuleInit() {
+    try {
+      await this.$connect();
+      this.logger.log('MySQL подключение успешно');
+    } catch (error) {
+      this.logger.error('Ошибка БД:', error);
+      throw error;
+    }
   }
 }
