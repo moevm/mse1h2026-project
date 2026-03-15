@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client"
   output   = "../generated/prisma"
@@ -13,9 +7,226 @@ datasource db {
   provider = "mysql"
 }
 
+enum UserRole {
+  student
+  teacher
+  admin
+}
+
+enum TeamStatus {
+  forming
+  selected
+  assigned
+  locked
+}
+
+enum RequestStatus {
+  pending
+  confirmed_initiator
+  confirmed_target
+  pending_teacher
+  approved
+  rejected
+}
+
+enum InvitationStatus {
+  pending
+  accepted
+  declined
+  cancelled
+  expired
+}
+
+enum ImportType {
+  projects
+  students
+}
+
+enum AssignmentStatus {
+  active
+  pending_change
+  replaced
+}
+
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  name      String
-  createdAt DateTime @default(now())
+  id          String   @id @default(uuid())
+  firstName   String   @map("first_name") @db.VarChar(255)
+  secondName  String   @map("second_name") @db.VarChar(255)
+  ldapUid     String?  @unique @map("ldap_uid") @db.VarChar(255)
+  email       String   @db.VarChar(255)
+  groupNumber Int      @map("group_number")
+  role        UserRole
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  taughtCourses       Course[]               @relation("CourseTeacher")
+  ledTeams            Team[]                 @relation("TeamLeader")
+  teamMemberships     TeamMember[]
+  taughtProjects      Project[]              @relation("ProjectTeacher")
+  sentInvitations     TeamInvitation[]       @relation("InvitationSentBy")
+  receivedInvitations TeamInvitation[]       @relation("InvitationInvitee")
+  approvedRequests    ExchangeRequest[]      @relation("RequestApprovedBy")
+  confirmedExchanges  ExchangeConfirmation[] @relation("ExchangeConfirmedBy")
+  imports             Import[]               @relation("ImportBy")
+
+  approvedAssignments Assignment[] @relation("AssignmentApprovedBy")
+
+  @@map("users")
+}
+
+model Course {
+  id                   String    @id @default(uuid())
+  name                 String    @db.VarChar(255)
+  semester             Int
+  maxTeamSize          Int       @map("max_team_size")
+  minTeamSize          Int       @map("min_team_size")
+  isActive             Boolean   @default(true) @map("is_active")
+  registrationDeadline DateTime? @map("registration_deadline")
+  autoDistributeAt     DateTime? @map("auto_distribute_at")
+  teacherId            String    @map("teacher_id")
+  createdAt            DateTime  @default(now()) @map("created_at")
+
+  teacher          User              @relation("CourseTeacher", fields: [teacherId], references: [id])
+  teams            Team[]
+  projects         Project[]
+  exchangeRequests ExchangeRequest[]
+  imports          Import[]
+
+  @@map("courses")
+}
+
+model Team {
+  id        String     @id @default(uuid())
+  courseId  String     @map("course_id")
+  leaderId  String?    @map("leader_id")
+  status    TeamStatus
+  createdAt DateTime   @default(now()) @map("created_at")
+
+  course                Course                 @relation(fields: [courseId], references: [id])
+  leader                User?                  @relation("TeamLeader", fields: [leaderId], references: [id])
+  members               TeamMember[]
+  assignments           Assignment[]
+  invitations           TeamInvitation[]
+  initiatedExchanges    ExchangeRequest[]      @relation("InitiatorTeam")
+  targetedExchanges     ExchangeRequest[]      @relation("TargetTeam")
+  exchangeConfirmations ExchangeConfirmation[]
+
+  @@map("teams")
+}
+
+model TeamMember {
+  id       String   @id @default(uuid())
+  userId   String   @map("user_id")
+  teamId   String   @map("team_id")
+  joinedAt DateTime @default(now()) @map("joined_at")
+
+  user User @relation(fields: [userId], references: [id])
+  team Team @relation(fields: [teamId], references: [id])
+
+  @@map("team_members")
+}
+
+model Project {
+  id          String   @id @default(uuid())
+  courseId    String   @map("course_id")
+  teacherId   String   @map("teacher_id")
+  title       String   @db.VarChar(255)
+  description String?  @db.Text
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  course             Course            @relation(fields: [courseId], references: [id])
+  teacher            User              @relation("ProjectTeacher", fields: [teacherId], references: [id])
+  assignments        Assignment[]
+  initiatedExchanges ExchangeRequest[] @relation("InitiatorProject")
+  targetedExchanges  ExchangeRequest[] @relation("TargetProject")
+
+  @@map("projects")
+}
+
+model Assignment {
+  id         String   @id @default(uuid())
+  projectId  String   @map("project_id")
+  teamId     String   @map("team_id")
+  assignedAt DateTime @default(now()) @map("assigned_at")
+
+  status AssignmentStatus @default(active) @map("status")
+
+  approvedBy String?   @map("approved_by")
+  approvedAt DateTime? @map("approved_at")
+
+  project  Project @relation(fields: [projectId], references: [id])
+  team     Team    @relation(fields: [teamId], references: [id])
+  approver User?   @relation("AssignmentApprovedBy", fields: [approvedBy], references: [id])
+
+  @@index([teamId, status])
+  @@map("assignments")
+}
+
+model ExchangeRequest {
+  id                 String        @id @default(uuid())
+  courseId           String        @map("course_id")
+  initiatorTeamId    String        @map("initiator_team_id")
+  targetTeamId       String        @map("target_team_id")
+  initiatorProjectId String        @map("initiator_project_id")
+  targetProjectId    String        @map("target_project_id")
+  status             RequestStatus
+  approvedBy         String?       @map("approved_by")
+  approvedAt         DateTime?     @map("approved_at")
+  createdAt          DateTime      @default(now()) @map("created_at")
+
+  course           Course                 @relation(fields: [courseId], references: [id])
+  initiatorTeam    Team                   @relation("InitiatorTeam", fields: [initiatorTeamId], references: [id])
+  targetTeam       Team                   @relation("TargetTeam", fields: [targetTeamId], references: [id])
+  initiatorProject Project                @relation("InitiatorProject", fields: [initiatorProjectId], references: [id])
+  targetProject    Project                @relation("TargetProject", fields: [targetProjectId], references: [id])
+  approver         User?                  @relation("RequestApprovedBy", fields: [approvedBy], references: [id])
+  confirmations    ExchangeConfirmation[]
+
+  @@map("exchange_requests")
+}
+
+model ExchangeConfirmation {
+  id                String   @id @default(uuid())
+  exchangeRequestId String   @map("exchange_request_id")
+  teamId            String   @map("team_id")
+  confirmedBy       String   @map("confirmed_by")
+  confirmedAt       DateTime @default(now()) @map("confirmed_at")
+
+  exchangeRequest ExchangeRequest @relation(fields: [exchangeRequestId], references: [id])
+  team            Team            @relation(fields: [teamId], references: [id])
+  confirmer       User            @relation("ExchangeConfirmedBy", fields: [confirmedBy], references: [id])
+
+  @@map("exchange_confirmations")
+}
+
+model Import {
+  id          String     @id @default(uuid())
+  courseId    String     @map("course_id")
+  type        ImportType
+  filename    String     @db.VarChar(255)
+  totalRows   Int        @map("total_rows")
+  successRows Int        @map("success_rows")
+  importedBy  String     @map("imported_by")
+  createdAt   DateTime   @default(now()) @map("created_at")
+
+  course   Course @relation(fields: [courseId], references: [id])
+  importer User   @relation("ImportBy", fields: [importedBy], references: [id])
+
+  @@map("imports")
+}
+
+model TeamInvitation {
+  id          String           @id @default(uuid())
+  teamId      String           @map("team_id")
+  inviteeId   String           @map("invitee_id")
+  invitedBy   String           @map("invited_by")
+  status      InvitationStatus @default(pending)
+  createdAt   DateTime         @default(now()) @map("created_at")
+  respondedAt DateTime?        @map("responded_at")
+
+  team    Team @relation(fields: [teamId], references: [id])
+  invitee User @relation("InvitationInvitee", fields: [inviteeId], references: [id])
+  inviter User @relation("InvitationSentBy", fields: [invitedBy], references: [id])
+
+  @@index([teamId, status])
+  @@map("team_invitations")
 }
