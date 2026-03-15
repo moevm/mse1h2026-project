@@ -9,7 +9,7 @@
     "Lobova Catherine",
     "Gelman Polina",
     "Pivoev Nikita",
-    "Otmakhob Danil"
+    "Otmakhov Danil"
   ],
   "scripts": {
     "b": "pnpm --filter @mse/backend",
@@ -21,7 +21,7 @@
     "lint": "pnpm -r lint",
     "format": "pnpm -r format",
     "format:check": "pnpm -r format:check",
-    "build": "concurrently -n backend,frontend -c blue,magenta \"pnpm --filter @mse/backend build\" \"pnpm --filter @mse/frontend build\"",
+    "build": "pnpm --filter @mse/database prisma:generate && concurrently -n backend,frontend -c blue,magenta \"pnpm --filter @mse/backend build\" \"pnpm --filter @mse/frontend build\"",
     "dev": "concurrently -k -n backend,frontend -c blue,magenta \"pnpm --filter @mse/backend start:dev\" \"pnpm --filter @mse/frontend dev\"",
     "preview": "concurrently -n backend,frontend -c blue,magenta \"pnpm --filter @mse/backend start:prod\" \"pnpm --filter @mse/frontend preview\""
   },
