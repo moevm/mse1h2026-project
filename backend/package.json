@@ -11,9 +11,10 @@
     "start:dev": "nest start --watch --preserveWatchOutput",
     "start:prod": "node dist/main.js",
     "lint": "eslint --cache src",
+    "typecheck": "tsc --noEmit -p tsconfig.build.json",
     "format": "prettier --cache --write src",
     "format:check": "prettier --cache --check src",
-    "typecheck": "tsc --noEmit -p tsconfig.build.json"
+    "pre-commit-check": "pnpm lint && pnpm typecheck && pnpm format"
   },
   "dependencies": {
     "@nestjs/common": "^11.1.14",
