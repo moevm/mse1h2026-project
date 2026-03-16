@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
 import { UsersService } from './users.service';
 
 @Controller('api/users')
@@ -11,5 +11,10 @@ export class UsersController {
       return this.usersService.getUsersByRole(role);
     }
     return this.usersService.getAllUsers();
+  }
+
+  @Get(':id')
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.usersService.getUserById(id);
   }
 }

@@ -33,6 +33,10 @@ export class UsersService {
     return this.users.find((user) => user.username === username);
   }
 
+  getUserById(id: number): User | undefined {
+    return mockUsers.find((user) => user.uid === id);
+  }
+
   getAllUsers(): User[] {
     return mockUsers;
   }
