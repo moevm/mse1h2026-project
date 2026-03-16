@@ -1,0 +1,68 @@
+# Docker Compose для разработки с горячей перезагрузкой
+# Запуск: docker compose -f docker-compose.dev.yml up --build
+
+name: mse-dev
+
+services:
+  db:
+    container_name: mse-dev-db
+    image: mysql:lts
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    healthcheck:
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes: [db_dev_data:/var/lib/mysql]
+    ports:
+      - '3306:3306'
+    restart: unless-stopped
+    env_file: .env
+
+  backend:
+    container_name: mse-dev-backend
+    build:
+      context: .
+      dockerfile: backend/Dockerfile.dev
+    environment:
+      DATABASE_URL: mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE}
+    volumes:
+      - ./backend/src:/app/backend/src
+      - ./database/src:/app/database/src
+      - ./database/prisma:/app/database/prisma
+    ports:
+      - '3000:3000'
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    env_file: .env
+
+  frontend:
+    container_name: mse-dev-frontend
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile.dev
+    environment:
+      DOCKER: 'true'
+    volumes:
+      - ./frontend/src:/app/frontend/src
+      - ./frontend/public:/app/frontend/public
+    ports:
+      - '5173:5173'
+    depends_on:
+      - backend
+    restart: unless-stopped
+    env_file: .env
+
+volumes:
+  db_dev_data:
+    driver: local
+
+networks:
+  default:
+    driver: bridge
