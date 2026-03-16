@@ -18,7 +18,6 @@ export class CoursesService {
     const newCourse: Course = {
       uid: newUid,
       name: course.name || 'New course',
-      semester: course.semester || 6,
       maxTeamSize: course.maxTeamSize || 5,
       minTeamSize: course.minTeamSize || 2,
       isActive: course.isActive !== undefined ? course.isActive : true,

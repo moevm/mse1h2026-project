@@ -4,7 +4,6 @@ export const mockCourses: Course[] = [
   {
     uid: 101,
     name: 'MSE',
-    semester: 6,
     maxTeamSize: 5,
     minTeamSize: 5,
     isActive: false,
@@ -15,7 +14,6 @@ export const mockCourses: Course[] = [
   {
     uid: 102,
     name: 'NoSQL',
-    semester: 6,
     maxTeamSize: 3,
     minTeamSize: 2,
     isActive: true,
