@@ -28,9 +28,9 @@
       <n-descriptions label-placement="left" bordered :column="1" class="course-info">
 
         <!-- Семестр -->
-        <n-descriptions-item label="Семестр">
+        <n-descriptions-item label="Преподаватель">
           <div class="info-item">
-            <span>{{ course.semester }} семестр</span>
+            <span>{{ course.adminId }}</span>
           </div>
         </n-descriptions-item>
 

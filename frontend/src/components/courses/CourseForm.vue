@@ -18,18 +18,20 @@
         />
       </n-form-item>
 
-      <n-form-item label="Семестр" path="semester" required>
-        <n-input-number
-          v-model:value="formData.semester"
-          :min="1"
-          :max="10"
-          placeholder="Введите номер семестра"
-          :disabled="disabledFields?.includes('semester')"
-          style="width: 120px"
+      <n-form-item label="Преподаватель" path="teacherId" required>
+        <n-select
+          v-model:value="formData.teacherId"
+          :options="teacherOptions"
+          :loading="loadingTeachers"
+          placeholder="Выберите преподавателя"
+          :disabled="disabledFields?.includes('teacher') || loadingTeachers"
+          filterable
+          clearable
+          @search="handleTeacherSearch"
+          @update:value="(val) => console.log('Выбрано:', val, formData.teacherId)"
         />
       </n-form-item>
 
-      <!-- Размер команды -->
       <n-space>
         <n-form-item label="Мин. размер команды" path="minTeamSize" required>
           <n-input-number
@@ -52,7 +54,6 @@
         </n-form-item>
       </n-space>
 
-      <!-- Дедлайн регистрации -->
       <n-form-item label="Дедлайн регистрации" path="registrationDeadline" required>
         <n-date-picker
           v-model:value="formData.registrationDeadline"
@@ -65,7 +66,6 @@
         />
       </n-form-item>
 
-      <!-- Статус -->
       <n-form-item label="Статус" path="isActive">
         <n-space align="center">
           <n-switch v-model:value="formData.isActive" :disabled="disabledFields?.includes('isActive')">
@@ -78,7 +78,6 @@
         </n-space>
       </n-form-item>
 
-      <!-- Кнопки -->
       <n-form-item>
         <n-space justify="end" :size="16">
           <n-button @click="$emit('cancel')">
@@ -99,14 +98,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import { 
-  NCard, NForm, NFormItem, NInput, NInputNumber, 
-  NDatePicker, NSwitch, NSpace, NText, NButton
+  NCard, NForm, NFormItem, NInput, NInputNumber, NSelect,
+  NDatePicker, NSwitch, NSpace, NText, NButton,
+  useNotification
 } from 'naive-ui';
-
-import type { FormInst, FormRules } from 'naive-ui';
-import type { Course, FormData } from '@/types';
+import type { FormInst, FormRules, SelectOption } from 'naive-ui';
+import type { Course, User } from '@/types';
+import { usersApi } from '@/api/users';
 
 const props = withDefaults(defineProps<{
   initialData?: Partial<Course> | null;
@@ -122,16 +122,22 @@ const emit = defineEmits<{
   (e: 'cancel'): void;
 }>();
 
+const notification = useNotification();
 const formRef = ref<FormInst | null>(null);
 const submitting = ref(false);
 
-// Данные формы с начальными значениями
-const formData = ref<FormData>({
+// Состояние для преподавателей
+const teachers = ref<User[]>([]);
+const loadingTeachers = ref(false);
+const teacherOptions = ref<SelectOption[]>([]);
+
+// Данные формы
+const formData = ref({
   name: '',
-  semester: 5,
+  teacherId: null as string | null,
   minTeamSize: 2,
   maxTeamSize: 5,
-  registrationDeadline: null,
+  registrationDeadline: null as number | null,
   isActive: true
 });
 
@@ -142,14 +148,12 @@ const rules: FormRules = {
     message: 'Введите название курса',
     trigger: ['blur', 'input']
   },
-  semester: [
-    {
-      required: true,
-      type: 'number',
-      message: 'Введите номер семестра',
-      trigger: ['blur', 'change']
-    }
-  ],
+  teacherId: {
+    required: true,
+    type: 'string',
+    message: 'Выберите преподавателя',
+    trigger: ['blur', 'change']
+  },
   minTeamSize: [
     {
       required: true,
@@ -191,20 +195,72 @@ const rules: FormRules = {
   }
 };
 
+// Загрузка преподавателей (админов)
+const loadTeachers = async () => {
+  loadingTeachers.value = true;
+  try {
+    // Запрашиваем только админов
+    teachers.value = await usersApi.getUsers({ role: 'admin' });
+    
+    // Преобразуем в формат для n-select
+    teacherOptions.value = teachers.value.map(teacher => ({
+      label: `${teacher.firstName} ${teacher.secondName}`,
+      value: teacher.uid.toString()
+    }));
+  } catch (error) {
+    console.error('Ошибка загрузки преподавателей:', error);
+    notification.error({
+      title: 'Ошибка',
+      content: 'Не удалось загрузить список преподавателей',
+      duration: 3000
+    });
+  } finally {
+    loadingTeachers.value = false;
+  }
+};
+
+// Поиск преподавателей
+const handleTeacherSearch = (query: string) => {
+  if (!query) {
+    // Если поиск пустой, показываем всех
+    teacherOptions.value = teachers.value.map(teacher => ({
+      label: `${teacher.firstName} ${teacher.secondName}`,
+      value: teacher.uid.toString()
+    }));
+    return;
+  }
+  
+  // Фильтруем по имени и фамилии
+  const searchQuery = query.toLowerCase();
+  teacherOptions.value = teachers.value
+    .filter(teacher => {
+      const fullName = `${teacher.firstName} ${teacher.secondName}`.toLowerCase();
+      const firstName = teacher.firstName.toLowerCase();
+      const secondName = teacher.secondName.toLowerCase();
+      
+      // Ищем по полному имени, имени или фамилии
+      return fullName.includes(searchQuery) || 
+             firstName.includes(searchQuery) || 
+             secondName.includes(searchQuery);
+    })
+    .map(teacher => ({
+      label: `${teacher.firstName} ${teacher.secondName}`,
+      value: teacher.uid.toString()
+    }));
+};
+
 // Проверка валидности формы
 const isFormValid = computed(() => {
-  // Для заблокированных полей не проверяем заполненность
   const checks = [];
   
   if (!props.disabledFields?.includes('name')) checks.push(formData.value.name);
-  if (!props.disabledFields?.includes('semester')) checks.push(formData.value.semester);
+  if (!props.disabledFields?.includes('teacher')) checks.push(formData.value.teacherId);
   if (!props.disabledFields?.includes('teamSize')) {
     checks.push(formData.value.minTeamSize);
     checks.push(formData.value.maxTeamSize);
   }
   if (!props.disabledFields?.includes('deadline')) checks.push(formData.value.registrationDeadline);
   
-  // Дополнительная проверка на соотношение размеров
   const teamSizeValid = props.disabledFields?.includes('teamSize') || 
     (formData.value.maxTeamSize && formData.value.minTeamSize && 
      formData.value.maxTeamSize >= formData.value.minTeamSize);
@@ -212,21 +268,29 @@ const isFormValid = computed(() => {
   return checks.every(Boolean) && teamSizeValid;
 });
 
-// Текст кнопки в зависимости от режима
 const submitButtonText = computed(() => {
   return props.mode === 'create' ? 'Создать курс' : 'Сохранить изменения';
 });
 
-// Отправка формы
 const handleSubmit = async () => {
   try {
     await formRef.value?.validate();
     submitting.value = true;
-    if (props.initialData?.uid){
-      emit('submit', convertFormDataToCourse(formData.value, props.initialData?.uid));
-    } else {
-      emit('submit', convertFormDataToCourse(formData.value, 1));
-    }
+    
+    // Преобразуем teacherId в число для Course
+    const courseData: Course = {
+      uid: props.mode === 'edit' && props.initialData?.uid ? props.initialData.uid : 0,
+      name: formData.value.name,
+      adminId: formData.value.teacherId ? parseInt(formData.value.teacherId) : 0,
+      minTeamSize: formData.value.minTeamSize,
+      maxTeamSize: formData.value.maxTeamSize,
+      isActive: formData.value.isActive,
+      registrationDeadline: formData.value.registrationDeadline 
+        ? new Date(formData.value.registrationDeadline) 
+        : undefined
+    };
+    
+    emit('submit', courseData);
   } catch (error) {
     console.error('Ошибка валидации:', error);
   } finally {
@@ -235,11 +299,11 @@ const handleSubmit = async () => {
 };
 
 // Функция для преобразования Course в FormData
-const mapCourseToFormData = (course: Partial<Course> | null | undefined): FormData => {
+const mapCourseToFormData = (course: Partial<Course> | null | undefined) => {
   if (!course || Object.keys(course).length === 0) {
     return {
       name: '',
-      semester: 6,
+      teacherId: null,
       minTeamSize: 2,
       maxTeamSize: 5,
       registrationDeadline: null,
@@ -249,7 +313,7 @@ const mapCourseToFormData = (course: Partial<Course> | null | undefined): FormDa
 
   return {
     name: course.name || '',
-    semester: course.semester || 6,
+    teacherId: course.adminId ? course.adminId.toString() : null,
     minTeamSize: course.minTeamSize ?? 2,
     maxTeamSize: course.maxTeamSize ?? 5,
     registrationDeadline: course.registrationDeadline ? new Date(course.registrationDeadline).getTime() : null,
@@ -257,19 +321,10 @@ const mapCourseToFormData = (course: Partial<Course> | null | undefined): FormDa
   };
 };
 
-const convertFormDataToCourse = (formData: FormData, uid: number): Course => {
-  return {
-    uid,
-    name: formData.name,
-    semester: formData.semester,
-    minTeamSize: formData.minTeamSize,
-    maxTeamSize: formData.maxTeamSize,
-    isActive: formData.isActive,
-    registrationDeadline: formData.registrationDeadline 
-      ? new Date(formData.registrationDeadline) 
-      : undefined
-  };
-};
+// Загружаем преподавателей при монтировании
+onMounted(() => {
+  loadTeachers();
+});
 
 // Загружаем данные при изменении initialData
 watch(() => props.initialData, (newData) => {
