@@ -69,7 +69,6 @@ const goBack = (): void => {
 .title {
   font-size: 1.8rem;
   font-weight: 600;
-  color: #333;
 }
 
 @media (max-width: 768px) {

@@ -18,7 +18,6 @@
         />
       </n-form-item>
 
-      <!-- Семестр - числовое значение -->
       <n-form-item label="Семестр" path="semester" required>
         <n-input-number
           v-model:value="formData.semester"
@@ -126,7 +125,7 @@ const emit = defineEmits<{
 const formRef = ref<FormInst | null>(null);
 const submitting = ref(false);
 
-// Данные формы с правильными начальными значениями
+// Данные формы с начальными значениями
 const formData = ref<FormData>({
   name: '',
   semester: 5,
@@ -223,7 +222,11 @@ const handleSubmit = async () => {
   try {
     await formRef.value?.validate();
     submitting.value = true;
-    emit('submit', convertFormDataToCourse(formData.value, 1));
+    if (props.initialData?.uid){
+      emit('submit', convertFormDataToCourse(formData.value, props.initialData?.uid));
+    } else {
+      emit('submit', convertFormDataToCourse(formData.value, 1));
+    }
   } catch (error) {
     console.error('Ошибка валидации:', error);
   } finally {

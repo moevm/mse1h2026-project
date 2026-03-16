@@ -25,7 +25,16 @@ const routes: RouterOptions['routes'] = [
         component: () => import('@/pages/CreateCoursePage.vue'), // Ленивая загрузка
         name: 'course-create'
       },
-      { path: 'courses/:id', component: CourseDetailPage },
+      { 
+        path: 'courses/:id', 
+        component: CourseDetailPage,
+        name: 'course-detail'
+      },
+      { 
+        path: 'courses/:id/edit', 
+        component: () => import('@/pages/EditCoursePage.vue'), // Ленивая загрузка
+        name: 'course-edit',
+      },
     ],
   },
 ];
