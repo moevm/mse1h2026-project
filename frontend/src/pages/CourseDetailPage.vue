@@ -2,9 +2,7 @@
   <div class="course-detail-page">
     <!-- Хлебные крошки -->
     <n-breadcrumb>
-      <n-breadcrumb-item @click="router.push('/courses')">
-        Курсы
-      </n-breadcrumb-item>
+      <n-breadcrumb-item @click="router.push('/courses')"> Курсы </n-breadcrumb-item>
       <n-breadcrumb-item>
         {{ course?.name || 'Загрузка...' }}
       </n-breadcrumb-item>
@@ -26,20 +24,19 @@
 
       <!-- Информация о курсе -->
       <n-descriptions label-placement="left" bordered :column="1" class="course-info">
-
         <!-- Преподаватель -->
         <n-descriptions-item label="Преподаватель">
           <div class="info-item">
-            <span>{{ teacher ? `${teacher.firstName} ${teacher.secondName}` : 'Не назначен' }}</span>
+            <span>{{
+              teacher ? `${teacher.firstName} ${teacher.secondName}` : 'Не назначен'
+            }}</span>
           </div>
         </n-descriptions-item>
 
         <!-- Размер команды -->
         <n-descriptions-item label="Размер команды">
           <div class="info-item">
-            <span>
-              {{ course.minTeamSize }} - {{ course.maxTeamSize }} человек
-            </span>
+            <span> {{ course.minTeamSize }} - {{ course.maxTeamSize }} человек </span>
           </div>
         </n-descriptions-item>
 
@@ -57,18 +54,8 @@
       <!-- Кнопки действий -->
       <template v-if="userStore.isAdmin" #footer>
         <n-space justify="end" :size="16">
-          <n-button
-            type="error"
-            @click="handleDeleteCourse"
-          >
-            Удалить
-          </n-button>
-          <n-button
-            type="primary"
-            @click="handleEditCourse"
-          >
-            Редактировать
-          </n-button>
+          <n-button type="error" @click="handleDeleteCourse"> Удалить </n-button>
+          <n-button type="primary" @click="handleEditCourse"> Редактировать </n-button>
         </n-space>
       </template>
     </n-card>
@@ -101,9 +88,16 @@
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import {
-  NBreadcrumb, NBreadcrumbItem, NCard, NDescriptions,
-  NDescriptionsItem, NTag, NSpace, NButton, NResult,
-  useNotification
+  NBreadcrumb,
+  NBreadcrumbItem,
+  NCard,
+  NDescriptions,
+  NDescriptionsItem,
+  NTag,
+  NSpace,
+  NButton,
+  NResult,
+  useNotification,
 } from 'naive-ui';
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue';
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue';
@@ -128,14 +122,14 @@ const formatDate = (date: Date): string => {
     month: 'long',
     day: 'numeric',
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
   });
 };
 
 // Загрузка данных курса
 const loadCourse = async () => {
   const courseId = Number(route.params.id);
-  
+
   if (isNaN(courseId)) {
     router.push('/404');
     return;
@@ -152,7 +146,7 @@ const loadCourse = async () => {
     notification.error({
       title: 'Ошибка',
       content: 'Не удалось загрузить информацию о курсе',
-      duration: 5000
+      duration: 5000,
     });
   } finally {
     loading.value = false;
@@ -176,7 +170,6 @@ const closeDialog = () => {
 const handleConfirmDelete = async () => {
   if (!course.value) return;
   try {
-
     await coursesApi.delete(course.value.uid);
 
     // Уведомление об успехе
@@ -198,8 +191,7 @@ const handleConfirmDelete = async () => {
   } finally {
     closeDialog();
   }
-}
-
+};
 
 // Загружаем данные при монтировании
 onMounted(() => {
@@ -218,7 +210,7 @@ onMounted(() => {
   margin-bottom: 24px;
 }
 
-.course-card {  
+.course-card {
   margin-top: 24px;
   box-shadow: var(--shadow);
 }
@@ -245,7 +237,6 @@ onMounted(() => {
   gap: 12px;
   padding: 8px 0;
 }
-
 
 /* ToDo: Адаптивность */
 </style>

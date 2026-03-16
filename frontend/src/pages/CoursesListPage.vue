@@ -1,6 +1,5 @@
 <template>
   <div class="courses-page">
-
     <!-- Компонент списка курсов -->
     <CoursesList
       :courses="courses"

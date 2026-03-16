@@ -2,11 +2,7 @@
   <div class="courses-container">
     <div class="courses-list_header">
       <h2 class="courses-list_title">Список курсов</h2>
-      <n-button
-        v-if="userStore.isAdmin"
-        class="primary-btn"
-        @click="$emit('course-add')"
-      >
+      <n-button v-if="userStore.isAdmin" class="primary-btn" @click="$emit('course-add')">
         <template #icon>
           <n-icon>
             <AddRound />

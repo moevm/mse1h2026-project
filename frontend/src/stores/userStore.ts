@@ -14,10 +14,10 @@ export const useUserStore = defineStore('user', {
   getters: {
     // Проверка на админа
     isAdmin: (state) => state.role === 'admin',
-    
+
     // Проверка на студента
     isStudent: (state) => state.role === 'student',
-    
+
     // Роль готова (не null)
     isRoleReady: (state) => state.role !== null,
   },
@@ -35,7 +35,7 @@ export const useUserStore = defineStore('user', {
       try {
         // 1. Сначала пробуем из localStorage
         const savedRole = localStorage.getItem('userRole') as 'admin' | 'student' | null;
-        
+
         if (savedRole) {
           this.role = savedRole;
         } else {

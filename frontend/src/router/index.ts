@@ -15,28 +15,28 @@ const routes: RouterOptions['routes'] = [
     path: '/',
     component: DefaultLayout,
     children: [
-      { 
+      {
         path: 'courses',
-        alias: '', 
+        alias: '',
         name: 'courses',
-        component: CoursesListPage
+        component: CoursesListPage,
       },
-      { 
-        path: 'courses/create', 
+      {
+        path: 'courses/create',
         component: () => import('@/pages/CreateCoursePage.vue'),
         name: 'course-create',
-        meta: { requiresAdmin: true } //  Только для админов
+        meta: { requiresAdmin: true }, //  Только для админов
       },
-      { 
-        path: 'courses/:id', 
+      {
+        path: 'courses/:id',
         component: CourseDetailPage,
         name: 'course-detail',
       },
-      { 
-        path: 'courses/:id/edit', 
+      {
+        path: 'courses/:id/edit',
         component: () => import('@/pages/EditCoursePage.vue'),
         name: 'course-edit',
-        meta: { requiresAdmin: true } // Только для админов
+        meta: { requiresAdmin: true }, // Только для админов
       },
     ],
   },
@@ -51,16 +51,16 @@ export const router = createRouter({
 // гард для проверки роли
 router.beforeEach((to, from, next) => {
   const userStore = useUserStore();
-  
+
   // Проверяем, требует ли маршрут прав администратора
   if (to.meta.requiresAdmin) {
     if (!userStore.isRoleReady) {
       console.warn('Роль еще не загружена, доступ запрещен');
-      // ToDo 
+      // ToDo
       next('/courses');
       return;
     }
-    
+
     // Проверяем, является ли пользователь админом
     if (!userStore.isAdmin) {
       console.log('Нет прав');
@@ -68,7 +68,7 @@ router.beforeEach((to, from, next) => {
       return;
     }
   }
-  
+
   // Если все проверки пройдены, продолжаем навигацию
   next();
 });

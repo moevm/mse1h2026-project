@@ -21,9 +21,7 @@
       class="result-container"
     >
       <template #footer>
-        <n-button type="primary" @click="goToCoursesList">
-          Вернуться к списку курсов
-        </n-button>
+        <n-button type="primary" @click="goToCoursesList"> Вернуться к списку курсов </n-button>
       </template>
     </n-result>
 
@@ -45,7 +43,7 @@ import { useRouter, useRoute } from 'vue-router';
 import { useNotification, NPageHeader, NResult, NButton } from 'naive-ui';
 import CourseForm from '@/components/courses/CourseForm.vue';
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue';
-import type { Course } from '@/types'; 
+import type { Course } from '@/types';
 import { coursesApi } from '@/api';
 
 const router = useRouter();
@@ -58,12 +56,12 @@ const loading = ref(true);
 // Загрузка данных курса
 const loadCourse = async () => {
   const courseId = Number(route.params.id);
-  
+
   if (isNaN(courseId)) {
     router.push('/404');
     return;
   }
-  
+
   try {
     loading.value = true;
     course.value = await coursesApi.getById(courseId);
@@ -72,7 +70,7 @@ const loadCourse = async () => {
     notification.error({
       title: 'Ошибка',
       content: 'Не удалось загрузить информацию о курсе',
-      duration: 5000
+      duration: 5000,
     });
     // При ошибке курс остается null, покажется n-result
     course.value = null;
@@ -83,7 +81,7 @@ const loadCourse = async () => {
 
 const handleEdit = async (formData: Course): Promise<void> => {
   if (!course.value) return;
-  
+
   try {
     // Вызов API для редактирования курса
     const editedCourse = await coursesApi.update(course.value.uid, formData);
@@ -94,7 +92,7 @@ const handleEdit = async (formData: Course): Promise<void> => {
       title: 'Успешно',
       content: 'Курс успешно отредактирован',
       duration: 3000,
-      keepAliveOnHover: true
+      keepAliveOnHover: true,
     });
 
     // Переход на страницу курса
@@ -106,7 +104,7 @@ const handleEdit = async (formData: Course): Promise<void> => {
       title: 'Ошибка редактирования',
       content: error instanceof Error ? error.message : 'Не удалось отредактировать курс',
       duration: 5000,
-      keepAliveOnHover: true
+      keepAliveOnHover: true,
     });
   }
 };
@@ -137,7 +135,7 @@ onMounted(() => {
 }
 
 .result-container {
-    margin-block-start: 100px;
+  margin-block-start: 100px;
 }
 
 .title {
@@ -149,7 +147,7 @@ onMounted(() => {
   .create-course-page {
     padding: 16px;
   }
-  
+
   .title {
     font-size: 1.5rem;
   }
