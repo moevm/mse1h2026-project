@@ -1,0 +1,16 @@
+import { Body, Controller, Post, HttpCode, HttpStatus } from '@nestjs/common';
+import { SignInDto } from './dto/sign-in.dto';
+import { SkipAuth } from '../common/guards/auth.guard';
+import { AuthService } from './auth.service';
+
+@Controller('auth')
+export class AuthController {
+  constructor(private authService: AuthService) {}
+
+  @SkipAuth()
+  @HttpCode(HttpStatus.OK)
+  @Post('login')
+  signIn(@Body() signInDto: SignInDto) {
+    return this.authService.signIn(signInDto.username, signInDto.password);
+  }
+}
