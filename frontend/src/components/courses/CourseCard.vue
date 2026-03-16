@@ -8,14 +8,14 @@
       <h3 class="card-title">{{ course.name }}</h3>
       <div class="header-extra">
         <n-button
-          v-if="role === 'admin' && course.isActive"
+          v-if="userStore.isAdmin && course.isActive"
           class="delete-btn secondary-btn"
           @click.stop="handleDelete"
         >
           Скрыть курс
         </n-button>
         <n-button
-          v-if="role === 'admin' && !course.isActive"
+          v-if="userStore.isAdmin && !course.isActive"
           class="show-btn secondary-btn"
           @click.stop="handleShow"
         >
@@ -29,10 +29,12 @@
 <script setup lang="ts">
 import type { Course } from '../../types/index';
 import { NButton } from 'naive-ui';
+import { useUserStore } from '@/stores/userStore';
+
+const userStore = useUserStore();
 
 const props = defineProps<{
   course: Course;
-  role: 'admin' | 'student';
 }>();
 
 const emit = defineEmits<{

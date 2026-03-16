@@ -1,33 +1,10 @@
 <template>
   <div class="courses-page">
-    <div class="role-selector">
-      <div class="radio-group">
-        <label class="radio-button">
-          <input
-            type="radio"
-            value="student"
-            :checked="currentRole === 'student'"
-            @change="currentRole = 'student'"
-          />
-          <span>Ученик</span>
-        </label>
-        <label class="radio-button">
-          <input
-            type="radio"
-            value="admin"
-            :checked="currentRole === 'admin'"
-            @change="currentRole = 'admin'"
-          />
-          <span>Админ</span>
-        </label>
-      </div>
-    </div>
+
     <!-- Компонент списка курсов -->
     <CoursesList
       :courses="courses"
       :loading="loading"
-      :current-role="currentRole"
-      @role-change="currentRole = $event"
       @course-click="handleCourseClick"
       @course-delete="handleCourseDelete"
       @course-show="handleCourseShow"
@@ -60,7 +37,6 @@ const notification = useNotification();
 
 // Состояния
 const courses = ref<Course[]>([]);
-const currentRole = ref<'admin' | 'student'>('student');
 const loading = ref(true);
 const showDialog = ref(false);
 const dialogAction = ref<'delete' | 'show'>('delete');

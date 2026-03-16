@@ -1,5 +1,13 @@
 <script setup lang="ts">
 import { dateRuRU, NConfigProvider, NNotificationProvider, ruRU, NGlobalStyle } from 'naive-ui';
+import { onMounted } from 'vue';
+import { useUserStore } from '@/stores/userStore';
+
+const userStore = useUserStore();
+
+onMounted(() => {
+  userStore.loadRole();
+});
 </script>
 
 <template>

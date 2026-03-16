@@ -55,7 +55,7 @@
       </n-descriptions>
 
       <!-- Кнопки действий -->
-      <template #footer>
+      <template v-if="userStore.isAdmin" #footer>
         <n-space justify="end" :size="16">
           <n-button
             type="error"
@@ -109,7 +109,9 @@ import LoadingSpinner from '@/components/common/LoadingSpinner.vue';
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue';
 import { coursesApi } from '@/api';
 import type { Course } from '@/types';
+import { useUserStore } from '@/stores/userStore';
 
+const userStore = useUserStore();
 const route = useRoute();
 const router = useRouter();
 const notification = useNotification();

@@ -3,7 +3,7 @@
     <div class="courses-list_header">
       <h2 class="courses-list_title">Список курсов</h2>
       <n-button
-        v-if="currentRole === 'admin'"
+        v-if="userStore.isAdmin"
         class="primary-btn"
         @click="$emit('course-add')"
       >
@@ -34,7 +34,6 @@
         v-for="course in visibleCourses"
         :key="course.uid"
         :course="course"
-        :role="currentRole"
         @click="$emit('course-click', course)"
         @delete="$emit('course-delete', course)"
         @show="$emit('course-show', course)"
@@ -50,12 +49,14 @@ import { SentimentDissatisfiedRound, AddRound } from '@vicons/material';
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue';
 import { NEmpty, NIcon, NButton } from 'naive-ui';
 import type { Course } from '@/types';
+import { useUserStore } from '@/stores/userStore';
+
+const userStore = useUserStore();
 
 // Пропсы
 const props = defineProps<{
   courses: Course[];
   loading: boolean;
-  currentRole: 'admin' | 'student';
 }>();
 
 // События
@@ -68,7 +69,7 @@ defineEmits<{
 
 // Сообщение для пустого состояния в зависимости от роли
 const emptyStateMessage = computed(() => {
-  if (props.currentRole === 'admin') {
+  if (userStore.isAdmin) {
     return 'Нет доступных курсов для управления';
   } else {
     return 'Нет доступных активных курсов';
@@ -77,7 +78,7 @@ const emptyStateMessage = computed(() => {
 
 // Оставляем только активные курсы для учеников, для админа показываем все
 const visibleCourses = computed(() => {
-  if (props.currentRole === 'admin') {
+  if (userStore.isAdmin) {
     return props.courses;
   } else {
     return props.courses.filter((course) => course.isActive);
@@ -88,7 +89,7 @@ const visibleCourses = computed(() => {
 <style scoped>
 .courses-container {
   width: 100%;
-  min-height: 80vh; /* Минимальная высота 80% экрана */
+  min-height: 80vh;
   display: flex;
   flex-direction: column;
   font-size: 1.5rem;
