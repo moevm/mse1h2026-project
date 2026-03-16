@@ -75,10 +75,17 @@
     ```bash
     git clone https://github.com/moevm/mse1h2026-project
     ```
+
 - Перейдите в директорию проекта:
   
     ```bash
     cd mse1h2026-project
+    ```
+
+- Скопируйте файл `.env.example` в `.env` и при необходимости отредактируйте переменные окружения.
+
+    ```bash
+    cp .env.example .env
     ```
 
 ### Запуск без **Docker**
@@ -89,7 +96,8 @@
     pnpm i
     ```
 
-- Запустите проект
+- Запустите проект:
+
   - Dev:
 
     ```bash
@@ -123,27 +131,14 @@
     pnpm f preview
     ```
     
-На данный момент фронтенд доступен по адресу `http://localhost:5173`, а бэкенд - `http://localhost:3000`.
+
+- На данный момент фронтенд доступен по адресу `http://localhost:5173`, а бэкенд - `http://localhost:3000`.
+
+  - [Прямая ссылка на фронтенд](http://localhost:5173)
+
+  - [Прямая ссылка на бэкенд](http://localhost:3000)
 
 ### Запуск с помощью **Docker**
-
-- Скопируйте файл `.env.example` в `.env` и при необходимости отредактируйте переменные окружения.
-
-    ```bash
-    cp .env.example .env
-    ```
-
-#### Production:
-
-1. Запустите docker compose:
-
-    ```bash
-    docker compose up
-    ```
-
-2. Дождитесь сборки и запуска контейнеров. Чтобы открыть сайт напишите `http://localhost:80` или `http://localhost` в адресной строке браузера. 
-   
-   [Прямая ссылка](http://localhost)
 
 #### Development:
 
@@ -159,16 +154,34 @@
 
    - [Прямая ссылка на бэкенд](http://localhost:3000)
 
+#### Production:
+
+1. Запустите docker compose:
+
+    ```bash
+    docker compose up
+    ```
+
+2. Дождитесь сборки и запуска контейнеров. Чтобы открыть сайт напишите `http://localhost:80` или `http://localhost` в адресной строке браузера. 
+   
+   [Прямая ссылка](http://localhost)
+
 ### Переменные окружения
 
 - db:
+
   - `MYSQL_ROOT_PASSWORD` - пароль для пользователя root в MySQL
+
   - `MYSQL_DATABASE` - имя базы данных, которая будет создана при запуске контейнера 
+
   - `MYSQL_USER` - имя пользователя для доступа к базе данных
+
   - `MYSQL_PASSWORD` - пароль для пользователя, указанного в `MYSQL_USER`
 
 - frontend:
+
   - `FRONTEND_PORT` - порт, на котором будет работать фронтенд
+
   - `VITE_API_BASE_URL` - базовый URL для API запросов к бэкенду
 
 
