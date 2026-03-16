@@ -49,7 +49,7 @@ export const router = createRouter({
 });
 
 // гард для проверки роли
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _, next) => {
   const userStore = useUserStore();
 
   // Проверяем, требует ли маршрут прав администратора
