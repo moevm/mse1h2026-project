@@ -1,7 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { AssignmentsService } from './assignments.service';
 
-@Controller('assignments')
+@Controller('api/assignments')
 export class AssignmentsController {
   constructor(private readonly assignmentsService: AssignmentsService) {}
 

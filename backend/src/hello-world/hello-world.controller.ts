@@ -1,14 +1,14 @@
-import { Controller, Get, Redirect } from '@nestjs/common';
+import { Controller, Get, UseGuards } from '@nestjs/common';
 import { HelloWorldService } from './hello-world.service';
+import { RolesGuard } from '../common/guards/roles.guard';
+import { Roles } from '../common/decorators/roles.decorator';
 
 @Controller()
 export class HelloWorldController {
   constructor(private readonly helloWorldService: HelloWorldService) {}
 
-  @Get()
-  @Redirect('/hello-world', 302)
-  redirect() {}
-
+  @UseGuards(RolesGuard)
+  @Roles(['admin'])
   @Get('hello-world')
   getHello(): string {
     return this.helloWorldService.getHello();
