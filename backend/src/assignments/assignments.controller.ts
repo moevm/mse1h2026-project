@@ -1,4 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
+
 import { AssignmentsService } from './assignments.service';
 
 @Controller('api/assignments')
