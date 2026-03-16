@@ -68,62 +68,122 @@
 
 ## Установка и запуск
 
-### Запуск без **Docker**
+### Подготовка к запуску
 
-1. Клонируйте репозиторий:
-   ```bash
-   git clone https://github.com/moevm/mse1h2026-project
-   ```
-2. Перейдите в директорию проекта:
+- Клонируйте репозиторий:
+
+    ```bash
+    git clone https://github.com/moevm/mse1h2026-project
+    ```
+
+- Перейдите в директорию проекта:
+  
     ```bash
     cd mse1h2026-project
     ```
-3. Установите зависимости:
+
+- Скопируйте файл `.env.example` в `.env` и при необходимости отредактируйте переменные окружения.
+
+    ```bash
+    cp .env.example .env
+    ```
+
+### Запуск без **Docker**
+
+- Установите зависимости:
+
     ```bash
     pnpm i
     ```
-4. Запустите проект
-   1. Dev:
-        ```bash
-        pnpm dev
-        ```
-    2. Production:
-        ```bash
-        pnpm build
-        pnpm preview
-        ```
-    3. Для запуска по отдельности фронтенда и бэкенда, используйте команды:
 
-        `b` - бэкенд, `f` - фронтенд
-        
-        Dev:
-        ```bash
-        pnpm b dev
-        pnpm f dev
-        ```
+- Запустите проект:
 
-        Production:
-        ```bash
-        pnpm b build
-        pnpm b start
-        pnpm f build
-        pnpm f preview
-        ```
+  - Dev:
+
+    ```bash
+    pnpm dev
+    ```
+
+  - Production:
+
+    ```bash
+    pnpm build
+    pnpm preview
+    ```
+
+- Для запуска по отдельности фронтенда и бэкенда, используйте команды:
+
+    `b` - бэкенд, `f` - фронтенд
+
+  - Dev:
+
+    ```bash
+    pnpm b dev
+    pnpm f dev
+    ```
+
+  - Production:
+
+    ```bash
+    pnpm b build
+    pnpm b start
+    pnpm f build
+    pnpm f preview
+    ```
     
-    На данный момент фронтенд доступен по адресу `http://localhost:5173`, а бэкенд - `http://localhost:3000`.
+
+- На данный момент фронтенд доступен по адресу `http://localhost:5173`, а бэкенд - `http://localhost:3000`.
+
+  - [Прямая ссылка на фронтенд](http://localhost:5173)
+
+  - [Прямая ссылка на бэкенд](http://localhost:3000)
 
 ### Запуск с помощью **Docker**
 
-1. Клонируйте репозиторий:
-   ```bash
-   git clone https://github.com/moevm/mse1h2026-project
-   ```
-2. Перейдите в директорию проекта:
+#### Development:
+
+1. Запустите docker compose для разработки:
+ 
     ```bash
-    cd mse1h2026-project
+    docker compose -f docker-compose.dev.yaml up
     ```
 
-TODO: Дописать инструкции по запуску с помощью Docker.
+2. Дождитесь сборки и запуска контейнеров. Чтобы открыть сайт напишите `http://localhost:5173` в адресной строке браузера. Чтобы получить доступ к бэкенду, используйте `http://localhost:3000`. 
+
+   - [Прямая ссылка на фронтенд](http://localhost:5173)
+
+   - [Прямая ссылка на бэкенд](http://localhost:3000)
+
+#### Production:
+
+1. Запустите docker compose:
+
+    ```bash
+    docker compose up
+    ```
+
+2. Дождитесь сборки и запуска контейнеров. Чтобы открыть сайт напишите `http://localhost:80` или `http://localhost` в адресной строке браузера. 
+   
+   [Прямая ссылка](http://localhost)
+
+### Переменные окружения
+
+- db:
+
+  - `MYSQL_ROOT_PASSWORD` - пароль для пользователя root в MySQL
+
+  - `MYSQL_DATABASE` - имя базы данных, которая будет создана при запуске контейнера 
+
+  - `MYSQL_USER` - имя пользователя для доступа к базе данных
+
+  - `MYSQL_PASSWORD` - пароль для пользователя, указанного в `MYSQL_USER`
+
+- frontend:
+
+  - `FRONTEND_PORT` - порт, на котором будет работать фронтенд
+
+  - `VITE_API_BASE_URL` - базовый URL для API запросов к бэкенду
+
 
 
 ## Проверка работоспособности
