@@ -86,6 +86,14 @@
         </n-button>
       </template>
     </n-result>
+    <ConfirmDialog
+      :show="showDialog"
+      title="Подтверждение действия"
+      message="Вы уверены, что хотите удалить этот курс?"
+      confirm-text="Удалить"
+      @confirm="handleConfirmDelete"
+      @cancel="closeDialog"
+    />
   </div>
 </template>
 
@@ -98,6 +106,7 @@ import {
   useNotification
 } from 'naive-ui';
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue';
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue';
 import { coursesApi } from '@/api';
 import type { Course } from '@/types';
 
@@ -107,6 +116,7 @@ const notification = useNotification();
 
 const course = ref<Course | null>(null);
 const loading = ref(true);
+const showDialog = ref(false);
 
 // Форматирование даты
 const formatDate = (date: Date): string => {
@@ -150,8 +160,40 @@ const handleEditCourse = () => {
 
 const handleDeleteCourse = () => {
   if (!course.value) return;
-  console.log('Удаление курса');
+  showDialog.value = true;
 };
+
+const closeDialog = () => {
+  showDialog.value = false;
+};
+
+const handleConfirmDelete = async () => {
+  if (!course.value) return;
+  try {
+
+    await coursesApi.delete(course.value.uid);
+
+    // Уведомление об успехе
+    notification.success({
+      title: 'Курс удален',
+      content: 'Курс успешно удален',
+      duration: 3000,
+      keepAliveOnHover: true,
+    });
+    router.push('/courses');
+  } catch (error) {
+    console.error('Ошибка:', error);
+
+    notification.error({
+      title: 'Ошибка сервера',
+      content: error instanceof Error ? error.message : 'Пожалуйста, попробуйте позже',
+      duration: 5000,
+    });
+  } finally {
+    closeDialog();
+  }
+}
+
 
 // Загружаем данные при монтировании
 onMounted(() => {
