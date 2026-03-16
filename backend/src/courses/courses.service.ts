@@ -21,7 +21,7 @@ export class CoursesService {
       maxTeamSize: course.maxTeamSize || 5,
       minTeamSize: course.minTeamSize || 2,
       isActive: course.isActive !== undefined ? course.isActive : true,
-      adminId: 0,
+      adminId: course.adminId || 0,
       registrationDeadline: new Date(),
       createdAt: new Date(),
     };
