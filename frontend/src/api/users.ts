@@ -25,5 +25,7 @@ export const usersApi = {
   // Получить только обычных пользователей
   getRegularUsers: async (): Promise<User[]> => {
     return usersApi.getUsers({ role: 'user' });
-  }
+  },
+
+  getById: (uid: number) => apiClient.get<User>(`/users/${uid}`),
 };

@@ -27,10 +27,10 @@
       <!-- Информация о курсе -->
       <n-descriptions label-placement="left" bordered :column="1" class="course-info">
 
-        <!-- Семестр -->
+        <!-- Преподаватель -->
         <n-descriptions-item label="Преподаватель">
           <div class="info-item">
-            <span>{{ course.adminId }}</span>
+            <span>{{ teacher ? `${teacher.firstName} ${teacher.secondName}` : 'Не назначен' }}</span>
           </div>
         </n-descriptions-item>
 
@@ -107,8 +107,8 @@ import {
 } from 'naive-ui';
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue';
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue';
-import { coursesApi } from '@/api';
-import type { Course } from '@/types';
+import { coursesApi, usersApi } from '@/api';
+import type { Course, User } from '@/types';
 import { useUserStore } from '@/stores/userStore';
 
 const userStore = useUserStore();
@@ -119,6 +119,7 @@ const notification = useNotification();
 const course = ref<Course | null>(null);
 const loading = ref(true);
 const showDialog = ref(false);
+const teacher = ref<User | null>(null);
 
 // Форматирование даты
 const formatDate = (date: Date): string => {
@@ -139,10 +140,13 @@ const loadCourse = async () => {
     router.push('/404');
     return;
   }
-  
+
   try {
     loading.value = true;
     course.value = await coursesApi.getById(courseId);
+    if (course.value?.adminId) {
+      teacher.value = await usersApi.getById(course.value.adminId);
+    }
   } catch (error) {
     console.error('Ошибка загрузки курса:', error);
     notification.error({

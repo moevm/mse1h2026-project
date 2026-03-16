@@ -28,7 +28,6 @@
           filterable
           clearable
           @search="handleTeacherSearch"
-          @update:value="(val) => console.log('Выбрано:', val, formData.teacherId)"
         />
       </n-form-item>
 
@@ -106,7 +105,7 @@ import {
 } from 'naive-ui';
 import type { FormInst, FormRules, SelectOption } from 'naive-ui';
 import type { Course, User } from '@/types';
-import { usersApi } from '@/api/users';
+import { usersApi } from '@/api';
 
 const props = withDefaults(defineProps<{
   initialData?: Partial<Course> | null;
