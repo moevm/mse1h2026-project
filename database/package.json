@@ -16,9 +16,6 @@
     "smoke": "tsx src/scripts/hello_world.ts",
     "dev": "tsx src/scripts/hello_world.ts"
   },
-  "exports": {
-    "./generated/prisma/client": "./generated/prisma/client.ts"
-  },
   "dependencies": {
     "@prisma/adapter-mariadb": "^7.4.1",
     "@prisma/client": "^7.4.1"
