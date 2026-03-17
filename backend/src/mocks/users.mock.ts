@@ -23,7 +23,7 @@ export const mockUsers: User[] = [
     uid: 3,
     firstName: 'Сергей',
     secondName: 'Сергеев',
-    role: 'teacher',
+    role: 'admin',
     email: 's.sergeev@university.edu',
     ldapUid: 123,
   },

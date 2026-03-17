@@ -15,4 +15,9 @@ export default defineConfig({
       '@': '/src',
     },
   },
+  server: {
+    watch: {
+      usePolling: !!process.env.DOCKER,
+    },
+  },
 });

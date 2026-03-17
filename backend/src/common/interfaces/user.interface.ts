@@ -3,7 +3,7 @@ export interface User {
   firstName: string;
   secondName: string;
   group?: number;
-  role: 'student' | 'teacher' | 'admin';
+  role: 'student' | 'admin';
   email: string;
   ldapUid: number;
 }
