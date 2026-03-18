@@ -1,0 +1,39 @@
+enum UserRole {
+  student
+  teacher
+}
+
+enum TeamStatus {
+  forming
+  selected
+  assigned
+  locked
+}
+
+enum RequestStatus {
+  pending
+  confirmed_initiator
+  confirmed_target
+  pending_teacher
+  approved
+  rejected
+}
+
+enum InvitationStatus {
+  pending
+  accepted
+  declined
+  cancelled
+  expired
+}
+
+enum ImportType {
+  projects
+  students
+}
+
+enum AssignmentStatus {
+  active
+  pending_change
+  replaced
+}

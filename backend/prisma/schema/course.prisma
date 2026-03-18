@@ -1,0 +1,20 @@
+model Course {
+  id                   String    @id @default(uuid())
+  name                 String    @db.VarChar(255)
+  semester             Int
+  maxTeamSize          Int       @map("max_team_size")
+  minTeamSize          Int       @map("min_team_size")
+  isActive             Boolean   @default(true) @map("is_active")
+  registrationDeadline DateTime? @map("registration_deadline")
+  autoDistributeAt     DateTime? @map("auto_distribute_at")
+  teacherId            String    @map("teacher_id")
+  createdAt            DateTime  @default(now()) @map("created_at")
+
+  teacher          User              @relation("CourseTeacher", fields: [teacherId], references: [id])
+  teams            Team[]
+  projects         Project[]
+  exchangeRequests ExchangeRequest[]
+  imports          Import[]
+
+  @@map("courses")
+}

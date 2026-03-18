@@ -1,0 +1,16 @@
+model Project {
+  id          String   @id @default(uuid())
+  courseId    String   @map("course_id")
+  teacherId   String   @map("teacher_id")
+  title       String   @db.VarChar(255)
+  description String?  @db.Text
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  course             Course            @relation(fields: [courseId], references: [id])
+  teacher            User              @relation("ProjectTeacher", fields: [teacherId], references: [id])
+  assignments        Assignment[]
+  initiatedExchanges ExchangeRequest[] @relation("InitiatorProject")
+  targetedExchanges  ExchangeRequest[] @relation("TargetProject")
+
+  @@map("projects")
+}

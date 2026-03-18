@@ -1,0 +1,36 @@
+model ExchangeRequest {
+  id                 String        @id @default(uuid())
+  courseId           String        @map("course_id")
+  initiatorTeamId    String        @map("initiator_team_id")
+  targetTeamId       String        @map("target_team_id")
+  initiatorProjectId String        @map("initiator_project_id")
+  targetProjectId    String        @map("target_project_id")
+  status             RequestStatus
+  approvedBy         String?       @map("approved_by")
+  approvedAt         DateTime?     @map("approved_at")
+  createdAt          DateTime      @default(now()) @map("created_at")
+
+  course           Course                 @relation(fields: [courseId], references: [id])
+  initiatorTeam    Team                   @relation("InitiatorTeam", fields: [initiatorTeamId], references: [id])
+  targetTeam       Team                   @relation("TargetTeam", fields: [targetTeamId], references: [id])
+  initiatorProject Project                @relation("InitiatorProject", fields: [initiatorProjectId], references: [id])
+  targetProject    Project                @relation("TargetProject", fields: [targetProjectId], references: [id])
+  approver         User?                  @relation("RequestApprovedBy", fields: [approvedBy], references: [id])
+  confirmations    ExchangeConfirmation[]
+
+  @@map("exchange_requests")
+}
+
+model ExchangeConfirmation {
+  id                String   @id @default(uuid())
+  exchangeRequestId String   @map("exchange_request_id")
+  teamId            String   @map("team_id")
+  confirmedBy       String   @map("confirmed_by")
+  confirmedAt       DateTime @default(now()) @map("confirmed_at")
+
+  exchangeRequest ExchangeRequest @relation(fields: [exchangeRequestId], references: [id])
+  team            Team            @relation(fields: [teamId], references: [id])
+  confirmer       User            @relation("ExchangeConfirmedBy", fields: [confirmedBy], references: [id])
+
+  @@map("exchange_confirmations")
+}
