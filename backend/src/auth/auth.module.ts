@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { APP_GUARD } from '@nestjs/core'; // eslint-disable-line
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { APP_GUARD } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 
-import { AuthGuard } from '../common/guards/auth.guard'; // eslint-disable-line
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { AuthGuard } from '../common/guards/auth.guard';
 import { UsersModule } from '../users/users.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';

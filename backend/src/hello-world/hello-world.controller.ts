@@ -1,6 +1,7 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
 
-import { Roles } from '../common/decorators/roles.decorator'; // eslint-disable-line
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { Roles } from '../common/decorators/roles.decorator';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { HelloWorldService } from './hello-world.service';
 
