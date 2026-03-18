@@ -19,13 +19,11 @@ COPY backend/package.json ./backend/
 # Устанавливаем зависимости backend
 RUN pnpm install --frozen-lockfile --filter @mse/backend
 
-# Копируем конфигурацию Prisma и схемы
-COPY backend/prisma backend/prisma.config.ts ./backend/
-
 # Копируем исходный код backend
 COPY backend ./backend
 
-RUN pnpm dlx prisma generate --schema=./backend/prisma/schema
+RUN pnpm --filter @mse/backend run db:generate
+RUN pnpm --filter @mse/backend run build
 
 EXPOSE 3000
 
