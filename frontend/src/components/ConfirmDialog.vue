@@ -12,8 +12,9 @@
 </template>
 
 <script setup lang="ts">
-import BaseButton from './BaseButton.vue';
 import { watch } from 'vue';
+
+import BaseButton from './BaseButton.vue';
 
 const props = defineProps<{
   show: boolean;

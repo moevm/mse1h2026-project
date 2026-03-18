@@ -14,8 +14,9 @@
     "preview": "vite preview",
     "lint": "eslint --cache src",
     "typecheck": "vue-tsc --noEmit -p tsconfig.json",
+    "format": "prettier --cache --write src",
     "format:check": "prettier --cache --check src",
-    "format": "prettier --cache --write src"
+    "pre-commit-check": "pnpm lint && pnpm typecheck && pnpm format"
   },
   "dependencies": {
     "@vicons/material": "^0.13.0",

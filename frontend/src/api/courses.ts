@@ -1,5 +1,5 @@
-import { apiClient } from './client';
 import type { Course } from '../types';
+import { apiClient } from './client';
 
 export const coursesApi = {
   getAll: () => apiClient.get<Course[]>('/courses'),

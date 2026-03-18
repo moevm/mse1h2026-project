@@ -8,6 +8,7 @@
     "typecheck": "pnpm run prisma:generate && tsc --noEmit -p tsconfig.json",
     "format": "prettier --cache --write src",
     "format:check": "prettier --cache --check src",
+    "pre-commit-check": "pnpm lint && pnpm typecheck && pnpm format",
     "prisma:generate": "prisma generate",
     "prisma:push": "prisma db push",
     "prisma:migrate": "prisma migrate dev",

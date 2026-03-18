@@ -3,7 +3,7 @@
  * @author @KorzikAlex @katerina2121
  * @description Конфигурация маршрутизации для фронтенда
  */
-import { createWebHistory, createRouter, type RouterOptions } from 'vue-router';
+import { type RouterOptions, createRouter, createWebHistory } from 'vue-router';
 
 // TODO: добавить маршруты в соответствии с требованиями проекта
 

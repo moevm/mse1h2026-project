@@ -1,6 +1,6 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { mockProjects } from '@/mocks/projects.mock';
 import { Project } from '@/common/interfaces/project.interface';
+import { mockProjects } from '@/mocks/projects.mock';
+import { Injectable, NotFoundException } from '@nestjs/common';
 
 @Injectable()
 export class ProjectService {

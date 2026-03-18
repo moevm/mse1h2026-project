@@ -1,7 +1,8 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
-import { HelloWorldService } from './hello-world.service';
-import { RolesGuard } from '../common/guards/roles.guard';
+
 import { Roles } from '../common/decorators/roles.decorator';
+import { RolesGuard } from '../common/guards/roles.guard';
+import { HelloWorldService } from './hello-world.service';
 
 @Controller()
 export class HelloWorldController {
