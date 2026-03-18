@@ -14,8 +14,6 @@ services:
     build:
       context: .
       dockerfile: ./backend/Dockerfile
-      args:
-        DATABASE_URL: ${DATABASE_URL}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000"]
       interval: 10s
