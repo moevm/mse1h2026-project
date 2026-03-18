@@ -57,4 +57,4 @@ COPY --from=build /app/deploy .
 EXPOSE 3000
 
 # Команда для запуска сервера
-CMD ["sh", "-c", "pnpm run db:deploy && pnpm run start:prod"]
+CMD ["sh", "-c", "pnpm run db:deploy && node dist/main.js"]
