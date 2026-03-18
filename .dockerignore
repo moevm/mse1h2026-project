@@ -30,5 +30,3 @@ eslint.config.ts
 .prettierrc.yaml
 .prettierignore
 .nvmrc
-
-**/generated/prisma/**
