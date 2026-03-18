@@ -39,13 +39,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import CourseCard from './CourseCard.vue';
-import { SentimentDissatisfiedRound, AddRound } from '@vicons/material';
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue';
-import { NEmpty, NIcon, NButton } from 'naive-ui';
-import type { Course } from '@/types';
 import { useUserStore } from '@/stores/userStore';
+import type { Course } from '@/types';
+import { AddRound, SentimentDissatisfiedRound } from '@vicons/material';
+import { NButton, NEmpty, NIcon } from 'naive-ui';
+import { computed } from 'vue';
+
+import CourseCard from './CourseCard.vue';
 
 const userStore = useUserStore();
 

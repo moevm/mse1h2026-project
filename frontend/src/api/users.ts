@@ -1,5 +1,6 @@
-import { apiClient } from './client';
 import type { User } from '@/types';
+
+import { apiClient } from './client';
 
 export interface GetUsersParams {
   role?: 'user' | 'admin';

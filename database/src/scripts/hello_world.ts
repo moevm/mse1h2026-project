@@ -1,4 +1,5 @@
 import 'dotenv/config';
+
 import { prisma } from '../index';
 
 async function main(): Promise<void> {

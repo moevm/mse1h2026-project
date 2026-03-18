@@ -38,13 +38,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
-import { useNotification, NPageHeader, NResult, NButton } from 'naive-ui';
-import CourseForm from '@/components/courses/CourseForm.vue';
-import LoadingSpinner from '@/components/common/LoadingSpinner.vue';
-import type { Course } from '@/types';
 import { coursesApi } from '@/api';
+import LoadingSpinner from '@/components/common/LoadingSpinner.vue';
+import CourseForm from '@/components/courses/CourseForm.vue';
+import type { Course } from '@/types';
+import { NButton, NPageHeader, NResult, useNotification } from 'naive-ui';
+import { onMounted, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
 const router = useRouter();
 const route = useRoute();

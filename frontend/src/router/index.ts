@@ -3,11 +3,11 @@
  * @author @KorzikAlex @katerina2121
  * @description Конфигурация маршрутизации для фронтенда
  */
-import { createWebHistory, createRouter, type RouterOptions } from 'vue-router';
 import DefaultLayout from '@/layout/DefaultLayout.vue';
-import CoursesListPage from '@/pages/CoursesListPage.vue';
 import CourseDetailPage from '@/pages/CourseDetailPage.vue';
+import CoursesListPage from '@/pages/CoursesListPage.vue';
 import { useUserStore } from '@/stores/userStore';
+import { type RouterOptions, createRouter, createWebHistory } from 'vue-router';
 
 // Массив маршрутов для приложения
 const routes: RouterOptions['routes'] = [

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { dateRuRU, NConfigProvider, NNotificationProvider, ruRU, NGlobalStyle } from 'naive-ui';
-import { onMounted } from 'vue';
 import { useUserStore } from '@/stores/userStore';
+import { NConfigProvider, NGlobalStyle, NNotificationProvider, dateRuRU, ruRU } from 'naive-ui';
+import { onMounted } from 'vue';
 
 const userStore = useUserStore();
 

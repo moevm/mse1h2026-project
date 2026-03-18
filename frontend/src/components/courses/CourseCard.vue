@@ -27,9 +27,10 @@
 </template>
 
 <script setup lang="ts">
-import type { Course } from '../../types/index';
-import { NButton } from 'naive-ui';
 import { useUserStore } from '@/stores/userStore';
+import { NButton } from 'naive-ui';
+
+import type { Course } from '../../types/index';
 
 const userStore = useUserStore();
 

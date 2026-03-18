@@ -85,25 +85,25 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { coursesApi, usersApi } from '@/api';
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue';
+import LoadingSpinner from '@/components/common/LoadingSpinner.vue';
+import { useUserStore } from '@/stores/userStore';
+import type { Course, User } from '@/types';
 import {
   NBreadcrumb,
   NBreadcrumbItem,
+  NButton,
   NCard,
   NDescriptions,
   NDescriptionsItem,
-  NTag,
-  NSpace,
-  NButton,
   NResult,
+  NSpace,
+  NTag,
   useNotification,
 } from 'naive-ui';
-import LoadingSpinner from '@/components/common/LoadingSpinner.vue';
-import ConfirmDialog from '@/components/common/ConfirmDialog.vue';
-import { coursesApi, usersApi } from '@/api';
-import type { Course, User } from '@/types';
-import { useUserStore } from '@/stores/userStore';
+import { onMounted, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
 const userStore = useUserStore();
 const route = useRoute();

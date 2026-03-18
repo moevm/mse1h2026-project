@@ -14,8 +14,8 @@
 </template>
 
 <script setup lang="ts">
-import { watch } from 'vue';
 import { NButton } from 'naive-ui';
+import { watch } from 'vue';
 
 const props = defineProps<{
   show: boolean;

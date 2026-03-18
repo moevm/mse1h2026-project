@@ -98,24 +98,24 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue';
+import { usersApi } from '@/api';
+import type { Course, User } from '@/types';
 import {
+  NButton,
   NCard,
+  NDatePicker,
   NForm,
   NFormItem,
   NInput,
   NInputNumber,
   NSelect,
-  NDatePicker,
-  NSwitch,
   NSpace,
+  NSwitch,
   NText,
-  NButton,
   useNotification,
 } from 'naive-ui';
 import type { FormInst, FormRules, SelectOption } from 'naive-ui';
-import type { Course, User } from '@/types';
-import { usersApi } from '@/api';
+import { computed, onMounted, ref, watch } from 'vue';
 
 const props = withDefaults(
   defineProps<{

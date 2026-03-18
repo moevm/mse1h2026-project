@@ -20,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import { NotificationsFilled, AccountCircleOutlined } from '@vicons/material';
+import { AccountCircleOutlined, NotificationsFilled } from '@vicons/material';
 import { NIcon } from 'naive-ui';
 </script>
 

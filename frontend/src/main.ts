@@ -3,10 +3,11 @@
  * @description Главный файл для инициализации Vue приложения.
  * @author @katerina2121 @KorzikAlex
  */
-import { createApp } from 'vue';
-import { createPinia } from 'pinia';
-import { router } from '@/router';
 import App from '@/App.vue';
+import { router } from '@/router';
+import { createPinia } from 'pinia';
+import { createApp } from 'vue';
+
 import './assets/styles/main.scss';
 
 const pinia = createPinia(); // Создание экземпляра Pinia для управления состоянием приложения

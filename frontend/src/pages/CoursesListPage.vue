@@ -23,13 +23,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
-import { useNotification } from 'naive-ui';
-import { useRouter } from 'vue-router';
-import CoursesList from '@/components/courses/CoursesList.vue';
-import ConfirmDialog from '@/components/common/ConfirmDialog.vue';
 import { coursesApi } from '@/api';
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue';
+import CoursesList from '@/components/courses/CoursesList.vue';
 import type { Course } from '@/types';
+import { useNotification } from 'naive-ui';
+import { computed, onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 const router = useRouter();
 const notification = useNotification();

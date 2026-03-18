@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
 import { User } from '@/common/interfaces/user.interface';
 import { mockUsers } from '@/mocks/users.mock';
+import { Injectable } from '@nestjs/common';
 
 export type UserRole = 'admin' | 'user';
 

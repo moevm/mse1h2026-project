@@ -11,11 +11,11 @@
 </template>
 
 <script setup lang="ts">
-import { useRouter } from 'vue-router';
-import { useNotification, NPageHeader } from 'naive-ui';
+import { coursesApi } from '@/api';
 import CourseForm from '@/components/courses/CourseForm.vue';
 import type { Course } from '@/types';
-import { coursesApi } from '@/api';
+import { NPageHeader, useNotification } from 'naive-ui';
+import { useRouter } from 'vue-router';
 
 const router = useRouter();
 const notification = useNotification();
