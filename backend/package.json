@@ -8,15 +8,15 @@
   "scripts": {
     "build": "nest build --preserveWatchOutput",
     "start": "nest start --preserveWatchOutput",
-    "start:dev": "pnpm run db:dev && concurrently -k -n prisma,Nest -c red,green \"prisma run db:generate -- --watch\" \"nest start --watch --preserveWatchOutput\"",
+    "start:dev": "prisma migrate dev && concurrently -n prisma,Nest -c red,green \"prisma generate --watch\" \"nest start --watch --preserveWatchOutput\"",
     "start:prod": "node dist/main.js",
     "db:generate": "prisma generate",
-    "db:deploy": "prisma migrate deploy && pnpm run db:generate",
+    "db:deploy": "prisma migrate deploy",
     "db:dev": "prisma migrate dev",
     "lint": "eslint --cache src",
     "format": "prettier --cache --write src",
     "format:check": "prettier --cache --check src",
-    "typecheck": "prisma db:deploy && tsc --noEmit -p tsconfig.build.json"
+    "typecheck": "prisma generate && tsc --noEmit -p tsconfig.build.json"
   },
   "dependencies": {
     "@dotenvx/dotenvx": "^1.54.1",
