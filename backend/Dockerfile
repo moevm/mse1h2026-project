@@ -8,11 +8,6 @@ FROM node:lts-alpine AS build
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 
-# Устанавливаем переменную окружения для базы данных
-ARG DATABASE_URL
-# Передаем переменную окружения в контейнер
-ENV DATABASE_URL=${DATABASE_URL}
-
 # Устанавливаем рабочую директорию
 WORKDIR /app
 
@@ -32,10 +27,11 @@ RUN pnpm install --frozen-lockfile --filter @mse/backend
 COPY backend ./backend
 
 # Собираем NestJS приложение
+RUN pnpm --filter @mse/backend run db:generate
 RUN pnpm --filter @mse/backend run build
 
-# pnpm deploy: создаёт автономную копию пакета с prod-зависимостями
-RUN pnpm --filter @mse/backend deploy --prod /app/deploy
+# pnpm deploy: создаёт автономную копию пакета
+RUN pnpm --filter @mse/backend deploy /app/deploy
 
 # ----
 
@@ -61,4 +57,4 @@ COPY --from=build /app/deploy .
 EXPOSE 3000
 
 # Команда для запуска сервера
-CMD ["node", "dist/main.js"]
+CMD ["sh", "-c", "pnpm run db:deploy && pnpm run start:prod"]
