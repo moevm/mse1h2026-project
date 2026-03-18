@@ -1,6 +1,7 @@
-import { ProjectService } from './projects.service';
-import { Controller, Get, Post, Param, Put, Delete, Body, ParseIntPipe } from '@nestjs/common';
 import type { Project } from '@/common/interfaces/project.interface';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
+
+import { ProjectService } from './projects.service';
 
 @Controller('api/projects')
 export class ProjectController {

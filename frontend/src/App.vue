@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { dateRuRU, NConfigProvider, NNotificationProvider, ruRU, NGlobalStyle } from 'naive-ui';
+import { NConfigProvider, NGlobalStyle, NNotificationProvider, dateRuRU, ruRU } from 'naive-ui';
+
 import CoursesList from './components/CoursesList.vue';
 </script>
 

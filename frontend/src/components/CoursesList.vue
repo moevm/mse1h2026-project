@@ -53,13 +53,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
-import CourseCard from './CourseCard.vue';
-import ConfirmDialog from './ConfirmDialog.vue';
 import { coursesApi } from '@/api';
-import type { Course } from '../types/index';
-import LoadingSpinner from './LoadingSpinner.vue';
 import { useNotification } from 'naive-ui';
+import { computed, onMounted, ref } from 'vue';
+
+import type { Course } from '../types/index';
+import ConfirmDialog from './ConfirmDialog.vue';
+import CourseCard from './CourseCard.vue';
+import LoadingSpinner from './LoadingSpinner.vue';
 
 const courses = ref<Course[]>([]);
 const currentRole = ref<'admin' | 'student'>('student');

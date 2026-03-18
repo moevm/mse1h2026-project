@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
+import { UsersModule } from '../users/users.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { UsersModule } from '../users/users.module';
-import { JwtModule } from '@nestjs/jwt';
 import { APP_GUARD } from '@nestjs/core'; // eslint-disable-line
 import { AuthGuard } from '../common/guards/auth.guard'; // eslint-disable-line
-import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [

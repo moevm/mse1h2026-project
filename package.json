@@ -14,8 +14,8 @@
   "scripts": {
     "b": "pnpm --filter @mse/backend",
     "f": "pnpm --filter @mse/frontend",
-    "typecheck": "pnpm -r typecheck",
     "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
     "format": "pnpm -r format",
     "format:check": "pnpm -r format:check",
     "build": "concurrently -n backend,frontend -c blue,magenta \"pnpm --filter @mse/backend db:deploy && pnpm --filter @mse/backend db:generate && pnpm --filter @mse/backend build\" \"pnpm --filter @mse/frontend build\"",
@@ -30,6 +30,7 @@
   "devDependencies": {
     "@dotenvx/dotenvx": "^1.54.1",
     "@eslint/js": "^10.0.1",
+    "@trivago/prettier-plugin-sort-imports": "^6.0.2",
     "@types/node": "^25.3.0",
     "concurrently": "^9.2.1",
     "eslint": "^10.0.1",
