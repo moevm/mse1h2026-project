@@ -3,10 +3,13 @@ pre-commit:
   commands:
     eslint:
       run: pnpm lint
+      glob: "**/*.{ts,tsx,vue,js,jsx,css,scss,json}"
     prettier:
       run: pnpm format
+      glob: "**/*.{ts,tsx,vue,js,jsx,css,scss,json}"
     typecheck:
       run: pnpm typecheck
+      glob: "**/*.{ts,tsx,vue}"
 
 pre-push:
   parallel: true
