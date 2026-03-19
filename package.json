@@ -38,6 +38,7 @@
     "eslint-plugin-vue": "~10.8.0",
     "globals": "^17.3.0",
     "jiti": "^2.6.1",
+    "lefthook": "^2.1.4",
     "prettier": "^3.8.1",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
