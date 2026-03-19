@@ -1,0 +1,20 @@
+pre-commit:
+  parallel: true
+  commands:
+    eslint:
+      run: pnpm lint
+      files: \.(js|jsx|ts|tsx|vue|json|yaml|yml)$
+    prettier:
+      run: pnpm format
+      files: \.(js|jsx|ts|tsx|css|sass|scss|vue|json|yaml|yml)$
+    typecheck:
+      run: pnpm typecheck
+      files: \.(ts|tsx|vue)$
+
+pre-push:
+  parallel: true
+  commands:
+    build:
+      run: pnpm build
+    build-compose:
+      run: docker compose build
