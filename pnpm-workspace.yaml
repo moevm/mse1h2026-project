@@ -9,5 +9,6 @@ onlyBuiltDependencies:
   - '@parcel/watcher'
   - '@prisma/engines'
   - esbuild
+  - lefthook
   - prisma
   - unrs-resolver
