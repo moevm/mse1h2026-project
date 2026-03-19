@@ -151,7 +151,7 @@ const routes: RouterOptions['routes'] = [
 | **class-validator** + **class-transformer** | DTO validation |
 | **Jest** | Testing |
 | **Prisma ORM** | Database access |
-| **MariaDB (MySQL)** | DBMS |
+| **MySQL** | DBMS |
 
 ### Architecture
 
