@@ -1,9 +1,9 @@
 export interface User {
   uid: number;
   firstName: string;
-  secondName: string;
-  group?: number;
-  role: 'student' | 'admin';
+  lastName: string;
   email: string;
+  role: 'student' | 'admin';
+  group?: number;
   ldapUid: number;
 }
