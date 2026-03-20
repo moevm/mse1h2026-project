@@ -1,10 +1,10 @@
+import { SkipAuth } from '@/common/guards/auth.guard';
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 
-import { SkipAuth } from '../common/guards/auth.guard';
 import { AuthService } from './auth.service';
 import { SignInDto } from './dto/sign-in.dto';
 
-@Controller('auth')
+@Controller('api/auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 

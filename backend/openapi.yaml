@@ -119,6 +119,7 @@ paths:
       summary: Обновление курса
       security:
         - bearerAuth: []
+      x-roles: [ 'admin' ]
       parameters:
         - name: id
           in: path
@@ -151,6 +152,7 @@ paths:
       summary: Удаление курса
       security:
         - bearerAuth: []
+      x-roles: [ 'admin' ]
       parameters:
         - name: id
           in: path
@@ -268,6 +270,7 @@ paths:
       summary: Создание проекта
       security:
         - bearerAuth: []
+      x-roles: [ 'admin' ]
       requestBody:
         required: true
         content:
@@ -277,8 +280,6 @@ paths:
               required: [title, teacherId, courseId]
               properties:
                 title:
-                  type: string
-                description:
                   type: string
                 teacherId:
                   type: integer
@@ -327,6 +328,7 @@ paths:
       summary: Обновление проекта
       security:
         - bearerAuth: []
+      x-roles: [ 'admin' ]
       parameters:
         - name: id
           in: path
@@ -341,7 +343,6 @@ paths:
               type: object
               properties:
                 title: { type: string }
-                description: { type: string }
                 teacherId: { type: integer }
                 courseId: { type: integer }
       responses:
@@ -364,6 +365,7 @@ paths:
       summary: Удаление проекта
       security:
         - bearerAuth: []
+      x-roles: [ 'admin' ]
       parameters:
         - name: id
           in: path
@@ -443,9 +445,10 @@ components:
       properties:
         uid: { type: integer }
         name: { type: string }
+        semester: { type: integer }
+        isActive: { type: boolean }
         maxTeamSize: { type: integer }
         minTeamSize: { type: integer }
-        isActive: { type: boolean }
         adminId: { type: integer }
         description: { type: string }
         registrationDeadline: { type: string, format: date-time }
@@ -457,8 +460,6 @@ components:
       properties:
         uid: { type: integer }
         title: { type: string }
-        description: { type: string }
-        teacherId: { type: integer }
         teacherFirstName: { type: string }
         teacherLastName: { type: string }
         courseName: { type: string }
@@ -496,7 +497,6 @@ components:
         maxTeamSize: { type: integer, minimum: 1 }
         minTeamSize: { type: integer, minimum: 1 }
         isActive: { type: boolean }
-        description: { type: string }
         registrationDeadline: { type: string, format: date-time }
     UpdateCourseDto:
       type: object
@@ -505,5 +505,4 @@ components:
         maxTeamSize: { type: integer, minimum: 1 }
         minTeamSize: { type: integer, minimum: 1 }
         isActive: { type: boolean }
-        description: { type: string }
         registrationDeadline: { type: string, format: date-time }
