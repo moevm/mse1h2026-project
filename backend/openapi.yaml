@@ -32,6 +32,8 @@ paths:
                 type: object
                 properties:
                   access_token: { type: string }
+        '400':
+          description: Неверный формат email
         '401':
           description: Неверный логин или пароль
 
@@ -417,9 +419,9 @@ components:
   schemas:
     SignInDto:
       type: object
-      required: [username, password]
+      required: [email, password]
       properties:
-        username: { type: string }
+        email: { type: string, format: email }
         password: { type: string }
     User:
       type: object
