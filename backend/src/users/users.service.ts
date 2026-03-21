@@ -1,8 +1,10 @@
+import { User } from '@/common/interfaces/user.interface';
+import { mockUsers } from '@/mocks/users.mock';
 import { Injectable } from '@nestjs/common';
 
 export type UserRole = 'admin' | 'user';
 
-export type User = {
+export type UserAuth = {
   userId: number;
   email: string;
   password: string;
@@ -12,7 +14,7 @@ export type User = {
 // Переделать в данные БД
 @Injectable()
 export class UsersService {
-  private readonly users: User[] = [
+  private readonly users: UserAuth[] = [
     {
       userId: 1,
       email: 'ivan@mail.com',
@@ -27,7 +29,19 @@ export class UsersService {
     },
   ];
 
-  async findOne(email: string): Promise<User | undefined> {
+  async findOne(email: string): Promise<UserAuth | undefined> {
     return this.users.find((user) => user.email === email);
+  }
+
+  getUserById(id: number): User | undefined {
+    return mockUsers.find((user) => user.uid === id);
+  }
+
+  getAllUsers(): User[] {
+    return mockUsers;
+  }
+
+  getUsersByRole(role: string): User[] {
+    return mockUsers.filter((user) => user.role === role);
   }
 }

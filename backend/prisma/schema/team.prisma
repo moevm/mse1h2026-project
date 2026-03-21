@@ -1,0 +1,47 @@
+model TeamMember {
+  id       String   @id @default(uuid())
+  userId   String   @map("user_id")
+  teamId   String   @map("team_id")
+  joinedAt DateTime @default(now()) @map("joined_at")
+
+  user User @relation(fields: [userId], references: [id])
+  team Team @relation(fields: [teamId], references: [id])
+
+  @@map("team_members")
+}
+
+model Team {
+  id        String     @id @default(uuid())
+  courseId  String     @map("course_id")
+  leaderId  String?    @map("leader_id")
+  status    TeamStatus
+  createdAt DateTime   @default(now()) @map("created_at")
+
+  course                Course                 @relation(fields: [courseId], references: [id])
+  leader                User?                  @relation("TeamLeader", fields: [leaderId], references: [id])
+  members               TeamMember[]
+  assignments           Assignment[]
+  invitations           TeamInvitation[]
+  initiatedExchanges    ExchangeRequest[]      @relation("InitiatorTeam")
+  targetedExchanges     ExchangeRequest[]      @relation("TargetTeam")
+  exchangeConfirmations ExchangeConfirmation[]
+
+  @@map("teams")
+}
+
+model TeamInvitation {
+  id          String           @id @default(uuid())
+  teamId      String           @map("team_id")
+  inviteeId   String           @map("invitee_id")
+  invitedBy   String           @map("invited_by")
+  status      InvitationStatus @default(pending)
+  createdAt   DateTime         @default(now()) @map("created_at")
+  respondedAt DateTime?        @map("responded_at")
+
+  team    Team @relation(fields: [teamId], references: [id])
+  invitee User @relation("InvitationInvitee", fields: [inviteeId], references: [id])
+  inviter User @relation("InvitationSentBy", fields: [invitedBy], references: [id])
+
+  @@index([teamId, status])
+  @@map("team_invitations")
+}

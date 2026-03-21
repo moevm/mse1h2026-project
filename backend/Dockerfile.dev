@@ -1,6 +1,5 @@
-# Образ для разработки backend (NestJS + watch mode)
-
-FROM node:lts-alpine
+# Образ для разработки backend
+FROM node:lts-alpine AS dev
 
 # Переменные окружения для pnpm
 ENV PNPM_HOME="/pnpm"
@@ -16,17 +15,15 @@ COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
 
 # Копируем package.json зависимых пакетов
 COPY backend/package.json ./backend/
-COPY database/package.json ./database/
 
-# Устанавливаем зависимости (включая devDependencies для watch-режима)
-RUN pnpm install --frozen-lockfile --filter @mse/backend --filter @mse/database
-
-# Копируем database-пакет и генерируем Prisma-клиент
-COPY database ./database
-RUN pnpm --filter @mse/database run prisma:generate
+# Устанавливаем зависимости backend
+RUN pnpm install --frozen-lockfile --filter @mse/backend
 
 # Копируем исходный код backend
 COPY backend ./backend
+
+RUN pnpm --filter @mse/backend run db:generate
+RUN pnpm --filter @mse/backend run build
 
 EXPOSE 3000
 

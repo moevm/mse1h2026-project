@@ -1,0 +1,24 @@
+model User {
+  id          String   @id @default(uuid())
+  firstName   String   @map("first_name") @db.VarChar(255)
+  secondName  String   @map("second_name") @db.VarChar(255)
+  ldapUid     String?  @unique @map("ldap_uid") @db.VarChar(255)
+  email       String   @db.VarChar(255)
+  groupNumber Int      @map("group_number")
+  role        UserRole
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  taughtCourses       Course[]               @relation("CourseTeacher")
+  ledTeams            Team[]                 @relation("TeamLeader")
+  teamMemberships     TeamMember[]
+  taughtProjects      Project[]              @relation("ProjectTeacher")
+  sentInvitations     TeamInvitation[]       @relation("InvitationSentBy")
+  receivedInvitations TeamInvitation[]       @relation("InvitationInvitee")
+  approvedRequests    ExchangeRequest[]      @relation("RequestApprovedBy")
+  confirmedExchanges  ExchangeConfirmation[] @relation("ExchangeConfirmedBy")
+  imports             Import[]               @relation("ImportBy")
+
+  approvedAssignments Assignment[] @relation("AssignmentApprovedBy")
+
+  @@map("users")
+}

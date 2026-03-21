@@ -1,19 +1,19 @@
 {
-    "recommendations": [
-        "github.copilot-chat",
-        "streetsidesoftware.code-spell-checker",
-        "ms-azuretools.vscode-docker",
-        "editorconfig.editorconfig",
-        "dbaeumer.vscode-eslint",
-        "esbenp.prettier-vscode",
-        "streetsidesoftware.code-spell-checker-russian",
-        "wayou.vscode-todo-highlight",
-        "tomoki1207.pdf",
-        "redhat.vscode-yaml",
-        "redhat.vscode-xml",
-        "prisma.prisma",
-        "william-voyek.vscode-nginx",
-        "github.vscode-github-actions",
-        "github.vscode-pull-request-github"
-    ]
+  "recommendations": [
+    "github.copilot-chat",
+    "streetsidesoftware.code-spell-checker",
+    "ms-azuretools.vscode-docker",
+    "editorconfig.editorconfig",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "streetsidesoftware.code-spell-checker-russian",
+    "wayou.vscode-todo-highlight",
+    "tomoki1207.pdf",
+    "redhat.vscode-yaml",
+    "redhat.vscode-xml",
+    "prisma.prisma",
+    "ahmadalli.vscode-nginx-conf",
+    "github.vscode-github-actions",
+    "github.vscode-pull-request-github",
+  ]
 }

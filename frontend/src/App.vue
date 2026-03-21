@@ -1,7 +1,13 @@
 <script setup lang="ts">
+import { useUserStore } from '@/stores/userStore';
 import { NConfigProvider, NGlobalStyle, NNotificationProvider, dateRuRU, ruRU } from 'naive-ui';
+import { onMounted } from 'vue';
 
-import CoursesList from './components/CoursesList.vue';
+const userStore = useUserStore();
+
+onMounted(() => {
+  userStore.loadRole();
+});
 </script>
 
 <template>
@@ -9,11 +15,10 @@ import CoursesList from './components/CoursesList.vue';
   <n-config-provider :locale="ruRU" :date-locale="dateRuRU">
     <!-- Провайдер уведомлений -->
     <n-notification-provider>
-      <CoursesList />
       <router-view />
       <n-global-style />
     </n-notification-provider>
   </n-config-provider>
 </template>
 
-<style scoped lang="scss"></style>
+<style lang="scss"></style>

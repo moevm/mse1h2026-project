@@ -1,3 +1,4 @@
+import { PrismaModule } from '@/prisma/prisma.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
@@ -15,6 +16,7 @@ import { UsersModule } from './users/users.module';
     ProjectsModule,
     AssignmentsModule,
     AuthModule,
+    PrismaModule,
     UsersModule,
     ConfigModule.forRoot({
       isGlobal: true,
