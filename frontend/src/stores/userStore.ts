@@ -1,59 +1,57 @@
+import { useStorage } from '@vueuse/core';
 import { defineStore } from 'pinia';
+import { computed, ref } from 'vue';
 
 interface UserState {
   role: 'admin' | 'student' | null;
   isLoading: boolean;
 }
 
-export const useUserStore = defineStore('user', {
-  state: (): UserState => ({
-    role: null, // По умолчанию null, загрузится при инициализации
-    isLoading: false,
-  }),
-
-  getters: {
-    // Проверка на админа
-    isAdmin: (state) => state.role === 'admin',
-
-    // Проверка на студента
-    isStudent: (state) => state.role === 'student',
-
-    // Роль готова (не null)
-    isRoleReady: (state) => state.role !== null,
-  },
-
-  actions: {
-    // Установить роль
-    setRole(role: 'admin' | 'student') {
-      this.role = role;
-      localStorage.setItem('userRole', role);
+export const useUserStore = defineStore('user', () => {
+  const role = useStorage<UserState['role']>('userRole', null, localStorage, {
+    serializer: {
+      read: (value: string): UserState['role'] =>
+        value === 'admin' || value === 'student' ? value : null,
+      write: (value: UserState['role']): string => value ?? '',
     },
+  });
+  const isLoading = ref<UserState['isLoading']>(false);
 
-    // Загрузить роль
-    async loadRole() {
-      this.isLoading = true;
-      try {
-        // 1. Сначала пробуем из localStorage
-        const savedRole = localStorage.getItem('userRole') as 'admin' | 'student' | null;
+  const isAdmin = computed(() => role.value === 'admin');
+  const isStudent = computed(() => role.value === 'student');
+  const isRoleReady = computed(() => role.value !== null);
 
-        if (savedRole) {
-          this.role = savedRole;
-        } else {
-          // временно вручную стравлю
-          this.role = 'admin';
-        }
-      } catch (error) {
-        console.error('Ошибка загрузки роли:', error);
-        this.role = 'student'; // Значение по умолчанию
-      } finally {
-        this.isLoading = false;
+  function setRole(newRole: Exclude<UserState['role'], null>): void {
+    role.value = newRole;
+  }
+
+  async function loadRole(): Promise<void> {
+    isLoading.value = true;
+    try {
+      if (role.value !== 'admin' && role.value !== 'student') {
+        // временно вручную стравлю
+        role.value = 'admin';
       }
-    },
+    } catch (error: unknown) {
+      console.error('Ошибка загрузки роли:', error);
+      role.value = 'student'; // Значение по умолчанию
+    } finally {
+      isLoading.value = false;
+    }
+  }
 
-    // Очистить роль (при выходе)
-    clearRole() {
-      this.role = null;
-      localStorage.removeItem('userRole');
-    },
-  },
+  function clearRole() {
+    role.value = null;
+  }
+
+  return {
+    role,
+    isLoading,
+    isAdmin,
+    isStudent,
+    isRoleReady,
+    setRole,
+    loadRole,
+    clearRole,
+  };
 });
