@@ -1,0 +1,32 @@
+pre-commit:
+  parallel: true
+  exclude:
+    - "package-lock.json"
+    - "yarn.lock"
+    - "pnpm-lock.yaml"
+    - "dist/**"
+    - "node_modules/**"
+    - "coverage/**"
+    - "build/**"
+    - "public/**"
+    - ".git/**"
+    - ".vscode/**"
+  commands:
+    eslint:
+      run: pnpm lint
+      glob: "**/*.{ts,tsx,vue,js,jsx,css,scss,json}"
+    prettier:
+      run: pnpm format
+      glob: "**/*.{ts,tsx,vue,js,jsx,css,scss,json}"
+    typecheck:
+      run: pnpm typecheck
+      glob: "**/*.{ts,tsx,vue}"
+
+pre-push:
+  parallel: true
+  commands:
+    build:
+      run: pnpm build
+    # Пока отключено
+    # build-compose:
+    #   run: docker compose build
