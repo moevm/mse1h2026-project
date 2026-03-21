@@ -1,4 +1,5 @@
-import type { Course } from '../types';
+import type { Course } from '@/types';
+
 import { apiClient } from './client';
 
 export const coursesApi = {
