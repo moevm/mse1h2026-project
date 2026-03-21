@@ -4,7 +4,7 @@ export const mockUsers: User[] = [
   {
     uid: 1,
     firstName: 'Иван',
-    secondName: 'Иванов',
+    lastName: 'Иванов',
     group: 3343,
     role: 'student',
     email: 'ivan.ivanov@university.edu',
@@ -13,7 +13,7 @@ export const mockUsers: User[] = [
   {
     uid: 2,
     firstName: 'Мария',
-    secondName: 'Мариева',
+    lastName: 'Мариева',
     group: 3344,
     role: 'student',
     email: 'maria.marieva@university.edu',
@@ -22,7 +22,7 @@ export const mockUsers: User[] = [
   {
     uid: 3,
     firstName: 'Сергей',
-    secondName: 'Сергеев',
+    lastName: 'Сергеев',
     role: 'admin',
     email: 's.sergeev@university.edu',
     ldapUid: 123,
@@ -30,7 +30,7 @@ export const mockUsers: User[] = [
   {
     uid: 4,
     firstName: 'Михаил',
-    secondName: 'Михаилов',
+    lastName: 'Михаилов',
     role: 'admin',
     email: 'm.mihailov@university.edu',
     ldapUid: 100,

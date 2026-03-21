@@ -6,7 +6,7 @@ export type UserRole = 'admin' | 'user';
 
 export type UserAuth = {
   userId: number;
-  username: string;
+  email: string;
   password: string;
   roles: UserRole[];
 };
@@ -17,20 +17,20 @@ export class UsersService {
   private readonly users: UserAuth[] = [
     {
       userId: 1,
-      username: 'ivan',
+      email: 'ivan@mail.com',
       password: 'ivan',
       roles: ['admin'],
     },
     {
       userId: 2,
-      username: 'maria',
+      email: 'maria@mail.com',
       password: 'maria',
       roles: ['user'],
     },
   ];
 
-  async findOne(username: string): Promise<UserAuth | undefined> {
-    return this.users.find((user) => user.username === username);
+  async findOne(email: string): Promise<UserAuth | undefined> {
+    return this.users.find((user) => user.email === email);
   }
 
   getUserById(id: number): User | undefined {

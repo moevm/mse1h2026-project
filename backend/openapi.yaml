@@ -7,18 +7,22 @@ servers:
   - url: 'http://localhost:3000/api'
 paths:
   /auth/login:
+    get:
+      summary: Авторизация
+      security: []
+      responses:
+        '200':
+          description: Страница авторизации
+
     post:
       summary: Авторизация
+      security: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              required: [email, password]
-              properties:
-                email: { type: string, format: email }
-                password: { type: string }
+              $ref: '#/components/schemas/SignInDto'
       responses:
         '200':
           description: Токен авторизации
@@ -27,12 +31,11 @@ paths:
               schema:
                 type: object
                 properties:
-                  token: { type: string }
-                  user: { $ref: '#/components/schemas/User' }
-        '401':
-          description: Неверный email или пароль
+                  access_token: { type: string }
         '400':
           description: Неверный формат email
+        '401':
+          description: Неверный логин или пароль
 
   /courses:
     get:
@@ -40,9 +43,6 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - name: semester
-          in: query
-          schema: { type: integer }
         - name: isActive
           in: query
           schema: { type: boolean }
@@ -50,7 +50,7 @@ paths:
           in: query
           schema:
             type: string
-            enum: [name, semester, createdAt]
+            enum: [name, createdAt]
         - name: order
           in: query
           schema:
@@ -110,10 +110,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Course'
-        '404':
-          description: Курс не найден
         '401':
           description: Не авторизован
+        '404':
+          description: Курс не найден
 
     put:
       summary: Обновление курса
@@ -138,14 +138,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Course'
-        '404':
-          description: Курс не найден
         '400':
           description: Неверные данные
         '401':
           description: Не авторизован
         '403':
           description: Нет прав на редактирование
+        '404':
+          description: Курс не найден
 
     delete:
       summary: Удаление курса
@@ -160,12 +160,12 @@ paths:
       responses:
         '204':
           description: Курс удален
-        '404':
-          description: Курс не найден
         '401':
           description: Не авторизован
         '403':
           description: Нет прав на удаление
+        '404':
+          description: Курс не найден
 
   /courses/{id}/distribution:
     get:
@@ -185,10 +185,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DistributionResult'
-        '404':
-          description: Курс не найден
         '401':
           description: Не авторизован
+        '404':
+          description: Курс не найден
 
   /courses/{id}/projects:
     get:
@@ -224,10 +224,10 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Project'
-        '404':
-          description: Проекты курса не найдены
         '401':
           description: Не авторизован
+        '404':
+          description: Проекты курса не найдены
 
   /projects:
     get:
@@ -293,12 +293,12 @@ paths:
                 $ref: '#/components/schemas/Project'
         '400':
           description: Неверные данные
-        '404':
-          description: Курс или преподаватель не найдены
         '401':
           description: Не авторизован
         '403':
           description: Нет прав на создание
+        '404':
+          description: Курс или преподаватель не найдены
 
   /projects/{id}:
     get:
@@ -318,10 +318,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Project'
-        '404':
-          description: Проект не найден
         '401':
           description: Не авторизован
+        '404':
+          description: Проект не найден
 
     put:
       summary: Обновление проекта
@@ -351,14 +351,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Project'
-        '404':
-          description: Проект не найден
         '400':
           description: Неверные данные
         '401':
           description: Не авторизован
         '403':
           description: Нет прав на редактирование
+        '404':
+          description: Проект не найден
 
     delete:
       summary: Удаление проекта
@@ -373,12 +373,12 @@ paths:
       responses:
         '204':
           description: Проект удален
-        '404':
-          description: Проект не найден
         '401':
           description: Не авторизован
         '403':
           description: Нет прав на удаление
+        '404':
+          description: Проект не найден
 
   /assignments:
     get:
@@ -417,59 +417,65 @@ components:
       scheme: bearer
       bearerFormat: JWT
   schemas:
+    SignInDto:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, format: email }
+        password: { type: string }
     User:
       type: object
-      required: [id, firstName, lastName, email, role, group, ldapUid]
+      required: [uid, firstName, lastName, email, role, ldapUid]
       properties:
-        id: { type: integer }
+        uid: { type: integer }
         firstName: { type: string }
         lastName: { type: string }
-        ldapUid: { type: string }
         email: { type: string, format: email }
-        group: { type: integer }
-        createdAt: { type: string, format: date-time }
         role:
           type: string
           enum: [student, admin]
+        group: { type: integer }
+        ldapUid: { type: string }
+        createdAt: { type: string, format: date-time }
     Course:
       type: object
-      required: [id, name, semester, maxTeamSize, minTeamSize, isActive]
+      required: [uid, name, maxTeamSize, minTeamSize, isActive, adminId]
       properties:
-        id: { type: integer }
+        uid: { type: integer }
         name: { type: string }
-        semester: { type: integer }
-        isActive: { type: boolean }
-        description: { type: string }
         maxTeamSize: { type: integer }
         minTeamSize: { type: integer }
+        isActive: { type: boolean }
+        adminId: { type: integer }
+        description: { type: string }
+        registrationDeadline: { type: string, format: date-time }
         createdAt: { type: string, format: date-time }
         updatedAt: { type: string, format: date-time }
-        registrationDeadline: { type: string, format: date-time }
     Project:
       type: object
-      required: [id, title, teacherId, courseId, teacherFirstName, teacherLastName, courseName]
+      required: [uid, title, teacherId, teacherFirstName, teacherLastName, courseName, courseId]
       properties:
-        id: { type: integer }
+        uid: { type: integer }
         title: { type: string }
         description: { type: string }
+        teacherId: { type: integer }
         teacherFirstName: { type: string }
         teacherLastName: { type: string }
-        teacherId: { type: integer }
         courseName: { type: string }
         courseId: { type: integer }
         createdAt: { type: string, format: date-time }
         updatedAt: { type: string, format: date-time }
     Assignment:
       type: object
-      required: [studentId, projectId, courseId, studentFirstName, studentSecondName, projectName, courseName]
+      required: [studentId, studentFirstName, studentLastName, projectId, projectName, courseId, courseName]
       properties:
         studentId: { type: integer }
         studentFirstName: { type: string }
-        studentSecondName: { type: string }
-        projectName: { type: string }
+        studentLastName: { type: string }
         projectId: { type: integer }
-        courseName: { type: string }
+        projectName: { type: string }
         courseId: { type: integer }
+        courseName: { type: string }
         assignedAt: { type: string, format: date-time }
         createdAt: { type: string, format: date-time }
         updatedAt: { type: string, format: date-time }
@@ -484,10 +490,9 @@ components:
             $ref: '#/components/schemas/Assignment'
     CreateCourseDto:
       type: object
-      required: [name, semester, maxTeamSize, minTeamSize, isActive]
+      required: [name, maxTeamSize, minTeamSize, isActive]
       properties:
         name: { type: string, minLength: 3 }
-        semester: { type: integer, minimum: 1 }
         maxTeamSize: { type: integer, minimum: 1 }
         minTeamSize: { type: integer, minimum: 1 }
         isActive: { type: boolean }
@@ -497,7 +502,6 @@ components:
       type: object
       properties:
         name: { type: string, minLength: 3 }
-        semester: { type: integer, minimum: 1 }
         maxTeamSize: { type: integer, minimum: 1 }
         minTeamSize: { type: integer, minimum: 1 }
         isActive: { type: boolean }
