@@ -57,6 +57,9 @@ importers:
 
   backend:
     dependencies:
+      '@dotenvx/dotenvx':
+        specifier: ^1.54.1
+        version: 1.54.1
       '@nestjs/common':
         specifier: ^11.1.14
         version: 11.1.14(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)
@@ -75,6 +78,12 @@ importers:
       '@nestjs/platform-express':
         specifier: ^11.1.14
         version: 11.1.14(@nestjs/common@11.1.14(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.14)
+      '@prisma/adapter-mariadb':
+        specifier: ^7.4.1
+        version: 7.4.1
+      '@prisma/client':
+        specifier: ^7.4.1
+        version: 7.4.1(prisma@7.4.1(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(typescript@5.9.3)
       class-transformer:
         specifier: ^0.5.1
         version: 0.5.1
@@ -103,25 +112,15 @@ importers:
       '@types/passport-local':
         specifier: ^1.0.38
         version: 1.0.38
-      typescript:
-        specifier: ^5.9.3
-        version: 5.9.3
-
-  database:
-    dependencies:
-      '@prisma/adapter-mariadb':
-        specifier: ^7.4.1
-        version: 7.4.1
-      '@prisma/client':
-        specifier: ^7.4.1
-        version: 7.4.1(prisma@7.4.1(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(typescript@5.9.3)
-    devDependencies:
       dotenv:
         specifier: ^17.3.1
         version: 17.3.1
       prisma:
         specifier: ^7.4.1
         version: 7.4.1(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
 
   frontend:
     dependencies:

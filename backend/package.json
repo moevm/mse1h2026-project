@@ -8,21 +8,26 @@
   "scripts": {
     "build": "nest build --preserveWatchOutput",
     "start": "nest start --preserveWatchOutput",
-    "start:dev": "nest start --watch --preserveWatchOutput",
+    "start:dev": "prisma migrate dev && concurrently -n prisma,Nest -c red,green \"prisma generate --watch\" \"nest start --watch --preserveWatchOutput\"",
     "start:prod": "node dist/main.js",
+    "db:generate": "prisma generate",
+    "db:deploy": "prisma migrate deploy",
+    "db:dev": "prisma migrate dev",
     "lint": "eslint --cache src",
-    "typecheck": "tsc --noEmit -p tsconfig.build.json",
     "format": "prettier --cache --write src",
     "format:check": "prettier --cache --check src",
-    "pre-commit-check": "pnpm lint && pnpm typecheck && pnpm format"
+    "typecheck": "prisma generate && tsc --noEmit -p tsconfig.build.json"
   },
   "dependencies": {
+    "@dotenvx/dotenvx": "^1.54.1",
     "@nestjs/common": "^11.1.14",
     "@nestjs/config": "^4.0.3",
     "@nestjs/core": "^11.1.14",
     "@nestjs/jwt": "^11.0.2",
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.1.14",
+    "@prisma/adapter-mariadb": "^7.4.1",
+    "@prisma/client": "^7.4.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.15.1",
     "passport": "^0.7.0",
@@ -34,6 +39,8 @@
     "@types/express": "^5.0.6",
     "@types/node": "^25.3.0",
     "@types/passport-local": "^1.0.38",
+    "dotenv": "^17.3.1",
+    "prisma": "^7.4.1",
     "typescript": "^5.9.3"
   }
 }

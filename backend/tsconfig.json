@@ -23,7 +23,7 @@
     "noFallthroughCasesInSwitch": false,
     "paths": {
       "@/*": ["src/*"]
-    }
+    },
   },
   "watchOptions": {
     "watchFile": "dynamicPriorityPolling",

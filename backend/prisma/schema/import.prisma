@@ -1,0 +1,15 @@
+model Import {
+  id          String     @id @default(uuid())
+  courseId    String     @map("course_id")
+  type        ImportType
+  filename    String     @db.VarChar(255)
+  totalRows   Int        @map("total_rows")
+  successRows Int        @map("success_rows")
+  importedBy  String     @map("imported_by")
+  createdAt   DateTime   @default(now()) @map("created_at")
+
+  course   Course @relation(fields: [courseId], references: [id])
+  importer User   @relation("ImportBy", fields: [importedBy], references: [id])
+
+  @@map("imports")
+}

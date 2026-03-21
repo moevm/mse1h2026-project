@@ -1,9 +1,6 @@
 packages:
   - backend
   - frontend
-  - database
-  - infrastructure
-  - docs
 
 injectWorkspacePackages: true
 
