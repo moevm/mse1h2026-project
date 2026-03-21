@@ -15,7 +15,7 @@ services:
       context: .
       dockerfile: ./backend/Dockerfile
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/hello-world"]
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
       interval: 10s
       timeout: 5s
       retries: 5
