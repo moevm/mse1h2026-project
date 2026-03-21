@@ -4,17 +4,18 @@
       <h3>{{ title }}</h3>
       <p>{{ message }}</p>
       <div class="dialog-actions">
-        <BaseButton text="Отмена" btn-class="cancel-btn" @click="$emit('cancel')" />
-        <BaseButton :text="confirmText" btn-class="confirm-btn" @click="$emit('confirm')" />
+        <n-button class="secondary-btn" @click="$emit('cancel')"> Отмена </n-button>
+        <n-button type="error" @click="$emit('confirm')">
+          {{ confirmText }}
+        </n-button>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { NButton } from 'naive-ui';
 import { watch } from 'vue';
-
-import BaseButton from './BaseButton.vue';
 
 const props = defineProps<{
   show: boolean;

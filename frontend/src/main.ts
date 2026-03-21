@@ -8,6 +8,8 @@ import { router } from '@/router';
 import { createPinia } from 'pinia';
 import { createApp } from 'vue';
 
+import './assets/styles/main.scss';
+
 const pinia = createPinia(); // Создание экземпляра Pinia для управления состоянием приложения
 
 const app = createApp(App); // Создание экземпляра Vue приложения с корневым компонентом App

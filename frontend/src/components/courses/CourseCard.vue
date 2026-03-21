@@ -7,30 +7,35 @@
     <div class="card-header">
       <h3 class="card-title">{{ course.name }}</h3>
       <div class="header-extra">
-        <BaseButton
-          v-if="role === 'admin' && course.isActive"
-          text="Скрыть курс"
-          btn-class="delete-btn"
-          @click="handleDelete"
-        />
-        <BaseButton
-          v-if="role === 'admin' && !course.isActive"
-          text="Показать курс"
-          btn-class="show-btn"
-          @click="handleShow"
-        />
+        <n-button
+          v-if="userStore.isAdmin && course.isActive"
+          class="delete-btn secondary-btn"
+          @click.stop="handleDelete"
+        >
+          Скрыть курс
+        </n-button>
+        <n-button
+          v-if="userStore.isAdmin && !course.isActive"
+          class="show-btn secondary-btn"
+          @click.stop="handleShow"
+        >
+          Показать курс
+        </n-button>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { Course } from '../types/index';
-import BaseButton from './BaseButton.vue';
+import { useUserStore } from '@/stores/userStore';
+import { NButton } from 'naive-ui';
+
+import type { Course } from '../../types/index';
+
+const userStore = useUserStore();
 
 const props = defineProps<{
   course: Course;
-  role: 'admin' | 'student';
 }>();
 
 const emit = defineEmits<{
@@ -62,6 +67,7 @@ const handleShow = (e: MouseEvent) => {
   border-radius: 15px;
   overflow: hidden;
   background: #d9d9d9;
+  padding: 1.5rem 0;
 }
 
 .course-card:hover {
@@ -97,7 +103,7 @@ const handleShow = (e: MouseEvent) => {
 }
 
 .course-card.inactive .card-title::before {
-  background-color: #f44336; /* или red */
+  background-color: #f44336;
 }
 
 .header-extra {

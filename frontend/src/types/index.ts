@@ -1,11 +1,23 @@
 export interface Course {
   uid: number;
   name: string;
-  semester: number;
   maxTeamSize: number;
   minTeamSize: number;
   isActive: boolean;
+  adminId: number;
+  description?: string;
   registrationDeadline?: Date;
+  createdAt?: Date;
+}
+
+export interface FormData {
+  name: string;
+  semester: number;
+  teacherId: number;
+  minTeamSize: number;
+  maxTeamSize: number;
+  registrationDeadline: number | null;
+  isActive: boolean;
 }
 
 export interface Project {
@@ -19,6 +31,16 @@ export interface Project {
   courseId: number;
   createdAt?: Date;
   updatedAt?: Date;
+}
+
+export interface User {
+  uid: number;
+  firstName: string;
+  secondName: string;
+  group?: number;
+  role: 'student' | 'admin';
+  email: string;
+  ldapUid: number;
 }
 
 export interface Assignment {
