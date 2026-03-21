@@ -8,6 +8,7 @@ import { CoursesModule } from './courses/courses.module';
 import { HelloWorldModule } from './hello-world/hello-world.module';
 import { ProjectsModule } from './projects/projects.module';
 import { UsersModule } from './users/users.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { UsersModule } from './users/users.module';
     AuthModule,
     PrismaModule,
     UsersModule,
+    HealthModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '../.env',
