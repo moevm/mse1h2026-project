@@ -17,10 +17,6 @@ export class CreateCourseDto {
 
   @IsInt()
   @Min(1)
-  semester: number;
-
-  @IsInt()
-  @Min(1)
   maxTeamSize: number;
 
   @IsInt()
