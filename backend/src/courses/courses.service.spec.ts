@@ -99,8 +99,8 @@ describe('CoursesService', () => {
     expect(result).toEqual(course);
     expect(mockPrismaService.course.update).toHaveBeenCalledWith({
       data: course,
-      where: { id : '1' },
-    })
+      where: { id: '1' },
+    });
   });
 
   it('should delete course', async () => {
@@ -110,8 +110,8 @@ describe('CoursesService', () => {
     const result = await service.deleteCourse('1');
     expect(result).toEqual(course);
     expect(mockPrismaService.course.delete).toHaveBeenCalledWith({
-      where: { id : course.id },
-    })
+      where: { id: course.id },
+    });
   });
 
   afterEach(() => {
