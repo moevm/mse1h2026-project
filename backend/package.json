@@ -30,6 +30,7 @@
     "@nestjs/terminus": "^11.1.1",
     "@prisma/adapter-mariadb": "^7.4.1",
     "@prisma/client": "^7.4.1",
+    "prisma": "^7.4.1",
     "axios": "^1.13.5",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.15.1",
@@ -43,7 +44,6 @@
     "@types/node": "^25.3.0",
     "@types/passport-local": "^1.0.38",
     "dotenv": "^17.3.1",
-    "prisma": "^7.4.1",
     "typescript": "^5.9.3"
   }
 }
