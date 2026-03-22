@@ -11,9 +11,11 @@
   - [Установка и запуск](#установка-и-запуск)
     - [Подготовка к запуску](#подготовка-к-запуску)
     - [Запуск без **Docker**](#запуск-без-docker)
-    - [Запуск с помощью **Docker**](#запуск-с-помощью-docker)
       - [Production](#production)
       - [Development](#development)
+    - [Запуск с помощью **Docker**](#запуск-с-помощью-docker)
+      - [Production](#production-1)
+      - [Development](#development-1)
     - [Переменные окружения](#переменные-окружения)
   - [Проверка работоспособности](#проверка-работоспособности)
   - [Дополнительная информация](#дополнительная-информация)
@@ -118,23 +120,27 @@
 - Введите в `.env` значения
 
   ```env
+  MYSQL_ROOT_PASSWORD=<your_root_password>
   MYSQL_DATABASE=<your_database_name>
   MYSQL_USER=root
-  MYSQL_PASSWORD=<your_root_password>
+  MYSQL_PASSWORD=${MYSQL_ROOT_PASSWORD}
   MYSQL_HOST=localhost
-  MYSQL_PORT=3306 
+  MYSQL_PORT=3306
+
+  BACKEND_OUTPUT_HOST=localhost
+  BACKEND_OUTPUT_PORT=3000
   ```
 
 - Запустите проект:
 
-  - Production:
+#### Production
 
   ```bash
   pnpm build
   pnpm preview
   ```
 
-  - Dev:
+#### Development
 
   ```bash
   pnpm dev
@@ -153,12 +159,15 @@
   MYSQL_PASSWORD=<your_mysql_user_password>
   MYSQL_HOST=db
   MYSQL_PORT=3306
+
+  BACKEND_OUTPUT_HOST=backend
+  BACKEND_OUTPUT_PORT=3000
   ```
 
 - Запустите docker compose:
 
   ```bash
-  docker compose up
+  docker compose up --build
   ```
 
 #### Development
@@ -174,10 +183,13 @@
   MYSQL_PASSWORD=${MYSQL_ROOT_PASSWORD}
   MYSQL_HOST=db
   MYSQL_PORT=3306
+
+  BACKEND_OUTPUT_HOST=backend
+  BACKEND_OUTPUT_PORT=3000
   ```
  
   ```bash
-  docker compose -f docker-compose.dev.yaml up
+  docker compose -f docker-compose.dev.yaml up --build
   ```
 
 ### Переменные окружения
@@ -190,9 +202,8 @@
   - `MYSQL_PASSWORD` - пароль для пользователя, указанного в `MYSQL_USER`.
   - `MYSQL_HOST` - хост, на котором работает MySQL (обычно `db` для Docker, `localhost` для локальной разработки)
   - `MYSQL_PORT` - порт, на котором работает MySQL (обычно `3306`)
-  
+    
     dev-env:
-
     - `MYSQL_OUTPUT_HOST` - хост, на котором будет доступна база данных MySQL (обычно `127.0.0.1` для локальной разработки)
     - `MYSQL_OUTPUT_PORT` - порт, на котором будет доступна база данных MySQL (обычно `3306`)
     - `MYSQL_OUTPUT_URL` - URL, на котором будет доступна база данных MySQL (обычно `{MYSQL_OUTPUT_HOST}:${MYSQL_OUTPUT_PORT}`)
@@ -200,18 +211,13 @@
 - backend:
 
   - `DATABASE_URL` - URL для подключения к базе данных MySQL (в частности для ORM Prisma)
-
-    dev-env:
-
-    - `BACKEND_OUTPUT_HOST` - хост, на котором будет доступен бэкенд (обычно `localhost`)
-    - `BACKEND_OUTPUT_PORT` - порт, на котором будет доступен бэкенд (обычно `3000`)
-    - `BACKEND_OUTPUT_URL` - URL, на котором будет доступен бэкенд (обычно `${BACKEND_OUTPUT_HOST}:${BACKEND_OUTPUT_PORT}`)
+  - `BACKEND_OUTPUT_HOST` - хост, на котором будет доступен бэкенд (обычно `127.0.0.1` для docker, `localhost` для локальной разработки)
+  - `BACKEND_OUTPUT_PORT` - порт, на котором будет доступен бэкенд (обычно `3000`)
+  - `BACKEND_OUTPUT_URL` - URL, на котором будет доступен бэкенд (обычно `${BACKEND_OUTPUT_HOST}:${BACKEND_OUTPUT_PORT}`)
 
 - frontend:
 
-  - `VITE_API_BASE_HOST` - базовый хост для API запросов к бэкенду (обычно `localhost`)
-  - `VITE_API_BASE_PORT` - базовый порт для API запросов к бэкенду (обычно `3000`)
-  - `VITE_API_BASE_URL` - базовый URL для API запросов к бэкенду (обычно `http://${VITE_API_BASE_HOST}:${VITE_API_BASE_PORT}/api`)
+  - `VITE_API_BASE_URL` - базовый URL для API запросов к бэкенду (обычно `http://${BACKEND_OUTPUT_URL}/api`)
   - `FRONTEND_OUTPUT_HOST` - хост, на котором будет доступен фронтенд (обычно `127.0.0.1`)
   - `FRONTEND_OUTPUT_PORT` - порт, на котором будет доступен фронтенд (обычно `8080`)
   - `FRONTEND_OUTPUT_URL` - URL, на котором будет доступен фронтенд (обычно `http://${FRONTEND_OUTPUT_HOST}:${FRONTEND_OUTPUT_PORT}`)
