@@ -445,7 +445,6 @@ components:
       properties:
         uid: { type: integer }
         name: { type: string }
-        semester: { type: integer }
         isActive: { type: boolean }
         maxTeamSize: { type: integer }
         minTeamSize: { type: integer }
