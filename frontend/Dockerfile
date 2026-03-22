@@ -4,6 +4,9 @@
 # Образ Node.js для сборки
 FROM node:lts-alpine AS build
 
+# Аргумент для передачи базового URL API в Vite
+ARG VITE_API_BASE_URL
+
 # Устанавливаем переменные окружения для pnpm
 ENV PNPM_HOME="/pnpm"
 # Добавляем pnpm в PATH
@@ -14,6 +17,9 @@ ENV PNPM_DISABLE_SELF_UPDATE_CHECK=true
 ENV PNPM_STORE_PATH=/pnpm/store
 # Устанавливаем переменную для CI-среды
 ENV CI=true
+
+# Устанавливаем переменную окружения для Vite, чтобы она была доступна во время сборки
+ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
 
 # Устанавливаем рабочую директорию
 WORKDIR /app
