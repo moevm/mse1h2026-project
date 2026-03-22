@@ -1,5 +1,4 @@
 import { Roles } from '@/common/decorators/roles.decorator';
-import { AuthGuard } from '@/common/guards/auth.guard';
 import { RolesGuard } from '@/common/guards/roles.guard';
 import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
 
@@ -11,33 +10,31 @@ import { UpdateCourseDto } from './dto/update-course.dto';
 export class CoursesController {
   constructor(private readonly coursesService: CoursesService) {}
 
-  @UseGuards(AuthGuard)
   @Get()
   findAll() {
     return this.coursesService.getAllCourses();
   }
 
-  @UseGuards(AuthGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.coursesService.getCourseById(id);
   }
 
-  @UseGuards(AuthGuard, RolesGuard)
+  @UseGuards(RolesGuard)
   @Roles(['admin'])
   @Post()
   async create(@Body() courseData: CreateCourseDto) {
     return this.coursesService.createCourse(courseData);
   }
 
-  @UseGuards(AuthGuard, RolesGuard)
+  @UseGuards(RolesGuard)
   @Roles(['admin'])
   @Put(':id')
   update(@Param('id') id: string, @Body() data: UpdateCourseDto) {
     return this.coursesService.updateCourse(id, data);
   }
 
-  @UseGuards(AuthGuard, RolesGuard)
+  @UseGuards(RolesGuard)
   @Roles(['admin'])
   @Delete(':id')
   delete(@Param('id') id: string) {
