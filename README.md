@@ -1,5 +1,23 @@
 # mse-template
 
+## Оглавление
+
+- [mse-template](#mse-template)
+  - [Оглавление](#оглавление)
+  - [Сценарии использования](#сценарии-использования)
+    - [Студент](#студент)
+    - [Преподаватель](#преподаватель)
+    - [Администратор](#администратор)
+  - [Установка и запуск](#установка-и-запуск)
+    - [Подготовка к запуску](#подготовка-к-запуску)
+    - [Запуск без **Docker**](#запуск-без-docker)
+    - [Запуск с помощью **Docker**](#запуск-с-помощью-docker)
+      - [Production](#production)
+      - [Development](#development)
+    - [Переменные окружения](#переменные-окружения)
+  - [Проверка работоспособности](#проверка-работоспособности)
+  - [Дополнительная информация](#дополнительная-информация)
+
 ## Сценарии использования
  
 *Сценарий использования* - описание того, что делает пользователь с приложением для достижения своей цели.
@@ -72,119 +90,131 @@
 
 - Клонируйте репозиторий:
 
-    ```bash
-    git clone https://github.com/moevm/mse1h2026-project
-    ```
+  ```bash
+  git clone https://github.com/moevm/mse1h2026-project
+  ```
 
 - Перейдите в директорию проекта:
   
-    ```bash
-    cd mse1h2026-project
-    ```
+  ```bash
+  cd mse1h2026-project
+  ```
 
-- Скопируйте файл `.env.example` в `.env` и при необходимости отредактируйте переменные окружения.
+- Скопируйте файл `.env.example` в `.env` и отредактируйте переменные окружения. 
+Переменные, находящиеся под `# [service] dev-env` используются для dev разработки с Docker.
 
-    ```bash
-    cp .env.example .env
-    ```
+  ```bash
+  cp .env.example .env
+  ```
 
 ### Запуск без **Docker**
 
 - Установите зависимости:
 
-    ```bash
-    pnpm i
-    ```
+  ```bash
+  pnpm i
+  ```
+
+- Введите в `.env` значения
+
+  ```env
+  MYSQL_DATABASE=<your_database_name>
+  MYSQL_USER=root
+  MYSQL_PASSWORD=<your_root_password>
+  MYSQL_HOST=localhost
+  MYSQL_PORT=3306 
+  ```
 
 - Запустите проект:
 
-  - Dev:
-
-    ```bash
-    pnpm dev
-    ```
-
   - Production:
 
-    ```bash
-    pnpm build
-    pnpm preview
-    ```
-
-- Для запуска по отдельности фронтенда и бэкенда, используйте команды:
-
-    `b` - бэкенд, `f` - фронтенд
+  ```bash
+  pnpm build
+  pnpm preview
+  ```
 
   - Dev:
 
-    ```bash
-    pnpm b dev
-    pnpm f dev
-    ```
-
-  - Production:
-
-    ```bash
-    pnpm b build
-    pnpm b start
-    pnpm f build
-    pnpm f preview
-    ```
-    
-
-- На данный момент фронтенд доступен по адресу `http://localhost:5173`, а бэкенд - `http://localhost:3000`.
-
-  - [Прямая ссылка на фронтенд](http://localhost:5173)
-
-  - [Прямая ссылка на бэкенд](http://localhost:3000)
+  ```bash
+  pnpm dev
+  ```
 
 ### Запуск с помощью **Docker**
 
-#### Development:
+#### Production
 
-1. Запустите docker compose для разработки:
+- Введите в `.env` значения для инициализации и запуска `MySQL` контейнера:
+
+  ```env
+  MYSQL_ROOT_PASSWORD=<your_root_password>
+  MYSQL_DATABASE=<your_database_name>
+  MYSQL_USER=<your_mysql_user>
+  MYSQL_PASSWORD=<your_mysql_user_password>
+  MYSQL_HOST=db
+  MYSQL_PORT=3306
+  ```
+
+- Запустите docker compose:
+
+  ```bash
+  docker compose up
+  ```
+
+#### Development
+
+- Запустите docker compose для разработки:
+
+- Введите в `.env` значения для инициализации и запуска `MySQL` контейнера:
+
+  ```env
+  MYSQL_ROOT_PASSWORD=<your_root_password>
+  MYSQL_DATABASE=<your_database_name>
+  MYSQL_USER=root
+  MYSQL_PASSWORD=${MYSQL_ROOT_PASSWORD}
+  MYSQL_HOST=db
+  MYSQL_PORT=3306
+  ```
  
-    ```bash
-    docker compose -f docker-compose.dev.yaml up
-    ```
-
-2. Дождитесь сборки и запуска контейнеров. Чтобы открыть сайт напишите `http://localhost:5173` в адресной строке браузера. Чтобы получить доступ к бэкенду, используйте `http://localhost:3000`. 
-
-   - [Прямая ссылка на фронтенд](http://localhost:5173)
-
-   - [Прямая ссылка на бэкенд](http://localhost:3000)
-
-#### Production:
-
-1. Запустите docker compose:
-
-    ```bash
-    docker compose up
-    ```
-
-2. Дождитесь сборки и запуска контейнеров. Чтобы открыть сайт напишите `http://localhost:80` или `http://localhost` в адресной строке браузера. 
-   
-   [Прямая ссылка](http://localhost)
+  ```bash
+  docker compose -f docker-compose.dev.yaml up
+  ```
 
 ### Переменные окружения
 
 - db:
 
-  - `MYSQL_ROOT_PASSWORD` - пароль для пользователя root в MySQL
+  - `MYSQL_ROOT_PASSWORD` - пароль для пользователя `root` в MySQL.
+  - `MYSQL_DATABASE` - имя базы данных, которая будет создана при запуске контейнера.
+  - `MYSQL_USER` - имя пользователя для доступа к базе данных (обычно `root` для локальной разработки, и не `root` для production).
+  - `MYSQL_PASSWORD` - пароль для пользователя, указанного в `MYSQL_USER`.
+  - `MYSQL_HOST` - хост, на котором работает MySQL (обычно `db` для Docker, `localhost` для локальной разработки)
+  - `MYSQL_PORT` - порт, на котором работает MySQL (обычно `3306`)
+  
+    dev-env:
 
-  - `MYSQL_DATABASE` - имя базы данных, которая будет создана при запуске контейнера 
+    - `MYSQL_OUTPUT_HOST` - хост, на котором будет доступна база данных MySQL (обычно `127.0.0.1` для локальной разработки)
+    - `MYSQL_OUTPUT_PORT` - порт, на котором будет доступна база данных MySQL (обычно `3306`)
+    - `MYSQL_OUTPUT_URL` - URL, на котором будет доступна база данных MySQL (обычно `{MYSQL_OUTPUT_HOST}:${MYSQL_OUTPUT_PORT}`)
 
-  - `MYSQL_USER` - имя пользователя для доступа к базе данных
+- backend:
 
-  - `MYSQL_PASSWORD` - пароль для пользователя, указанного в `MYSQL_USER`
+  - `DATABASE_URL` - URL для подключения к базе данных MySQL (в частности для ORM Prisma)
+
+    dev-env:
+
+    - `BACKEND_OUTPUT_HOST` - хост, на котором будет доступен бэкенд (обычно `localhost`)
+    - `BACKEND_OUTPUT_PORT` - порт, на котором будет доступен бэкенд (обычно `3000`)
+    - `BACKEND_OUTPUT_URL` - URL, на котором будет доступен бэкенд (обычно `${BACKEND_OUTPUT_HOST}:${BACKEND_OUTPUT_PORT}`)
 
 - frontend:
 
-  - `FRONTEND_PORT` - порт, на котором будет работать фронтенд
-
-  - `VITE_API_BASE_URL` - базовый URL для API запросов к бэкенду
-
-
+  - `VITE_API_BASE_HOST` - базовый хост для API запросов к бэкенду (обычно `localhost`)
+  - `VITE_API_BASE_PORT` - базовый порт для API запросов к бэкенду (обычно `3000`)
+  - `VITE_API_BASE_URL` - базовый URL для API запросов к бэкенду (обычно `http://${VITE_API_BASE_HOST}:${VITE_API_BASE_PORT}/api`)
+  - `FRONTEND_OUTPUT_HOST` - хост, на котором будет доступен фронтенд (обычно `127.0.0.1`)
+  - `FRONTEND_OUTPUT_PORT` - порт, на котором будет доступен фронтенд (обычно `8080`)
+  - `FRONTEND_OUTPUT_URL` - URL, на котором будет доступен фронтенд (обычно `http://${FRONTEND_OUTPUT_HOST}:${FRONTEND_OUTPUT_PORT}`)
 
 ## Проверка работоспособности
 Инструкции по проверке работоспособности проекта (основной функциональности и результатов).
