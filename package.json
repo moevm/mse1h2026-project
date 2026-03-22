@@ -19,7 +19,7 @@
     "format": "pnpm -r format",
     "format:check": "pnpm -r format:check",
     "build": "concurrently -n backend,frontend -c blue,magenta \"pnpm --filter @mse/backend db:generate && pnpm --filter @mse/backend build\" \"pnpm --filter @mse/frontend build\"",
-    "dev": "concurrently -n backend,frontend -c blue,magenta \"pnpm --filter @mse/backend start:dev\" \"pnpm --filter @mse/frontend dev\"",
+    "dev": "pnpm --filter=@mse/backend db:dev && concurrently -n backend,frontend -c blue,magenta \"pnpm --filter @mse/backend start:dev\" \"pnpm --filter @mse/frontend dev\"",
     "preview": "concurrently -n backend,frontend -c blue,magenta \"pnpm --filter @mse/backend start:prod\" \"pnpm --filter @mse/frontend preview\""
   },
   "engines": {
