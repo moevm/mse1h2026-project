@@ -1,6 +1,13 @@
 <script setup lang="ts">
 import { useUserStore } from '@/stores/userStore';
-import { NConfigProvider, NGlobalStyle, NNotificationProvider, dateRuRU, ruRU } from 'naive-ui';
+import {
+  type GlobalThemeOverrides,
+  NConfigProvider,
+  NGlobalStyle,
+  NNotificationProvider,
+  dateRuRU,
+  ruRU,
+} from 'naive-ui';
 import { onMounted } from 'vue';
 
 const userStore = useUserStore();
@@ -8,11 +15,23 @@ const userStore = useUserStore();
 onMounted(() => {
   userStore.loadRole();
 });
+
+/**
+ * Переопределение цветовой схемы для Naive UI.
+ */
+const themeOverrides: GlobalThemeOverrides = {
+  common: {
+    primaryColor: '#023370',
+    primaryColorHover: '#01428e',
+    primaryColorPressed: '#01428e',
+    primaryColorSuppl: '#01428e',
+  },
+};
 </script>
 
 <template>
   <!-- Все Naive UI компоненты внутри будут на русском -->
-  <n-config-provider :locale="ruRU" :date-locale="dateRuRU">
+  <n-config-provider :locale="ruRU" :date-locale="dateRuRU" :theme-overrides="themeOverrides">
     <!-- Провайдер уведомлений -->
     <n-notification-provider>
       <router-view />

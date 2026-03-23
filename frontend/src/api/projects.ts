@@ -1,4 +1,5 @@
-import type { Project } from '../types';
+import type { Project } from '@/types';
+
 import { apiClient } from './client';
 
 export const projectsApi = {

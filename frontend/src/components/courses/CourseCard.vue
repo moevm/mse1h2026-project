@@ -28,9 +28,8 @@
 
 <script setup lang="ts">
 import { useUserStore } from '@/stores/userStore';
+import type { Course } from '@/types/index';
 import { NButton } from 'naive-ui';
-
-import type { Course } from '../../types/index';
 
 const userStore = useUserStore();
 
