@@ -1,7 +1,6 @@
 model Course {
   id                   String    @id @default(uuid())
   name                 String    @db.VarChar(255)
-  semester             Int
   maxTeamSize          Int       @map("max_team_size")
   minTeamSize          Int       @map("min_team_size")
   isActive             Boolean   @default(true) @map("is_active")
