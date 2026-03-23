@@ -44,7 +44,6 @@
     "@types/node": "^25.3.0",
     "@types/passport-local": "^1.0.38",
     "dotenv": "^17.3.1",
-    "prisma": "^7.4.1",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   }
