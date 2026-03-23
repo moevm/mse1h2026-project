@@ -7,4 +7,5 @@ node_modules
 .vscode
 *.md
 **/generated/prisma/**
+**/generated/**
 tsconfig*.json

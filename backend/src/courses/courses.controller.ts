@@ -1,7 +1,10 @@
-import type { Course } from '@/common/interfaces/course.interface';
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
+import { Roles } from '@/common/decorators/roles.decorator';
+import { RolesGuard } from '@/common/guards/roles.guard';
+import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
 
 import { CoursesService } from './courses.service';
+import { CreateCourseDto } from './dto/create-course.dto';
+import { UpdateCourseDto } from './dto/update-course.dto';
 
 @Controller('api/courses')
 export class CoursesController {
@@ -13,24 +16,28 @@ export class CoursesController {
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
+  findOne(@Param('id') id: string) {
     return this.coursesService.getCourseById(id);
   }
 
+  @UseGuards(RolesGuard)
+  @Roles(['admin'])
   @Post()
-  async create(@Body() courseData: Course) {
+  async create(@Body() courseData: CreateCourseDto) {
     return this.coursesService.createCourse(courseData);
   }
 
+  @UseGuards(RolesGuard)
+  @Roles(['admin'])
   @Put(':id')
-  update(@Param('id', ParseIntPipe) id: number, @Body() data: Course) {
+  update(@Param('id') id: string, @Body() data: UpdateCourseDto) {
     return this.coursesService.updateCourse(id, data);
   }
 
+  @UseGuards(RolesGuard)
+  @Roles(['admin'])
   @Delete(':id')
-  delete(@Param('id', ParseIntPipe) id: number) {
+  delete(@Param('id') id: string) {
     return this.coursesService.deleteCourse(id);
   }
-
-  // @Get(':id/distribution')
 }
