@@ -1,3 +1,5 @@
+name: mse1h2026-project-dev
+
 services:
   db:
     image: mysql:lts
@@ -7,7 +9,7 @@ services:
       timeout: 5s
       retries: 5
     volumes: [db_dev_data:/var/lib/mysql]
-    ports: ["3306:3306"]
+    ports: ["${MYSQL_OUTPUT_URL}:3306"]
     restart: unless-stopped
     env_file: .env
 
@@ -15,10 +17,18 @@ services:
     build:
       context: .
       dockerfile: backend/Dockerfile.dev
+    environment:
+      DATABASE_URL: mysql://root:${MYSQL_ROOT_PASSWORD}@db:3306/${MYSQL_DATABASE}
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:3000/health || exit 1"]
+      start_period: 45s
+      interval: 10s
+      timeout: 5s
+      retries: 10
     volumes:
       - ./backend/src:/app/backend/src
       - ./backend/prisma:/app/backend/prisma
-    ports: ["3000:3000"]
+    ports: ["${BACKEND_OUTPUT_URL}:3000"]
     depends_on:
       db:
         condition: service_healthy
@@ -34,9 +44,10 @@ services:
     volumes:
       - ./frontend/src:/app/frontend/src
       - ./frontend/public:/app/frontend/public
-    ports: ["5173:5173"]
+    ports: ["${FRONTEND_OUTPUT_URL}:5173"]
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     restart: unless-stopped
     env_file: .env
 

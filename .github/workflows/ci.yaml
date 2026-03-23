@@ -50,3 +50,19 @@ jobs:
 
       - name: 'Build Project'
         run: pnpm run build
+
+  docker:
+    needs: [build]
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Enable BuildKit
+        run: |
+          echo "DOCKER_BUILDKIT=1" >> $GITHUB_ENV
+          echo "COMPOSE_DOCKER_CLI_BUILD=1" >> $GITHUB_ENV
+
+      - name: Build Docker images
+        run: docker compose build

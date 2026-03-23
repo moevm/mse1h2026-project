@@ -5,6 +5,9 @@ FROM node:lts-alpine
 # Переменные окружения для pnpm
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
+ENV PNPM_DISABLE_SELF_UPDATE_CHECK=true
+ENV PNPM_STORE_PATH=/pnpm/store
+ENV CI=true
 
 WORKDIR /app
 
@@ -14,11 +17,16 @@ RUN corepack enable
 # Копируем конфигурацию workspace и lockfile
 COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
 
+# Предварительно загружаем все зависимости в кэш
+RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
+    pnpm fetch
+
 # Копируем package.json frontend
 COPY frontend/package.json ./frontend/
 
 # Устанавливаем зависимости (включая devDependencies для Vite)
-RUN pnpm install --frozen-lockfile --filter @mse/frontend
+RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
+    pnpm install --offline --frozen-lockfile --filter @mse/frontend
 
 # Копируем исходный код frontend
 COPY frontend ./frontend
