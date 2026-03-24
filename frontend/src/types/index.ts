@@ -36,7 +36,7 @@ export interface Project {
 export interface User {
   uid: number;
   firstName: string;
-  secondName: string;
+  lastName: string;
   group?: number;
   role: 'student' | 'admin';
   email: string;
