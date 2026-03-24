@@ -297,7 +297,7 @@ const handleSubmit = async () => {
     const courseData: Course = {
       uid: props.mode === 'edit' && props.initialData?.uid ? props.initialData.uid : 0,
       name: formData.value.name,
-      adminId: formData.value.teacherId ? parseInt(formData.value.teacherId) : 0,
+      // teacherId: formData.value.teacherId ? parseInt(formData.value.teacherId) : 0,
       minTeamSize: formData.value.minTeamSize,
       maxTeamSize: formData.value.maxTeamSize,
       isActive: formData.value.isActive,
