@@ -19,6 +19,8 @@ async function bootstrap() {
       'http://127.0.0.1:5173',
       // Docker frontend url
       'http://127.0.0.1:8080',
+      // Localhost frontend url
+      'http://localhost:8080',
       // Docker nginx url
       'http://172.20.0.1:80',
       // Vite dev server

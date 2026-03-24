@@ -120,10 +120,9 @@
 - Введите в `.env` значения
 
   ```env
-  MYSQL_ROOT_PASSWORD=<your_root_password>
   MYSQL_DATABASE=<your_database_name>
   MYSQL_USER=root
-  MYSQL_PASSWORD=${MYSQL_ROOT_PASSWORD}
+  MYSQL_PASSWORD=<your_root_password>
   MYSQL_HOST=localhost
   MYSQL_PORT=3306
 
@@ -148,8 +147,6 @@
 
 ### Запуск с помощью **Docker**
 
-#### Production
-
 - Введите в `.env` значения для инициализации и запуска `MySQL` контейнера:
 
   ```env
@@ -160,9 +157,11 @@
   MYSQL_HOST=db
   MYSQL_PORT=3306
 
-  BACKEND_OUTPUT_HOST=backend
+  BACKEND_OUTPUT_HOST=127.0.0.1
   BACKEND_OUTPUT_PORT=3000
   ```
+
+#### Production
 
 - Запустите docker compose:
 
@@ -174,20 +173,6 @@
 
 - Запустите docker compose для разработки:
 
-- Введите в `.env` значения для инициализации и запуска `MySQL` контейнера:
-
-  ```env
-  MYSQL_ROOT_PASSWORD=<your_root_password>
-  MYSQL_DATABASE=<your_database_name>
-  MYSQL_USER=root
-  MYSQL_PASSWORD=${MYSQL_ROOT_PASSWORD}
-  MYSQL_HOST=db
-  MYSQL_PORT=3306
-
-  BACKEND_OUTPUT_HOST=backend
-  BACKEND_OUTPUT_PORT=3000
-  ```
- 
   ```bash
   docker compose -f docker-compose.dev.yaml up --build
   ```
@@ -198,7 +183,7 @@
 
   - `MYSQL_ROOT_PASSWORD` - пароль для пользователя `root` в MySQL.
   - `MYSQL_DATABASE` - имя базы данных, которая будет создана при запуске контейнера.
-  - `MYSQL_USER` - имя пользователя для доступа к базе данных (обычно `root` для локальной разработки, и не `root` для production).
+  - `MYSQL_USER` - имя пользователя для доступа к базе данных (обычно `root` для локальной разработки, и не `root` для docker).
   - `MYSQL_PASSWORD` - пароль для пользователя, указанного в `MYSQL_USER`.
   - `MYSQL_HOST` - хост, на котором работает MySQL (обычно `db` для Docker, `localhost` для локальной разработки)
   - `MYSQL_PORT` - порт, на котором работает MySQL (обычно `3306`)
@@ -211,7 +196,7 @@
 - backend:
 
   - `DATABASE_URL` - URL для подключения к базе данных MySQL (в частности для ORM Prisma)
-  - `BACKEND_OUTPUT_HOST` - хост, на котором будет доступен бэкенд (обычно `127.0.0.1` для docker, `localhost` для локальной разработки)
+  - `BACKEND_OUTPUT_HOST` - хост, на котором будет доступен бэкенд (обычно `127.0.0.1`)
   - `BACKEND_OUTPUT_PORT` - порт, на котором будет доступен бэкенд (обычно `3000`)
   - `BACKEND_OUTPUT_URL` - URL, на котором будет доступен бэкенд (обычно `${BACKEND_OUTPUT_HOST}:${BACKEND_OUTPUT_PORT}`)
 
