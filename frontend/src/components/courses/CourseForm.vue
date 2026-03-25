@@ -295,7 +295,7 @@ const handleSubmit = async () => {
 
     // Преобразуем teacherId в число для Course
     const courseData: Course = {
-      id: props.mode === 'edit' && props.initialData?.id ? props.initialData.id : "",
+      id: props.mode === 'edit' && props.initialData?.id ? props.initialData.id : '',
       name: formData.value.name,
       // teacherId: formData.value.teacherId ? parseInt(formData.value.teacherId) : 0,
       minTeamSize: formData.value.minTeamSize,
