@@ -5,11 +5,11 @@ import { apiClient } from './client';
 export const coursesApi = {
   getAll: () => apiClient.get<Course[]>('/courses'),
 
-  getById: (uid: number) => apiClient.get<Course>(`/courses/${uid}`),
+  getById: (id: string) => apiClient.get<Course>(`/courses/${id}`),
 
   create: (data: Partial<Course>) => apiClient.post<Course>('/courses', data),
 
-  update: (uid: number, data: Course) => apiClient.put<Course>(`/courses/${uid}`, data),
+  update: (id: string, data: Course) => apiClient.put<Course>(`/courses/${id}`, data),
 
-  delete: (uid: number) => apiClient.delete<Course>(`/courses/${uid}`),
+  delete: (id: string) => apiClient.delete<Course>(`/courses/${id}`),
 };

@@ -3,9 +3,6 @@
  * @author @KorzikAlex @katerina2121
  * @description Конфигурация маршрутизации для фронтенда
  */
-import DefaultLayout from '@/layout/DefaultLayout.vue';
-import CourseDetailPage from '@/pages/CourseDetailPage.vue';
-import CoursesListPage from '@/pages/CoursesListPage.vue';
 import { useUserStore } from '@/stores/userStore';
 import { type RouterOptions, createRouter, createWebHistory } from 'vue-router';
 
@@ -13,13 +10,13 @@ import { type RouterOptions, createRouter, createWebHistory } from 'vue-router';
 const routes: RouterOptions['routes'] = [
   {
     path: '/',
-    component: DefaultLayout,
+    component: () => import('@/layout/DefaultLayout.vue'),
     children: [
       {
         path: 'courses',
         alias: '',
         name: 'courses',
-        component: CoursesListPage,
+        component: () => import('@/pages/CoursesListPage.vue'),
       },
       {
         path: 'courses/create',
@@ -29,7 +26,7 @@ const routes: RouterOptions['routes'] = [
       },
       {
         path: 'courses/:id',
-        component: CourseDetailPage,
+        component: () => import('@/pages/CourseDetailPage.vue'),
         name: 'course-detail',
       },
       {

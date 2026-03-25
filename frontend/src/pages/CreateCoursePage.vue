@@ -13,6 +13,7 @@
 <script setup lang="ts">
 import { coursesApi } from '@/api';
 import CourseForm from '@/components/courses/CourseForm.vue';
+import courses from '@/pages/CoursesListPage.vue';
 import type { Course } from '@/types';
 import { NPageHeader, useNotification } from 'naive-ui';
 import { useRouter } from 'vue-router';
@@ -35,6 +36,7 @@ const handleCreate = async (formData: Course): Promise<void> => {
     });
 
     // Переход на страницу со списком курсов
+    courses.value = await coursesApi.getAll();
     router.push('/courses');
   } catch (error) {
     console.error('Ошибка создания курса:', error);
