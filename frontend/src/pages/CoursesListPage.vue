@@ -60,8 +60,8 @@ const fetchCourses = async () => {
 
 // Обработчики событий от списка
 const handleCourseClick = (course: Course) => {
-  console.log('Переход на курс:', course.uid);
-  router.push(`/courses/${course.uid}`);
+  console.log('Переход на курс:', course.id);
+  router.push(`/courses/${course.id}`);
 };
 
 const handleCourseDelete = (course: Course) => {
@@ -94,8 +94,8 @@ const closeDialog = () => {
 };
 
 // Обновление курса в локальном состоянии
-const updateCourseInList = (courseUid: number, isActive: boolean) => {
-  const course = courses.value.find((c) => c.uid === courseUid);
+const updateCourseInList = (courseId: string, isActive: boolean) => {
+  const course = courses.value.find((c) => c.id === courseId);
   if (course) {
     course.isActive = isActive;
   }
@@ -112,9 +112,9 @@ const handleConfirm = async () => {
       ...courseToAction.value,
       isActive: newActiveState,
     };
-    await coursesApi.update(courseToAction.value.uid, updatedData);
+    await coursesApi.update(courseToAction.value.id, updatedData);
 
-    updateCourseInList(courseToAction.value.uid, newActiveState);
+    updateCourseInList(courseToAction.value.id, newActiveState);
 
     // Уведомление об успехе
     notification.success({

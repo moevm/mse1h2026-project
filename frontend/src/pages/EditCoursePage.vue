@@ -55,9 +55,9 @@ const loading = ref(true);
 
 // Загрузка данных курса
 const loadCourse = async () => {
-  const courseId = Number(route.params.id);
+  const courseId = String(route.params.id);
 
-  if (isNaN(courseId)) {
+  if (!courseId || courseId === 'undefined' || courseId === 'null') {
     router.push('/404');
     return;
   }
@@ -84,7 +84,7 @@ const handleEdit = async (formData: Course): Promise<void> => {
 
   try {
     // Вызов API для редактирования курса
-    const editedCourse = await coursesApi.update(course.value.uid, formData);
+    const editedCourse = await coursesApi.update(course.value.id, formData);
 
     console.log('Курс успешно обновлен:', editedCourse);
 
@@ -96,7 +96,7 @@ const handleEdit = async (formData: Course): Promise<void> => {
     });
 
     // Переход на страницу курса
-    router.push(`/courses/${course.value.uid}`);
+    router.push(`/courses/${course.value.id}`);
   } catch (error) {
     console.error('Ошибка редактирования курса:', error);
 
@@ -111,7 +111,7 @@ const handleEdit = async (formData: Course): Promise<void> => {
 
 const goBack = (): void => {
   if (course.value) {
-    router.push(`/courses/${course.value.uid}`);
+    router.push(`/courses/${course.value.id}`);
   } else {
     router.push('/courses');
   }
