@@ -17,8 +17,6 @@ services:
     build:
       context: .
       dockerfile: backend/Dockerfile.dev
-    environment:
-      DATABASE_URL: mysql://root:${MYSQL_ROOT_PASSWORD}@db:3306/${MYSQL_DATABASE}
     healthcheck:
       test: ["CMD-SHELL", "curl -fsS http://localhost:3000/health || exit 1"]
       start_period: 45s
