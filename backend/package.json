@@ -50,7 +50,6 @@
     "@types/passport-local": "^1.0.38",
     "dotenv": "^17.3.1",
     "jest": "^30.3.0",
-    "prisma": "^7.4.1",
     "ts-jest": "^29.4.6",
     "typescript": "^5.9.3"
   }
