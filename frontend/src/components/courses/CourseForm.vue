@@ -18,7 +18,7 @@
         />
       </n-form-item>
 
-      <n-form-item label="Преподаватель" path="teacherId" required>
+      <n-form-item label="Преподаватель" path="teacherId">
         <n-select
           v-model:value="formData.teacherId"
           :options="teacherOptions"
@@ -161,7 +161,7 @@ const rules: FormRules = {
     trigger: ['blur', 'input'],
   },
   teacherId: {
-    required: true,
+    required: false,
     type: 'string',
     message: 'Выберите преподавателя',
     trigger: ['blur', 'change'],
@@ -217,7 +217,7 @@ const loadTeachers = async () => {
     // Преобразуем в формат для n-select
     teacherOptions.value = teachers.value.map((teacher) => ({
       label: `${teacher.firstName} ${teacher.secondName}`,
-      value: teacher.uid.toString(),
+      value: teacher.id,
     }));
   } catch (error) {
     console.error('Ошибка загрузки преподавателей:', error);
@@ -237,7 +237,7 @@ const handleTeacherSearch = (query: string) => {
     // Если поиск пустой, показываем всех
     teacherOptions.value = teachers.value.map((teacher) => ({
       label: `${teacher.firstName} ${teacher.secondName}`,
-      value: teacher.uid.toString(),
+      value: teacher.id,
     }));
     return;
   }
@@ -259,7 +259,7 @@ const handleTeacherSearch = (query: string) => {
     })
     .map((teacher) => ({
       label: `${teacher.firstName} ${teacher.secondName}`,
-      value: teacher.uid.toString(),
+      value: teacher.id,
     }));
 };
 
@@ -268,7 +268,7 @@ const isFormValid = computed(() => {
   const checks = [];
 
   if (!props.disabledFields?.includes('name')) checks.push(formData.value.name);
-  if (!props.disabledFields?.includes('teacher')) checks.push(formData.value.teacherId);
+  // if (!props.disabledFields?.includes('teacher')) checks.push(formData.value.teacherId);
   if (!props.disabledFields?.includes('teamSize')) {
     checks.push(formData.value.minTeamSize);
     checks.push(formData.value.maxTeamSize);
@@ -295,7 +295,7 @@ const handleSubmit = async () => {
 
     // Преобразуем teacherId в число для Course
     const courseData: Course = {
-      uid: props.mode === 'edit' && props.initialData?.uid ? props.initialData.uid : 0,
+      id: props.mode === 'edit' && props.initialData?.id ? props.initialData.id : "",
       name: formData.value.name,
       // teacherId: formData.value.teacherId ? parseInt(formData.value.teacherId) : 0,
       minTeamSize: formData.value.minTeamSize,
