@@ -34,12 +34,11 @@ async function main() {
   console.log(`Admin created: ${admin.email}`);
 
   const course1 = await prisma.course.upsert({
-    where: { id: 'seed-course-1' },
+    where: { id: '00000000-0000-0000-0000-000000000001' },
     update: {},
     create: {
-      id: 'seed-course-1',
+      id: '00000000-0000-0000-0000-000000000001',
       name: 'Основы и Управление Промышленной Разработкой ПО',
-      semester: 5,
       maxTeamSize: 5,
       minTeamSize: 3,
       isActive: true,
@@ -48,12 +47,11 @@ async function main() {
   });
 
   const course2 = await prisma.course.upsert({
-    where: { id: 'seed-course-2' },
+    where: { id: '00000000-0000-0000-0000-000000000002' },
     update: {},
     create: {
-      id: 'seed-course-2',
+      id: '00000000-0000-0000-0000-000000000002',
       name: 'Введение в нереляционные базы данных',
-      semester: 2,
       maxTeamSize: 3,
       minTeamSize: 2,
       isActive: true,
@@ -64,10 +62,10 @@ async function main() {
   console.log(`Courses created: ${course1.name}, ${course2.name}`);
 
   await prisma.project.upsert({
-    where: { id: 'seed-project-1' },
+    where: { id: '00000000-0000-0000-0000-000000000011' },
     update: {},
     create: {
-      id: 'seed-project-1',
+      id: '00000000-0000-0000-0000-000000000011',
       title: 'Помощник преподавателя на лаба',
       description: 'Задача - создать инструмент, который получает на вход pull-request\'ы с кодом на Си/Питоне, а на выходе генерирует отчёт, в котором указаны проблемы в данном коде (использование плохих шаблонов/практик, неопределенное поведение, рандомные константы в коде и тд)\'',
       courseId: course1.id,
@@ -76,10 +74,10 @@ async function main() {
   });
 
   await prisma.project.upsert({
-    where: { id: 'seed-project-2' },
+    where: { id: '00000000-0000-0000-0000-000000000012' },
     update: {},
     create: {
-      id: 'seed-project-2',
+      id: '00000000-0000-0000-0000-000000000012',
       title: 'Новые периферийные устройства в RIPES',
       description: 'Задача - добавить новые устройства в Ripes https://github.com/mortbopet/Ripes/tree/master/src/io',
       courseId: course1.id,
@@ -88,10 +86,10 @@ async function main() {
   });
 
   await prisma.project.upsert({
-    where: { id: 'seed-project-3' },
+    where: { id: '00000000-0000-0000-0000-000000000021' },
     update: {},
     create: {
-      id: 'seed-project-3',
+      id: '00000000-0000-0000-0000-000000000021',
       title: 'БД актеров',
       description: 'Задача - создать каталог профилей актеров со всевозможной дополнительной информацией + поиск + редактирование.',
       courseId: course2.id,
