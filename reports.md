@@ -15,7 +15,11 @@
 - [Задачи на следующую итерацию](iterations/iteration-1/next_tasks.md)
 
 ### Итерация 2 (даты: 25.02 – 25.03)
-- 
+- [Презентация](iterations/iteration-2/presentation.pdf)
+- [Запланированные задачи](iterations/iteration-2/tasks_planned.md)
+- [Выполненные задачи](iterations/iteration-2/tasks_completed.md)
+- [Задачи на следующую итерацию](iterations/iteration-2/next_tasks.md)
+- [Демонстрация программы](iterations/iteration-2/demo.mp4)
 
 ### Итерация 3 (даты: 25.03 – 05.05)
 - 
