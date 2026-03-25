@@ -58,10 +58,16 @@
           v-model:value="formData.registrationDeadline"
           type="datetime"
           placeholder="Выберите дату и время"
+          :is-date-disabled="isDateDisabled"
+          :is-time-disabled="isTimeDisabled"
           :disabled="disabledFields?.includes('deadline')"
           clearable
           style="width: 100%"
-          value-format="timestamp"
+          :actions="['clear', 'confirm']"
+          format="dd.MM.yyyy HH:mm:ss"
+          date-format="dd.MM.yyyy"
+          month-format="MMM"
+          time-format="HH:mm:ss"
         />
       </n-form-item>
 
@@ -100,6 +106,7 @@
 <script setup lang="ts">
 import { usersApi } from '@/api';
 import type { Course, User } from '@/types';
+import { useNow } from '@vueuse/core';
 import {
   NButton,
   NCard,
@@ -116,6 +123,39 @@ import {
 } from 'naive-ui';
 import type { FormInst, FormRules, SelectOption } from 'naive-ui';
 import { computed, onMounted, ref, watch } from 'vue';
+
+function isDateDisabled(ts: number) {
+  const today = new Date();
+  // Сбросить время для сравнения только по дате
+  today.setHours(0, 0, 0, 0);
+  return new Date(ts) < today;
+}
+
+function isTimeDisabled(current: number) {
+  const selectedDate = new Date(current);
+  const now = useNow().value;
+
+  const isSameDay =
+    selectedDate.getFullYear() === now.getFullYear() &&
+    selectedDate.getMonth() === now.getMonth() &&
+    selectedDate.getDate() === now.getDate();
+
+  if (!isSameDay) {
+    return {
+      isHourDisabled: () => false,
+      isMinuteDisabled: () => false,
+      isSecondDisabled: () => false,
+    };
+  }
+
+  return {
+    isHourDisabled: (hour: number) => hour < now.getHours(),
+    isMinuteDisabled: (minute: number, hour: number | null) =>
+      hour === now.getHours() && minute < now.getMinutes(),
+    isSecondDisabled: (second: number, minute: number | null, hour: number | null) =>
+      hour === now.getHours() && minute === now.getMinutes() && second < now.getSeconds(),
+  };
+}
 
 const props = withDefaults(
   defineProps<{
@@ -199,12 +239,25 @@ const rules: FormRules = {
       trigger: ['blur', 'change'],
     },
   ],
-  registrationDeadline: {
-    required: true,
-    type: 'number',
-    message: 'Выберите дату и время дедлайна',
-    trigger: ['blur', 'change'],
-  },
+  registrationDeadline: [
+    {
+      required: true,
+      type: 'number',
+      message: 'Выберите дату и время дедлайна',
+      trigger: ['blur', 'change'],
+    },
+    {
+      validator: (_, value) => {
+        if (typeof value !== 'number') {
+          return false;
+        }
+
+        return value >= Date.now();
+      },
+      message: 'Дедлайн не может быть в прошлом',
+      trigger: ['blur', 'change'],
+    },
+  ],
 };
 
 // Загрузка преподавателей (админов)
@@ -216,7 +269,7 @@ const loadTeachers = async () => {
 
     // Преобразуем в формат для n-select
     teacherOptions.value = teachers.value.map((teacher) => ({
-      label: `${teacher.firstName} ${teacher.secondName}`,
+      label: `${teacher.firstName} ${teacher.lastName}`,
       value: teacher.uid.toString(),
     }));
   } catch (error) {
@@ -236,7 +289,7 @@ const handleTeacherSearch = (query: string) => {
   if (!query) {
     // Если поиск пустой, показываем всех
     teacherOptions.value = teachers.value.map((teacher) => ({
-      label: `${teacher.firstName} ${teacher.secondName}`,
+      label: `${teacher.firstName} ${teacher.lastName}`,
       value: teacher.uid.toString(),
     }));
     return;
@@ -246,9 +299,9 @@ const handleTeacherSearch = (query: string) => {
   const searchQuery = query.toLowerCase();
   teacherOptions.value = teachers.value
     .filter((teacher) => {
-      const fullName = `${teacher.firstName} ${teacher.secondName}`.toLowerCase();
+      const fullName = `${teacher.firstName} ${teacher.lastName}`.toLowerCase();
       const firstName = teacher.firstName.toLowerCase();
-      const secondName = teacher.secondName.toLowerCase();
+      const secondName = teacher.lastName.toLowerCase();
 
       // Ищем по полному имени, имени или фамилии
       return (
@@ -258,7 +311,7 @@ const handleTeacherSearch = (query: string) => {
       );
     })
     .map((teacher) => ({
-      label: `${teacher.firstName} ${teacher.secondName}`,
+      label: `${teacher.firstName} ${teacher.lastName}`,
       value: teacher.uid.toString(),
     }));
 };
@@ -281,7 +334,12 @@ const isFormValid = computed(() => {
       formData.value.minTeamSize &&
       formData.value.maxTeamSize >= formData.value.minTeamSize);
 
-  return checks.every(Boolean) && teamSizeValid;
+  const deadlineValid =
+    props.disabledFields?.includes('deadline') ||
+    (typeof formData.value.registrationDeadline === 'number' &&
+      formData.value.registrationDeadline >= Date.now());
+
+  return checks.every(Boolean) && teamSizeValid && deadlineValid;
 });
 
 const submitButtonText = computed(() => {
