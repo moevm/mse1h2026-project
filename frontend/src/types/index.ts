@@ -4,7 +4,7 @@ export interface Course {
   maxTeamSize: number;
   minTeamSize: number;
   isActive: boolean;
-  adminId: number;
+  adminId?: number;
   description?: string;
   registrationDeadline?: Date;
   createdAt?: Date;
