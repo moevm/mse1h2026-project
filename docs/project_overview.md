@@ -10,7 +10,7 @@
    - Каждый курс – отдельная сущность (например, “ОПРПО 2026”).
    - Преподаватель может создавать, редактировать и удалять курсы.
 2. **Авторизация и роли**
-   - Студенты, преподаватели и администраторы входят через систему авторизации (JWT).
+   - Студенты и администраторы входят через систему авторизации (JWT).
    - Роли определяют доступный функционал.
 3. **Импорт данных**
    - Импорт списка студентов из CSV.
@@ -39,46 +39,123 @@
 6. **Команда инициирует обмен** – отправляет запрос другой команде, преподаватель подтверждает.
 7. **Просмотр дашборда** – графики и таблицы с распределением.
 
-## Запуск без **Docker**
+## Установка и запуск
 
-1. Клонируйте репозиторий:
-   ```bash
-   git clone https://github.com/moevm/mse1h2026-project
-   ```
-2. Перейдите в директорию проекта:
-    ```bash
-    cd mse1h2026-project
-    ```
-3. Установите зависимости:
-    ```bash
-    pnpm i
-    ```
-4. Запустите проект
-   1. Dev:
-        ```bash
-        pnpm dev
-        ```
-    2. Production:
-        ```bash
-        pnpm build
-        pnpm preview
-        ```
-    3. Для запуска по отдельности фронтенда и бэкенда, используйте команды:
+### Подготовка к запуску
 
-        `b` - бэкенд, `f` - фронтенд
-        
-        Dev:
-        ```bash
-        pnpm b dev
-        pnpm f dev
-        ```
+- Клонируйте репозиторий:
 
-        Production:
-        ```bash
-        pnpm b build
-        pnpm b start
-        pnpm f build
-        pnpm f preview
-        ```
+  ```bash
+  git clone https://github.com/moevm/mse1h2026-project
+  ```
+
+- Перейдите в директорию проекта:
+  
+  ```bash
+  cd mse1h2026-project
+  ```
+
+- Скопируйте файл `.env.example` в `.env` и отредактируйте переменные окружения. 
+Переменные, находящиеся под `# [service] dev-env` используются для dev разработки с Docker.
+
+  ```bash
+  cp .env.example .env
+  ```
+
+### Запуск без **Docker**
+
+- Установите зависимости:
+
+  ```bash
+  pnpm i
+  ```
+
+- Введите в `.env` значения
+
+  ```env
+  MYSQL_DATABASE=<your_database_name>
+  MYSQL_USER=root
+  MYSQL_PASSWORD=<your_root_password>
+  MYSQL_HOST=localhost
+  MYSQL_PORT=3306
+
+  BACKEND_OUTPUT_HOST=localhost
+  BACKEND_OUTPUT_PORT=3000
+  ```
+
+- Запустите проект:
+
+#### Production
+
+  ```bash
+  pnpm build
+  pnpm preview
+  ```
+
+#### Development
+
+  ```bash
+  pnpm dev
+  ```
+
+### Запуск с помощью **Docker**
+
+- Введите в `.env` значения для инициализации и запуска `MySQL` контейнера:
+
+  ```env
+  MYSQL_ROOT_PASSWORD=<your_root_password>
+  MYSQL_DATABASE=<your_database_name>
+  MYSQL_USER=<your_mysql_user>
+  MYSQL_PASSWORD=<your_mysql_user_password>
+  MYSQL_HOST=db
+  MYSQL_PORT=3306
+
+  BACKEND_OUTPUT_HOST=127.0.0.1
+  BACKEND_OUTPUT_PORT=3000
+  ```
+
+#### Production
+
+- Запустите docker compose:
+
+  ```bash
+  docker compose up --build
+  ```
+
+#### Development
+
+- Запустите docker compose для разработки:
+
+  ```bash
+  docker compose -f docker-compose.dev.yaml up --build
+  ```
+
+### Переменные окружения
+
+- db:
+
+  - `MYSQL_ROOT_PASSWORD` - пароль для пользователя `root` в MySQL.
+  - `MYSQL_DATABASE` - имя базы данных, которая будет создана при запуске контейнера.
+  - `MYSQL_USER` - имя пользователя для доступа к базе данных (обычно `root` для локальной разработки, и не `root` для docker).
+  - `MYSQL_PASSWORD` - пароль для пользователя, указанного в `MYSQL_USER`.
+  - `MYSQL_HOST` - хост, на котором работает MySQL (обычно `db` для Docker, `localhost` для локальной разработки)
+  - `MYSQL_PORT` - порт, на котором работает MySQL (обычно `3306`)
     
-    На данный момент фронтенд доступен по адресу `http://localhost:5173`, а бэкенд - `http://localhost:3000`.
+    dev-env:
+    - `MYSQL_OUTPUT_HOST` - хост, на котором будет доступна база данных MySQL (обычно `127.0.0.1` для локальной разработки)
+    - `MYSQL_OUTPUT_PORT` - порт, на котором будет доступна база данных MySQL (обычно `3306`)
+    - `MYSQL_OUTPUT_URL` - URL, на котором будет доступна база данных MySQL (обычно `{MYSQL_OUTPUT_HOST}:${MYSQL_OUTPUT_PORT}`)
+
+- backend:
+
+  - `DATABASE_URL` - URL для подключения к базе данных MySQL (в частности для ORM Prisma)
+  - `BACKEND_OUTPUT_HOST` - хост, на котором будет доступен бэкенд (обычно `127.0.0.1`)
+  - `BACKEND_OUTPUT_PORT` - порт, на котором будет доступен бэкенд (обычно `3000`)
+  - `BACKEND_OUTPUT_URL` - URL, на котором будет доступен бэкенд (обычно `${BACKEND_OUTPUT_HOST}:${BACKEND_OUTPUT_PORT}`)
+
+- frontend:
+
+  - `VITE_API_BASE_URL` - базовый URL для API запросов к бэкенду (обычно `http://${BACKEND_OUTPUT_URL}/api`)
+  - `FRONTEND_OUTPUT_HOST` - хост, на котором будет доступен фронтенд (обычно `127.0.0.1`)
+  - `FRONTEND_OUTPUT_PORT` - порт, на котором будет доступен фронтенд (обычно `8080`)
+  - `FRONTEND_OUTPUT_URL` - URL, на котором будет доступен фронтенд (обычно `http://${FRONTEND_OUTPUT_HOST}:${FRONTEND_OUTPUT_PORT}`)
