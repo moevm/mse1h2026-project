@@ -126,9 +126,9 @@ const formatDate = (date: Date): string => {
 
 // Загрузка данных курса
 const loadCourse = async () => {
-  const courseId = Number(route.params.id);
+  const courseId = String(route.params.id);
 
-  if (isNaN(courseId)) {
+  if (!courseId || courseId === 'undefined' || courseId === 'null') {
     router.push('/404');
     return;
   }
@@ -153,7 +153,7 @@ const loadCourse = async () => {
 
 const handleEditCourse = () => {
   if (!course.value) return;
-  router.push(`/courses/${course.value.uid}/edit`);
+  router.push(`/courses/${course.value.id}/edit`);
 };
 
 const handleDeleteCourse = () => {
@@ -168,7 +168,7 @@ const closeDialog = () => {
 const handleConfirmDelete = async () => {
   if (!course.value) return;
   try {
-    await coursesApi.delete(course.value.uid);
+    await coursesApi.delete(course.value.id);
 
     // Уведомление об успехе
     notification.success({

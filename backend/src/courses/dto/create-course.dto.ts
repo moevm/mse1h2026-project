@@ -32,6 +32,7 @@ export class CreateCourseDto {
   @Type(() => Date)
   registrationDeadline?: Date;
 
+  @IsOptional()
   @IsUUID()
   teacherId: string;
 }

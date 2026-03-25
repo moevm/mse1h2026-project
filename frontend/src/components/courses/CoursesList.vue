@@ -28,7 +28,7 @@
     <div v-else class="courses-list">
       <CourseCard
         v-for="course in visibleCourses"
-        :key="course.uid"
+        :key="course.id"
         :course="course"
         @click="$emit('course-click', course)"
         @delete="$emit('course-delete', course)"

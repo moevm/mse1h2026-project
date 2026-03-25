@@ -18,7 +18,7 @@
         />
       </n-form-item>
 
-      <n-form-item label="Преподаватель" path="teacherId" required>
+      <n-form-item label="Преподаватель" path="teacherId">
         <n-select
           v-model:value="formData.teacherId"
           :options="teacherOptions"
@@ -201,7 +201,7 @@ const rules: FormRules = {
     trigger: ['blur', 'input'],
   },
   teacherId: {
-    required: true,
+    required: false,
     type: 'string',
     message: 'Выберите преподавателя',
     trigger: ['blur', 'change'],
@@ -270,7 +270,7 @@ const loadTeachers = async () => {
     // Преобразуем в формат для n-select
     teacherOptions.value = teachers.value.map((teacher) => ({
       label: `${teacher.firstName} ${teacher.lastName}`,
-      value: teacher.uid.toString(),
+      value: teacher.id,
     }));
   } catch (error) {
     console.error('Ошибка загрузки преподавателей:', error);
@@ -290,7 +290,7 @@ const handleTeacherSearch = (query: string) => {
     // Если поиск пустой, показываем всех
     teacherOptions.value = teachers.value.map((teacher) => ({
       label: `${teacher.firstName} ${teacher.lastName}`,
-      value: teacher.uid.toString(),
+      value: teacher.id,
     }));
     return;
   }
@@ -301,18 +301,18 @@ const handleTeacherSearch = (query: string) => {
     .filter((teacher) => {
       const fullName = `${teacher.firstName} ${teacher.lastName}`.toLowerCase();
       const firstName = teacher.firstName.toLowerCase();
-      const secondName = teacher.lastName.toLowerCase();
+      const lastName = teacher.lastName.toLowerCase();
 
       // Ищем по полному имени, имени или фамилии
       return (
         fullName.includes(searchQuery) ||
         firstName.includes(searchQuery) ||
-        secondName.includes(searchQuery)
+        lastName.includes(searchQuery)
       );
     })
     .map((teacher) => ({
       label: `${teacher.firstName} ${teacher.lastName}`,
-      value: teacher.uid.toString(),
+      value: teacher.id,
     }));
 };
 
@@ -321,7 +321,7 @@ const isFormValid = computed(() => {
   const checks = [];
 
   if (!props.disabledFields?.includes('name')) checks.push(formData.value.name);
-  if (!props.disabledFields?.includes('teacher')) checks.push(formData.value.teacherId);
+  // if (!props.disabledFields?.includes('teacher')) checks.push(formData.value.teacherId);
   if (!props.disabledFields?.includes('teamSize')) {
     checks.push(formData.value.minTeamSize);
     checks.push(formData.value.maxTeamSize);
@@ -353,9 +353,9 @@ const handleSubmit = async () => {
 
     // Преобразуем teacherId в число для Course
     const courseData: Course = {
-      uid: props.mode === 'edit' && props.initialData?.uid ? props.initialData.uid : 0,
+      id: props.mode === 'edit' && props.initialData?.id ? props.initialData.id : '',
       name: formData.value.name,
-      adminId: formData.value.teacherId ? parseInt(formData.value.teacherId) : 0,
+      // teacherId: formData.value.teacherId ? parseInt(formData.value.teacherId) : 0,
       minTeamSize: formData.value.minTeamSize,
       maxTeamSize: formData.value.maxTeamSize,
       isActive: formData.value.isActive,
