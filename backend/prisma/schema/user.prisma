@@ -6,6 +6,7 @@ model User {
   email       String   @db.VarChar(255)
   groupNumber Int      @map("group_number")
   role        UserRole
+  password    String?  @db.VarChar(255)
   createdAt   DateTime @default(now()) @map("created_at")
 
   taughtCourses       Course[]               @relation("CourseTeacher")
