@@ -28,7 +28,7 @@
         <n-descriptions-item label="Преподаватель">
           <div class="info-item">
             <span>{{
-              teacher ? `${teacher.firstName} ${teacher.secondName}` : 'Не назначен'
+              teacher ? `${teacher.firstName} ${teacher.lastName}` : 'Не назначен'
             }}</span>
           </div>
         </n-descriptions-item>

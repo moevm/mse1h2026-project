@@ -216,7 +216,7 @@ const loadTeachers = async () => {
 
     // Преобразуем в формат для n-select
     teacherOptions.value = teachers.value.map((teacher) => ({
-      label: `${teacher.firstName} ${teacher.secondName}`,
+      label: `${teacher.firstName} ${teacher.lastName}`,
       value: teacher.id,
     }));
   } catch (error) {
@@ -236,7 +236,7 @@ const handleTeacherSearch = (query: string) => {
   if (!query) {
     // Если поиск пустой, показываем всех
     teacherOptions.value = teachers.value.map((teacher) => ({
-      label: `${teacher.firstName} ${teacher.secondName}`,
+      label: `${teacher.firstName} ${teacher.lastName}`,
       value: teacher.id,
     }));
     return;
@@ -246,19 +246,19 @@ const handleTeacherSearch = (query: string) => {
   const searchQuery = query.toLowerCase();
   teacherOptions.value = teachers.value
     .filter((teacher) => {
-      const fullName = `${teacher.firstName} ${teacher.secondName}`.toLowerCase();
+      const fullName = `${teacher.firstName} ${teacher.lastName}`.toLowerCase();
       const firstName = teacher.firstName.toLowerCase();
-      const secondName = teacher.secondName.toLowerCase();
+      const lastName = teacher.lastName.toLowerCase();
 
       // Ищем по полному имени, имени или фамилии
       return (
         fullName.includes(searchQuery) ||
         firstName.includes(searchQuery) ||
-        secondName.includes(searchQuery)
+        lastName.includes(searchQuery)
       );
     })
     .map((teacher) => ({
-      label: `${teacher.firstName} ${teacher.secondName}`,
+      label: `${teacher.firstName} ${teacher.lastName}`,
       value: teacher.id,
     }));
 };
