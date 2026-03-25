@@ -28,5 +28,5 @@ export const usersApi = {
     return usersApi.getUsers({ role: 'user' });
   },
 
-  getById: (id: number) => apiClient.get<User>(`/users/${id}`),
+  getById: (id: string) => apiClient.get<User>(`/users/${id}`),
 };

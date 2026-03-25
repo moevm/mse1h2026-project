@@ -4,7 +4,7 @@ export interface Course {
   maxTeamSize: number;
   minTeamSize: number;
   isActive: boolean;
-  adminId?: number;
+  adminId?: string;
   description?: string;
   registrationDeadline?: Date;
   createdAt?: Date;
@@ -13,7 +13,7 @@ export interface Course {
 export interface FormData {
   name: string;
   semester: number;
-  teacherId: number;
+  teacherId: string;
   minTeamSize: number;
   maxTeamSize: number;
   registrationDeadline: number | null;
@@ -24,11 +24,11 @@ export interface Project {
   id: string;
   title: string;
   description?: string;
-  teacherId: number;
+  teacherId: string;
   teacherFirstName: string;
   teacherLastName: string;
   courseName: string;
-  courseId: number;
+  courseId: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -44,12 +44,12 @@ export interface User {
 }
 
 export interface Assignment {
-  studentId: number;
+  studentId: string;
   studentFirstName: string;
   studentLastName: string;
-  projectId: number;
+  projectId: string;
   projectName: string;
-  courseId: number;
+  courseId: string;
   courseName: string;
   assignedAt?: Date;
   createdAt?: Date;
