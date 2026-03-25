@@ -1,5 +1,5 @@
 export interface Course {
-  uid: number;
+  id: string;
   name: string;
   maxTeamSize: number;
   minTeamSize: number;
@@ -21,7 +21,7 @@ export interface FormData {
 }
 
 export interface Project {
-  uid: number;
+  id: string;
   title: string;
   description?: string;
   teacherId: number;
@@ -34,7 +34,7 @@ export interface Project {
 }
 
 export interface User {
-  uid: number;
+  id: string;
   firstName: string;
   secondName: string;
   group?: number;
