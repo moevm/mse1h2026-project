@@ -1,6 +1,6 @@
 services:
   db:
-    image: mysql:lts
+    image: mysql:8.4.8
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
@@ -15,7 +15,7 @@ services:
       context: .
       dockerfile: ./backend/Dockerfile
     healthcheck:
-      test: ["CMD", "curl", "-fS", "http://localhost:3000/health"]
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3000/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
       interval: 10s
       timeout: 5s
       retries: 5
