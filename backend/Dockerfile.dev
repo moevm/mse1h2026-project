@@ -1,8 +1,5 @@
 # Образ для разработки backend
-FROM node:lts-alpine AS dev
-
-# Устанавливаем curl для healthcheck
-RUN apk add --no-cache curl
+FROM node:24.14.1-alpine3.23 AS dev
 
 # Переменные окружения для pnpm
 ENV PNPM_HOME="/pnpm"
