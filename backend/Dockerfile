@@ -2,7 +2,7 @@
 
 # Этап 1: Сборка приложения
 # Образ Node.js для сборки
-FROM node:24.14.1-alpine3.23@sha256:01743339035a5c3c11a373cd7c83aeab6ed1457b55da6a69e014a95ac4e4700b AS build
+FROM node:24.14.1-alpine3.23 AS build
 
 # Устанавливаем переменные окружения для pnpm
 ENV PNPM_HOME="/pnpm"
@@ -49,7 +49,7 @@ RUN pnpm --filter @mse/backend deploy --prod /app/deploy
 
 # Этап 2: Запуск приложения
 # Финальный образ для запуска приложения
-FROM node:24.14.1-alpine3.23@sha256:01743339035a5c3c11a373cd7c83aeab6ed1457b55da6a69e014a95ac4e4700b AS production
+FROM node:24.14.1-alpine3.23 AS production
 
 # Устанавливаем переменные окружения для Node.js
 ENV NODE_ENV=production

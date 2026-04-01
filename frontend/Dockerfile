@@ -2,7 +2,7 @@
 
 # Этап 1: Сборка приложения
 # Образ Node.js для сборки
-FROM node:24.14.1-alpine3.23@sha256:01743339035a5c3c11a373cd7c83aeab6ed1457b55da6a69e014a95ac4e4700b AS build
+FROM node:24.14.1-alpine3.23 AS build
 
 # Аргумент для передачи базового URL API в Vite
 ARG VITE_API_BASE_URL
@@ -51,7 +51,7 @@ RUN pnpm --filter @mse/frontend run build
 
 # Этап 2: Запуск приложения
 # Финальный образ для запуска приложения
-FROM nginx:1.28.3-alpine3.23-slim@sha256:b33eedfdf089be1f83759ced27b4deec5b6f1b6fc2a6819ebce0ae351a4406e5 AS production
+FROM nginx:1.28.3-alpine3.23-slim AS production
 
 # Копируем собранные файлы из этапа сборки в директорию Nginx
 COPY --from=build /app/frontend/dist /usr/share/nginx/html
