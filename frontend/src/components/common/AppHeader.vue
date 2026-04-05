@@ -1,10 +1,10 @@
 <template>
   <header class="app-header">
-    <nav class="nav-menu">
+    <nav v-if="userStore.isAuthenticated" class="nav-menu">
       <router-link to="/" class="nav-link">Список курсов</router-link>
     </nav>
 
-    <div class="user-menu">
+    <div v-if="userStore.isAuthenticated" class="user-menu" >
       <router-link to="/notifications" class="icon-link">
         <n-icon size="42" color="white" class="hover-scale">
           <NotificationsFilled />
@@ -22,6 +22,9 @@
 <script setup lang="ts">
 import { AccountCircleOutlined, NotificationsFilled } from '@vicons/material';
 import { NIcon } from 'naive-ui';
+import { useUserStore } from '@/stores/userStore';
+
+const userStore = useUserStore();
 </script>
 
 <style lang="css">
@@ -32,6 +35,7 @@ import { NIcon } from 'naive-ui';
   align-items: center;
   padding: 30px 60px;
   width: 100%;
+  min-height: 102px;
 }
 
 .nav-link {
