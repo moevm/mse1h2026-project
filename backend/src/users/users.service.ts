@@ -8,7 +8,7 @@ export type UserAuth = {
   userId: number;
   email: string;
   password: string;
-  roles: UserRole[];
+  role: UserRole;
 };
 
 // Переделать в данные БД
@@ -19,13 +19,13 @@ export class UsersService {
       userId: 1,
       email: 'ivan@mail.com',
       password: 'ivan',
-      roles: ['admin'],
+      role: 'admin',
     },
     {
       userId: 2,
       email: 'maria@mail.com',
       password: 'maria',
-      roles: ['user'],
+      role: 'user',
     },
   ];
 
