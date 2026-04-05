@@ -121,7 +121,7 @@ const handleSubmit = async () => {
     console.error('Ошибка входа:', error);
     notification.error({
       title: 'Ошибка',
-      content: 'Неверный email или пароль',
+      content: 'Ошибка авторизации',
       duration: 5000
     });
   } finally {

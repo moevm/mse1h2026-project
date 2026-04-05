@@ -31,12 +31,11 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      // Токен истек или невалиден
+    const isLoginRequest = error.config?.url?.includes('/auth/login');
+    
+    if (!isLoginRequest && error.response?.status === 401) {
       localStorage.removeItem('auth_token');
       localStorage.removeItem('user');
-      
-      // Редирект на страницу логина
       window.location.href = '/login';
     }
     return Promise.reject(error);

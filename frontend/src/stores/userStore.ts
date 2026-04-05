@@ -4,6 +4,16 @@ import { computed, ref } from 'vue';
 import axiosInstance from '@/api/axios';
 import type {UserAuth } from '@/types';
 
+class AuthError extends Error {
+  public cause: unknown;
+  
+  constructor(message: string, cause?: unknown) {
+    super(message);
+    this.name = 'AuthError';
+    this.cause = cause;
+  }
+}
+
 export const useUserStore = defineStore('user', () => {
   // useStorage для role
   const role = useStorage<'admin' | 'student' | null>('userRole', null, localStorage, {
@@ -61,6 +71,19 @@ export const useUserStore = defineStore('user', () => {
       
     } catch (error: unknown) {
       console.error('Ошибка входа:', error);
+    
+      if (error && typeof error === 'object' && 'response' in error) {
+        const axiosError = error as { response?: { status?: number } };
+        if (axiosError.response?.status === 401) {
+          throw new AuthError('Неверный email или пароль', error);
+        } else if (axiosError.response?.status === 500) {
+          throw new AuthError('Ошибка сервера. Попробуйте позже', error);
+        } else if (axiosError.response?.status === 404) {
+          throw new AuthError('Сервер не найден. Проверьте подключение.', error);
+        }
+      }
+      
+      throw new AuthError('Ошибка авторизации', error);
     } finally {
       isLoading.value = false;
     }
