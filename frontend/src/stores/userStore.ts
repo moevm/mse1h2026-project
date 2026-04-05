@@ -2,7 +2,7 @@ import { useStorage } from '@vueuse/core';
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 import axiosInstance from '@/api/axios';
-import type { User } from '@/types';
+import type {UserAuth } from '@/types';
 
 export const useUserStore = defineStore('user', () => {
   // useStorage для role
@@ -15,9 +15,9 @@ export const useUserStore = defineStore('user', () => {
   });
 
   // useStorage для user (сохраняем целиком)
-  const user = useStorage<User | null>('user', null, localStorage, {
+  const user = useStorage<UserAuth | null>('user', null, localStorage, {
     serializer: {
-      read: (value: string): User | null => {
+      read: (value: string): UserAuth | null => {
         try {
           const parsed = JSON.parse(value);
           return parsed?.id ? parsed : null;
@@ -25,7 +25,7 @@ export const useUserStore = defineStore('user', () => {
           return null;
         }
       },
-      write: (value: User | null): string => JSON.stringify(value),
+      write: (value: UserAuth | null): string => JSON.stringify(value),
     },
   });
 
@@ -39,15 +39,11 @@ export const useUserStore = defineStore('user', () => {
   const isStudent = computed(() => role.value === 'student');
   const isRoleReady = computed(() => role.value !== null);
   const isAuthenticated = computed(() => !!token.value && !!user.value);
-  const userName = computed(() => {
-    if (!user.value) return '';
-    return `${user.value.firstName} ${user.value.lastName}`;
-  });
 
   // Методы
-  function setUser(data: { user: User; token: string }): void {
+  function setUser(data: { user: UserAuth; access_token: string }): void {
     user.value = data.user;
-    token.value = data.token;
+    token.value = data.access_token;
     role.value = data.user.role;
     
     // useStorage автоматически сохранил всё в localStorage
@@ -56,17 +52,12 @@ export const useUserStore = defineStore('user', () => {
   async function login(email: string, password: string): Promise<void> {
     isLoading.value = true;
     try {
-      const response = await axiosInstance.post<{ user: User; access_token: string }>('/auth/login', {
+      const response = await axiosInstance.post<{ user: UserAuth; access_token: string }>('/auth/login', {
         email,
         password,
       });
-
-      const { user: userData, access_token: userToken } = response.data;
       
-      // Автоматически сохраняется в localStorage через useStorage
-      user.value = userData;
-      token.value = userToken;
-      role.value = userData.role;
+      setUser(response.data)
       
     } catch (error: unknown) {
       console.error('Ошибка входа:', error);
@@ -92,7 +83,6 @@ export const useUserStore = defineStore('user', () => {
     isStudent,
     isRoleReady,
     isAuthenticated,
-    userName,
     setUser,
     login,
     logout

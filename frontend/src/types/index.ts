@@ -43,6 +43,13 @@ export interface User {
   ldapUid: number;
 }
 
+export interface UserAuth {
+  userId: number;
+  email: string;
+  password: string;
+  role: 'student' | 'admin';
+}
+
 export interface Assignment {
   studentId: string;
   studentFirstName: string;
