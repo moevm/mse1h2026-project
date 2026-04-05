@@ -95,8 +95,8 @@ const rules: FormRules = {
       trigger: ['blur', 'input']
     },
     {
-      min: 6,
-      message: 'Пароль должен содержать минимум 6 символов',
+      min: 4,
+      message: 'Пароль должен содержать минимум 4 символа',
       trigger: ['blur']
     }
   ]

@@ -30,7 +30,7 @@ export const useUserStore = defineStore('user', () => {
   });
 
   // useStorage для token
-  const token = useStorage<string | null>('auth_token', null, localStorage);
+  const token = useStorage<string | null>('token', null, localStorage);
 
   const isLoading = ref(false);
 
@@ -55,14 +55,13 @@ export const useUserStore = defineStore('user', () => {
 
   async function login(email: string, password: string): Promise<void> {
     isLoading.value = true;
-    
     try {
-      const response = await axiosInstance.post<{ user: User; token: string }>('/auth/login', {
+      const response = await axiosInstance.post<{ user: User; access_token: string }>('/auth/login', {
         email,
         password,
       });
-      
-      const { user: userData, token: userToken } = response.data;
+
+      const { user: userData, access_token: userToken } = response.data;
       
       // Автоматически сохраняется в localStorage через useStorage
       user.value = userData;
