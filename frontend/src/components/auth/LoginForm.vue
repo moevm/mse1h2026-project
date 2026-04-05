@@ -55,6 +55,8 @@ import {
   type FormInst,
   type FormRules
 } from 'naive-ui';
+import { useUserStore } from '@/stores/userStore';
+const userStore = useUserStore();
 
 const router = useRouter();
 const notification = useNotification();
@@ -106,10 +108,8 @@ const handleSubmit = async () => {
     await formRef.value?.validate();
     loading.value = true;
 
-    // TODO: Вызов API для авторизации
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await userStore.login(formData.email, formData.password);
 
-    
     notification.success({
       title: 'Успешно',
       content: 'Вы успешно вошли в систему',
