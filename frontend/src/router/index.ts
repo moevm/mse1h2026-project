@@ -13,6 +13,11 @@ const routes: RouterOptions['routes'] = [
     component: () => import('@/layout/DefaultLayout.vue'),
     children: [
       {
+        path: 'auth/login',
+        name: 'login',
+        component: () => import('@/pages/LoginPage.vue')
+      },
+      {
         path: 'courses',
         alias: '',
         name: 'courses',
