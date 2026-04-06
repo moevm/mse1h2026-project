@@ -15,14 +15,14 @@ const routes: RouterOptions['routes'] = [
       {
         path: 'login',
         name: 'login',
-        component: () => import('@/pages/LoginPage.vue')
+        component: () => import('@/pages/LoginPage.vue'),
       },
       {
         path: 'courses',
         alias: '',
         name: 'courses',
         component: () => import('@/pages/CoursesListPage.vue'),
-        meta: { requiresAuthentication: true }
+        meta: { requiresAuthentication: true },
       },
       {
         path: 'courses/create',
@@ -34,13 +34,13 @@ const routes: RouterOptions['routes'] = [
         path: 'courses/:id',
         component: () => import('@/pages/CourseDetailPage.vue'),
         name: 'course-detail',
-        meta: { requiresAuthentication: true }
+        meta: { requiresAuthentication: true },
       },
       {
         path: 'courses/:id/edit',
         component: () => import('@/pages/EditCoursePage.vue'),
         name: 'course-edit',
-        meta: { requiresAuthentication: true, requiresAdmin: true }, 
+        meta: { requiresAuthentication: true, requiresAdmin: true },
       },
     ],
   },
@@ -59,7 +59,7 @@ router.beforeEach((to, _, next) => {
   // Проверяем, требует ли маршрут прав администратора
   if (to.meta.requiresAuthentication) {
     if (!userStore.isAuthenticated) {
-      console.log('Не авторизован((')
+      console.log('Не авторизован((');
       next('/login');
       return;
     }

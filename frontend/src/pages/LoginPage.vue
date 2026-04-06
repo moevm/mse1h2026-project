@@ -13,8 +13,8 @@
 </template>
 
 <script setup lang="ts">
-import { NCard } from 'naive-ui';
 import LoginForm from '@/components/auth/LoginForm.vue';
+import { NCard } from 'naive-ui';
 </script>
 
 <style scoped>

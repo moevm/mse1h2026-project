@@ -1,7 +1,6 @@
-import axiosInstance from './axios'
+import axiosInstance from './axios';
 
 class ApiClient {
-
   async get<T>(path: string): Promise<T> {
     const response = await axiosInstance.get<T>(path);
     return response.data;

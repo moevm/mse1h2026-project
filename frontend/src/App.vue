@@ -8,7 +8,6 @@ import {
   ruRU,
 } from 'naive-ui';
 
-
 /**
  * Переопределение цветовой схемы для Naive UI.
  */

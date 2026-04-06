@@ -1,12 +1,12 @@
+import axiosInstance from '@/api/axios';
+import type { UserAuth } from '@/types';
 import { useStorage } from '@vueuse/core';
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
-import axiosInstance from '@/api/axios';
-import type {UserAuth } from '@/types';
 
 class AuthError extends Error {
   public cause: unknown;
-  
+
   constructor(message: string, cause?: unknown) {
     super(message);
     this.name = 'AuthError';
@@ -55,23 +55,25 @@ export const useUserStore = defineStore('user', () => {
     user.value = data.user;
     token.value = data.access_token;
     role.value = data.user.role;
-    
+
     // useStorage автоматически сохранил всё в localStorage
   }
 
   async function login(email: string, password: string): Promise<void> {
     isLoading.value = true;
     try {
-      const response = await axiosInstance.post<{ user: UserAuth; access_token: string }>('/auth/login', {
-        email,
-        password,
-      });
-      
-      setUser(response.data)
-      
+      const response = await axiosInstance.post<{ user: UserAuth; access_token: string }>(
+        '/auth/login',
+        {
+          email,
+          password,
+        },
+      );
+
+      setUser(response.data);
     } catch (error: unknown) {
       console.error('Ошибка входа:', error);
-    
+
       if (error && typeof error === 'object' && 'response' in error) {
         const axiosError = error as { response?: { status?: number } };
         if (axiosError.response?.status === 401) {
@@ -82,7 +84,7 @@ export const useUserStore = defineStore('user', () => {
           throw new AuthError('Сервер не найден. Проверьте подключение.', error);
         }
       }
-      
+
       throw new AuthError('Ошибка авторизации', error);
     } finally {
       isLoading.value = false;
@@ -93,7 +95,7 @@ export const useUserStore = defineStore('user', () => {
     user.value = null;
     token.value = null;
     role.value = null;
-    
+
     window.location.href = '/login';
   }
 
@@ -108,6 +110,6 @@ export const useUserStore = defineStore('user', () => {
     isAuthenticated,
     setUser,
     login,
-    logout
+    logout,
   };
 });

@@ -4,7 +4,7 @@
       <router-link to="/" class="nav-link">Список курсов</router-link>
     </nav>
 
-    <div v-if="userStore.isAuthenticated" class="user-menu" >
+    <div v-if="userStore.isAuthenticated" class="user-menu">
       <router-link to="/notifications" class="icon-link">
         <n-icon size="42" color="white" class="hover-scale">
           <NotificationsFilled />
@@ -20,9 +20,9 @@
 </template>
 
 <script setup lang="ts">
+import { useUserStore } from '@/stores/userStore';
 import { AccountCircleOutlined, NotificationsFilled } from '@vicons/material';
 import { NIcon } from 'naive-ui';
-import { useUserStore } from '@/stores/userStore';
 
 const userStore = useUserStore();
 </script>

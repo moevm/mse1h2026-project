@@ -3,7 +3,6 @@ import type { AxiosInstance, InternalAxiosRequestConfig } from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
   headers: {
@@ -15,16 +14,16 @@ const axiosInstance: AxiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const token = localStorage.getItem('token');
-    
+
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-    
+
     return config;
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 // Интерцептор ответа - обработка 401 Unauthorized
@@ -32,14 +31,14 @@ axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
     const isLoginRequest = error.config?.url?.includes('/auth/login');
-    
+
     if (!isLoginRequest && error.response?.status === 401) {
       localStorage.removeItem('auth_token');
       localStorage.removeItem('user');
       window.location.href = '/login';
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 export default axiosInstance;
