@@ -1,7 +1,7 @@
+import { SkipAuth } from '@/common/guards/auth.guard';
 import { Controller, Get } from '@nestjs/common';
 
 import { HelloWorldService } from './hello-world.service';
-import { SkipAuth } from '@/common/guards/auth.guard';
 
 @Controller()
 export class HelloWorldController {
