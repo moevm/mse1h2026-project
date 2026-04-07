@@ -1,3 +1,4 @@
+import { SkipAuth } from '@/common/guards/auth.guard';
 import { PrismaService } from '@/prisma/prisma.service';
 import { Controller, Get } from '@nestjs/common';
 import {
@@ -16,17 +17,19 @@ export class HealthController {
     private prismaService: PrismaService,
   ) {}
 
+  @SkipAuth()
   @Get()
   @HealthCheck()
   checkConnection() {
     return this.health.check([
-      () => this.http.pingCheck('app', 'http://127.0.0.1:3000/api/courses'),
+      () => this.http.pingCheck('app', 'http://127.0.0.1:3000/hello-world', { timeout: 3000 }),
     ]);
   }
 
+  @SkipAuth()
   @Get('ready')
   @HealthCheck()
   checkPrisma() {
-    return this.health.check([() => this.prisma.pingCheck('prisma', this.prismaService as any)]);
+    return this.health.check([() => this.prisma.pingCheck('prisma', this.prismaService)]);
   }
 }
