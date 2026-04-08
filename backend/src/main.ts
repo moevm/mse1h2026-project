@@ -22,11 +22,10 @@ async function bootstrap() {
     ],
   });
 
-  const host = '127.0.0.1';
   const port = 3000;
 
-  await app.listen(port, host, () => {
-    console.log(`Server running on http://${host}:${port}`);
+  await app.listen(port, () => {
+    console.log(`Server running on http://localhost:${port}`);
   });
 }
 bootstrap();
