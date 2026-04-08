@@ -21,12 +21,3 @@ pre-commit:
     typecheck:
       run: pnpm typecheck
       glob: "**/*.{ts,tsx,vue}"
-
-# Пока отключено
-# pre-push:
-#   parallel: true
-#   commands:
-#     build:
-#       run: pnpm build
-#     build-compose:
-#       run: docker compose build
