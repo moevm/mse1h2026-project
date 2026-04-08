@@ -13,8 +13,8 @@
       <n-dropdown
         trigger="click"
         :options="menuOptions"
-        @select="handleMenuSelect"
         placement="bottom-end"
+        @select="handleMenuSelect"
       >
         <n-icon size="42" color="white" class="hover-scale">
           <AccountCircleOutlined />
