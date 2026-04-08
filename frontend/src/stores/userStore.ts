@@ -5,8 +5,6 @@ import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
-const router = useRouter();
-
 class AuthError extends Error {
   public cause: unknown;
 
@@ -18,6 +16,8 @@ class AuthError extends Error {
 }
 
 export const useUserStore = defineStore('user', () => {
+  const router = useRouter();
+
   // useStorage для role
   const role = useStorage<'admin' | 'student' | null>('userRole', null, localStorage, {
     serializer: {
@@ -98,8 +98,7 @@ export const useUserStore = defineStore('user', () => {
     user.value = null;
     token.value = null;
     role.value = null;
-
-    router.push('/login');
+    await router.push('/login');
   }
 
   return {

@@ -10,11 +10,16 @@
           <NotificationsFilled />
         </n-icon>
       </router-link>
-      <router-link to="/profile" class="icon-link">
+      <n-dropdown
+        trigger="click"
+        :options="menuOptions"
+        @select="handleMenuSelect"
+        placement="bottom-end"
+      >
         <n-icon size="42" color="white" class="hover-scale">
           <AccountCircleOutlined />
         </n-icon>
-      </router-link>
+      </n-dropdown>
     </div>
   </header>
 </template>
@@ -22,9 +27,35 @@
 <script setup lang="ts">
 import { useUserStore } from '@/stores/userStore';
 import { AccountCircleOutlined, NotificationsFilled } from '@vicons/material';
-import { NIcon } from 'naive-ui';
+import { NDropdown, NIcon } from 'naive-ui';
+import { useRouter } from 'vue-router';
 
 const userStore = useUserStore();
+const router = useRouter();
+
+const menuOptions = [
+  {
+    label: 'Профиль',
+    key: 'profile',
+  },
+  // ToDo: исправить пуль к командам и проектам когда они будут
+  {
+    label: 'Мои команды и проекты',
+    key: 'path',
+  },
+  {
+    label: 'Выйти',
+    key: 'logout',
+  },
+];
+
+const handleMenuSelect = (key: string) => {
+  if (key === 'logout') {
+    userStore.logout();
+  } else {
+    router.push(`/${key}`);
+  }
+};
 </script>
 
 <style lang="css">
