@@ -9,8 +9,6 @@ services:
     volumes: [db_data:/var/lib/mysql]
     restart: unless-stopped
     env_file: .env
-    environment:
-      DATABASE_URL: mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DATABASE}
     logging:
       driver: "json-file"
       options:
@@ -42,8 +40,8 @@ services:
     build:
       context: .
       dockerfile: ./frontend/Dockerfile
-    environment:
-      VITE_API_BASE_URL: http://127.0.0.1:3000/api
+      args:
+        VITE_API_BASE_URL: http://127.0.0.1:3000/api
     depends_on:
       backend:
         condition: service_healthy
