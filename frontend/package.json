@@ -16,7 +16,7 @@
     "typecheck": "vue-tsc --noEmit -p tsconfig.json",
     "format": "prettier --cache --write src",
     "format:check": "prettier --cache --check src",
-    "pre-commit-check": "pnpm lint && pnpm typecheck && pnpm format"
+    "pre-commit-check": "pnpm typecheck && pnpm lint && pnpm format"
   },
   "dependencies": {
     "@vicons/material": "^0.13.0",

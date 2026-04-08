@@ -18,6 +18,7 @@
     "format": "prettier --cache --write src",
     "format:check": "prettier --cache --check src",
     "typecheck": "prisma generate && tsc --noEmit -p tsconfig.build.json",
+    "pre-commit-check": "pnpm typecheck && pnpm lint && pnpm format",
     "test": "jest",
     "test:watch": "jest --watch"
   },
