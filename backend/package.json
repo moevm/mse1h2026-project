@@ -17,7 +17,9 @@
     "lint": "eslint --cache src",
     "format": "prettier --cache --write src",
     "format:check": "prettier --cache --check src",
-    "typecheck": "prisma generate && tsc --noEmit -p tsconfig.build.json"
+    "typecheck": "prisma generate && tsc --noEmit -p tsconfig.build.json",
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "dependencies": {
     "@dotenvx/dotenvx": "^1.59.1",
@@ -41,11 +43,15 @@
     "rxjs": "^7.8.2"
   },
   "devDependencies": {
-    "@nestjs/cli": "^11.0.17",
+    "@nestjs/cli": "^11.0.16",
+    "@nestjs/testing": "^11.1.17",
     "@types/express": "^5.0.6",
-    "@types/node": "^25.5.0",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^25.3.0",
     "@types/passport-local": "^1.0.38",
     "dotenv": "^17.3.1",
+    "jest": "^30.3.0",
+    "ts-jest": "^29.4.6",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   }
