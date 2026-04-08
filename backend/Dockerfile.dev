@@ -32,4 +32,4 @@ COPY backend ./backend
 EXPOSE 3000
 
 # Запуск NestJS в watch-режиме
-CMD ["sh", "-c", "pnpm --filter @mse/backend db:deploy && pnpm --filter @mse/backend start:dev"]
+CMD ["sh", "-c", "pnpm", "--filter", "@mse/backend", "db:deploy", "&&", "pnpm", "--filter", "@mse/backend", "start:dev"]
