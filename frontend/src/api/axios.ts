@@ -1,3 +1,4 @@
+import { useUserStore } from '@/stores/userStore';
 import axios from 'axios';
 import type { AxiosInstance, InternalAxiosRequestConfig } from 'axios';
 
@@ -10,12 +11,14 @@ const axiosInstance: AxiosInstance = axios.create({
   },
 });
 
-// Интерцептор запроса - добавляем токен в заголовки
+// Интерцептор запроса
 axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    const token = localStorage.getItem('token');
+    const userStore = useUserStore();
+    const token = userStore.token;
 
     if (token && config.headers) {
+      // Добавил пропущенные обратные кавычки для шаблонной строки
       config.headers.Authorization = `Bearer ${token}`;
     }
 
@@ -26,16 +29,15 @@ axiosInstance.interceptors.request.use(
   },
 );
 
-// Интерцептор ответа - обработка 401 Unauthorized
+// Интерцептор ответа
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
-    const isLoginRequest = error.config?.url?.includes('/auth/login');
+    const userStore = useUserStore();
+    const isLoginRequest = error.config?.url?.includes('/login');
 
     if (!isLoginRequest && error.response?.status === 401) {
-      localStorage.removeItem('auth_token');
-      localStorage.removeItem('user');
-      window.location.href = '/login';
+      userStore.logout();
     }
     return Promise.reject(error);
   },

@@ -3,6 +3,9 @@ import type { UserAuth } from '@/types';
 import { useStorage } from '@vueuse/core';
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 class AuthError extends Error {
   public cause: unknown;
@@ -96,7 +99,7 @@ export const useUserStore = defineStore('user', () => {
     token.value = null;
     role.value = null;
 
-    window.location.href = '/login';
+    router.push('/login');
   }
 
   return {
