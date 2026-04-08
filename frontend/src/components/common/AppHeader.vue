@@ -66,7 +66,7 @@ const handleMenuSelect = (key: string) => {
   align-items: center;
   padding: 30px 60px;
   width: 100%;
-  min-height: 102px;
+  min-height: 9vh;
 }
 
 .nav-link {
