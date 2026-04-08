@@ -1,15 +1,17 @@
 import type { Project } from '@/types';
 
-import { apiClient } from './client';
+import axiosInstance from './axios';
 
 export const projectsApi = {
-  getAll: () => apiClient.get<Project[]>('/projects'),
+  getAll: () => axiosInstance.get<Project[]>('/projects').then((res) => res.data),
 
-  getById: (id: string) => apiClient.get<Project>(`/projects/${id}`),
+  getById: (id: string) => axiosInstance.get<Project>(`/projects/${id}`).then((res) => res.data),
 
-  create: (data: Partial<Project>) => apiClient.post<Project>('/projects', data),
+  create: (data: Partial<Project>) =>
+    axiosInstance.post<Project>('/projects', data).then((res) => res.data),
 
-  update: (id: string, data: Project) => apiClient.put<Project>(`/projects/${id}`, data),
+  update: (id: string, data: Project) =>
+    axiosInstance.put<Project>(`/projects/${id}`, data).then((res) => res.data),
 
-  delete: (id: string) => apiClient.delete<Project>(`/projects/${id}`),
+  delete: (id: string) => axiosInstance.delete(`/projects/${id}`).then((res) => res.data),
 };

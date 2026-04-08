@@ -1,7 +1,7 @@
 import type { Assignment } from '@/types';
 
-import { apiClient } from './client';
+import axiosInstance from './axios';
 
 export const assignmentsApi = {
-  getAll: () => apiClient.get<Assignment[]>('/assignments'),
+  getAll: () => axiosInstance.get<Assignment[]>('/assignments').then((res) => res.data),
 };

@@ -1,27 +1,61 @@
 <template>
   <header class="app-header">
-    <nav class="nav-menu">
+    <nav v-if="userStore.isAuthenticated" class="nav-menu">
       <router-link to="/" class="nav-link">Список курсов</router-link>
     </nav>
 
-    <div class="user-menu">
+    <div v-if="userStore.isAuthenticated" class="user-menu">
       <router-link to="/notifications" class="icon-link">
         <n-icon size="42" color="white" class="hover-scale">
           <NotificationsFilled />
         </n-icon>
       </router-link>
-      <router-link to="/profile" class="icon-link">
+      <n-dropdown
+        trigger="click"
+        :options="menuOptions"
+        placement="bottom-end"
+        @select="handleMenuSelect"
+      >
         <n-icon size="42" color="white" class="hover-scale">
           <AccountCircleOutlined />
         </n-icon>
-      </router-link>
+      </n-dropdown>
     </div>
   </header>
 </template>
 
 <script setup lang="ts">
+import { useUserStore } from '@/stores/userStore';
 import { AccountCircleOutlined, NotificationsFilled } from '@vicons/material';
-import { NIcon } from 'naive-ui';
+import { NDropdown, NIcon } from 'naive-ui';
+import { useRouter } from 'vue-router';
+
+const userStore = useUserStore();
+const router = useRouter();
+
+const menuOptions = [
+  {
+    label: 'Профиль',
+    key: 'profile',
+  },
+  // ToDo: исправить пуль к командам и проектам когда они будут
+  {
+    label: 'Мои команды и проекты',
+    key: 'path',
+  },
+  {
+    label: 'Выйти',
+    key: 'logout',
+  },
+];
+
+const handleMenuSelect = (key: string) => {
+  if (key === 'logout') {
+    userStore.logout();
+  } else {
+    router.push(`/${key}`);
+  }
+};
 </script>
 
 <style lang="css">
@@ -32,6 +66,7 @@ import { NIcon } from 'naive-ui';
   align-items: center;
   padding: 30px 60px;
   width: 100%;
+  min-height: 9vh;
 }
 
 .nav-link {

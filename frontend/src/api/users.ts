@@ -1,6 +1,7 @@
+// api/usersApi.ts
 import type { User } from '@/types';
 
-import { apiClient } from './client';
+import axiosInstance from './axios';
 
 export interface GetUsersParams {
   role?: 'user' | 'admin';
@@ -15,18 +16,20 @@ export const usersApi = {
       url += `?role=${params.role}`;
     }
 
-    return apiClient.get<User[]>(url);
+    const response = await axiosInstance.get<User[]>(url);
+    return response.data;
   },
 
-  // Получить только админов
   getAdmins: async (): Promise<User[]> => {
     return usersApi.getUsers({ role: 'admin' });
   },
 
-  // Получить только обычных пользователей
   getRegularUsers: async (): Promise<User[]> => {
     return usersApi.getUsers({ role: 'user' });
   },
 
-  getById: (id: string) => apiClient.get<User>(`/users/${id}`),
+  getById: async (id: string): Promise<User> => {
+    const response = await axiosInstance.get<User>(`/users/${id}`);
+    return response.data;
+  },
 };
