@@ -2,14 +2,14 @@ name: mse1h2026-project-dev
 
 services:
   db:
-    image: mysql:lts
+    image: mysql:8.4.8
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
       timeout: 5s
       retries: 5
     volumes: [db_dev_data:/var/lib/mysql]
-    ports: ["${MYSQL_OUTPUT_URL}:3306"]
+    ports: ["127.0.0.1:3306:3306"]
     restart: unless-stopped
     env_file: .env
 
@@ -18,14 +18,14 @@ services:
       context: .
       dockerfile: backend/Dockerfile.dev
     healthcheck:
-      test: ["CMD", "node", "-e", "fetch('http://localhost:3000/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
       interval: 10s
       timeout: 5s
       retries: 10
     volumes:
       - ./backend/src:/app/backend/src
       - ./backend/prisma:/app/backend/prisma
-    ports: ["${BACKEND_OUTPUT_URL}:3000"]
+    ports: ["127.0.0.1:3000:3000"]
     depends_on:
       db:
         condition: service_healthy
@@ -37,11 +37,12 @@ services:
       context: .
       dockerfile: frontend/Dockerfile.dev
     environment:
-      DOCKER: "true"
+      DEV_DOCKER: "true"
+      VITE_API_BASE_URL: http://127.0.0.1:3000/api
     volumes:
       - ./frontend/src:/app/frontend/src
       - ./frontend/public:/app/frontend/public
-    ports: ["${FRONTEND_OUTPUT_URL}:5173"]
+    ports: ["127.0.0.1:8080:8080"]
     depends_on:
       backend:
         condition: service_healthy

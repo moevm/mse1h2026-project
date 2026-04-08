@@ -88,6 +88,15 @@
 
 ### Подготовка к запуску
 
+- Убедитесь, что у вас установлены:
+  - [Git](https://git-scm.com/downloads)
+  - [Docker](https://www.docker.com/get-started)
+
+- Требования к системе:
+  - Операционная система: **Windows 10/11**, **macOS**, **Linux**
+  - Разрядность системы: **64-битная**
+  - Браузер: Современный браузер на базе Chromium (например, Google Chrome) или Gecko (например, Firefox) желательно последней версии.
+
 - Клонируйте репозиторий:
 
   ```bash
@@ -101,7 +110,6 @@
   ```
 
 - Скопируйте файл `.env.example` в `.env` и отредактируйте переменные окружения. 
-Переменные, находящиеся под `# [service] dev-env` используются для dev разработки с Docker.
 
   ```bash
   cp .env.example .env
@@ -109,6 +117,11 @@
 
 ### Запуск без **Docker**
 
+- Для локальной разработки (без Docker) убедитесь, что у вас установлены:
+  - [Node.js 24.14.1](https://nodejs.org/en/download/)
+  - [pnpm 10.30.1](https://pnpm.io/installation#using-corepack)
+  - [MySQL Community Server 8.4.8](https://dev.mysql.com/downloads/mysql/)
+ 
 - Установите зависимости:
 
   ```bash
@@ -124,24 +137,24 @@
   MYSQL_HOST=localhost
   MYSQL_PORT=3306
 
-  BACKEND_OUTPUT_HOST=localhost
-  BACKEND_OUTPUT_PORT=3000
+  JWT_SECRET=<your_jwt_secret>
   ```
 
 - Запустите проект:
 
-#### Production
+  #### Production
 
-  ```bash
-  pnpm build
-  pnpm preview
-  ```
+    ```bash
+    pnpm build && pnpm preview
+    ```
 
-#### Development
+  #### Development
 
-  ```bash
-  pnpm dev
-  ```
+    ```bash
+    pnpm dev
+    ```
+  
+- Смотри раздел **[Проверка работоспособности](#проверка-работоспособности)**
 
 ### Запуск с помощью **Docker**
 
@@ -155,8 +168,7 @@
   MYSQL_HOST=db
   MYSQL_PORT=3306
 
-  BACKEND_OUTPUT_HOST=127.0.0.1
-  BACKEND_OUTPUT_PORT=3000
+  JWT_SECRET=<your_jwt_secret>
   ```
 
 #### Production
@@ -167,6 +179,8 @@
   docker compose up --build
   ```
 
+- Смотри раздел **[Проверка работоспособности](#проверка-работоспособности)**
+
 #### Development
 
 - Запустите docker compose для разработки:
@@ -174,6 +188,8 @@
   ```bash
   docker compose -f docker-compose.dev.yaml up --build
   ```
+
+- Смотри раздел **[Проверка работоспособности](#проверка-работоспособности)**
 
 ### Переменные окружения
 
@@ -183,30 +199,17 @@
   - `MYSQL_DATABASE` - имя базы данных, которая будет создана при запуске контейнера.
   - `MYSQL_USER` - имя пользователя для доступа к базе данных (обычно `root` для локальной разработки, и не `root` для docker).
   - `MYSQL_PASSWORD` - пароль для пользователя, указанного в `MYSQL_USER`.
-  - `MYSQL_HOST` - хост, на котором работает MySQL (обычно `db` для Docker, `localhost` для локальной разработки)
-  - `MYSQL_PORT` - порт, на котором работает MySQL (обычно `3306`)
-    
-    dev-env:
-    - `MYSQL_OUTPUT_HOST` - хост, на котором будет доступна база данных MySQL (обычно `127.0.0.1` для локальной разработки)
-    - `MYSQL_OUTPUT_PORT` - порт, на котором будет доступна база данных MySQL (обычно `3306`)
-    - `MYSQL_OUTPUT_URL` - URL, на котором будет доступна база данных MySQL (обычно `{MYSQL_OUTPUT_HOST}:${MYSQL_OUTPUT_PORT}`)
+  - `MYSQL_HOST` - хост, на котором работает MySQL (`db` для Docker, `localhost` для локальной разработки)
+  - `MYSQL_PORT` - порт, на котором работает MySQL (`3306`)
 
 - backend:
-
-  - `DATABASE_URL` - URL для подключения к базе данных MySQL (в частности для ORM Prisma)
-  - `BACKEND_OUTPUT_HOST` - хост, на котором будет доступен бэкенд (обычно `127.0.0.1`)
-  - `BACKEND_OUTPUT_PORT` - порт, на котором будет доступен бэкенд (обычно `3000`)
-  - `BACKEND_OUTPUT_URL` - URL, на котором будет доступен бэкенд (обычно `${BACKEND_OUTPUT_HOST}:${BACKEND_OUTPUT_PORT}`)
-
-- frontend:
-
-  - `VITE_API_BASE_URL` - базовый URL для API запросов к бэкенду (обычно `http://${BACKEND_OUTPUT_URL}/api`)
-  - `FRONTEND_OUTPUT_HOST` - хост, на котором будет доступен фронтенд (обычно `127.0.0.1`)
-  - `FRONTEND_OUTPUT_PORT` - порт, на котором будет доступен фронтенд (обычно `8080`)
-  - `FRONTEND_OUTPUT_URL` - URL, на котором будет доступен фронтенд (обычно `http://${FRONTEND_OUTPUT_HOST}:${FRONTEND_OUTPUT_PORT}`)
+  - `JWT_SECRET` - секрет для генерации JWT токенов (может быть любым строковым значением, но рекомендуется использовать сложную строку для безопасности).
 
 ## Проверка работоспособности
-Инструкции по проверке работоспособности проекта (основной функциональности и результатов).
+
+1. После запуска приложения, откройте браузер и перейдите по адресу http://127.0.0.1:8080.
+2. В локальной разработке и в docker compose для разработки, доступен путь к backend API по адресу http://127.0.0.1:3000/api.
+  
 
 ## Дополнительная информация
 Любая информация, которую команда посчитает нужной разместить.
