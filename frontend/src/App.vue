@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useUserStore } from '@/stores/userStore';
 import {
   type GlobalThemeOverrides,
   NConfigProvider,
@@ -8,13 +7,6 @@ import {
   dateRuRU,
   ruRU,
 } from 'naive-ui';
-import { onMounted } from 'vue';
-
-const userStore = useUserStore();
-
-onMounted(() => {
-  userStore.loadRole();
-});
 
 /**
  * Переопределение цветовой схемы для Naive UI.

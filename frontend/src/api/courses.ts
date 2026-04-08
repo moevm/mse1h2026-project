@@ -1,15 +1,17 @@
 import type { Course } from '@/types';
 
-import { apiClient } from './client';
+import axiosInstance from './axios';
 
 export const coursesApi = {
-  getAll: () => apiClient.get<Course[]>('/courses'),
+  getAll: () => axiosInstance.get<Course[]>('/courses').then((res) => res.data),
 
-  getById: (id: string) => apiClient.get<Course>(`/courses/${id}`),
+  getById: (id: string) => axiosInstance.get<Course>(`/courses/${id}`).then((res) => res.data),
 
-  create: (data: Partial<Course>) => apiClient.post<Course>('/courses', data),
+  create: (data: Partial<Course>) =>
+    axiosInstance.post<Course>('/courses', data).then((res) => res.data),
 
-  update: (id: string, data: Course) => apiClient.put<Course>(`/courses/${id}`, data),
+  update: (id: string, data: Course) =>
+    axiosInstance.put<Course>(`/courses/${id}`, data).then((res) => res.data),
 
-  delete: (id: string) => apiClient.delete<Course>(`/courses/${id}`),
+  delete: (id: string) => axiosInstance.delete(`/courses/${id}`).then((res) => res.data),
 };
