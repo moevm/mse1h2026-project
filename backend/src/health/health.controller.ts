@@ -23,13 +23,7 @@ export class HealthController {
   checkConnection() {
     return this.health.check([
       () => this.http.pingCheck('app', 'http://127.0.0.1:3000/hello-world', { timeout: 3000 }),
+      () => this.prisma.pingCheck('prisma', this.prismaService),
     ]);
-  }
-
-  @SkipAuth()
-  @Get('ready')
-  @HealthCheck()
-  checkPrisma() {
-    return this.health.check([() => this.prisma.pingCheck('prisma', this.prismaService)]);
   }
 }
