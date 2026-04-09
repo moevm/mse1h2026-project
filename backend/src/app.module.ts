@@ -8,6 +8,7 @@ import { CoursesModule } from './courses/courses.module';
 import { HealthModule } from './health/health.module';
 import { HelloWorldModule } from './hello-world/hello-world.module';
 import { ProjectsModule } from './projects/projects.module';
+import { TeamsModule } from './teams/teams.module';
 import { UsersModule } from './users/users.module';
 
 @Module({
@@ -24,6 +25,7 @@ import { UsersModule } from './users/users.module';
       isGlobal: true,
       envFilePath: '../.env',
     }),
+    TeamsModule,
   ],
 })
 export class AppModule {}
