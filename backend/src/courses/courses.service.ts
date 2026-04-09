@@ -1,7 +1,8 @@
 import { PrismaService } from '@/prisma/prisma.service';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 
 import { CreateCourseDto } from './dto/create-course.dto';
+import { CreateTeamDto } from './dto/create-team.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
 
 @Injectable()
@@ -31,7 +32,7 @@ export class CoursesService {
         imports: true,
       },
     });
-    if (!course) throw new NotFoundException(`Course ${id} not found`);
+    if (!course) throw new NotFoundException(`Course ${id} not found.`);
     return course;
   }
 
@@ -43,6 +44,20 @@ export class CoursesService {
     });
   }
 
+  async createTeam(id: string, dto: CreateTeamDto) {
+    const course = await this.getCourseById(id);
+    if (course.maxTeamSize < course.teams.length + 1) {
+      throw new BadRequestException('Team size is above limit for this course.');
+    }
+
+    return this.prisma.team.create({
+      data: {
+        ...dto,
+        courseId: id,
+      },
+    });
+  }
+
   async updateCourse(id: string, dto: UpdateCourseDto) {
     try {
       return await this.prisma.course.update({
@@ -50,15 +65,17 @@ export class CoursesService {
         data: dto,
       });
     } catch {
-      throw new NotFoundException(`Course ${id} not found`);
+      throw new NotFoundException(`Course ${id} not found.`);
     }
   }
 
   async deleteCourse(id: string) {
     try {
-      return await this.prisma.course.delete({ where: { id } });
+      return await this.prisma.course.delete({
+        where: { id },
+      });
     } catch {
-      throw new NotFoundException(`Course ${id} not found`);
+      throw new NotFoundException(`Course ${id} not found.`);
     }
   }
 }
