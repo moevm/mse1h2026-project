@@ -14,6 +14,8 @@ WORKDIR /app
 # Включаем pnpm через Corepack
 RUN corepack enable
 
+FROM dev AS build
+
 # Копируем конфигурацию workspace и lockfile
 COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
 

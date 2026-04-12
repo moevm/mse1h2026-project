@@ -8,6 +8,8 @@ import vueDevTools from 'vite-plugin-vue-devtools';
 import vue from '@vitejs/plugin-vue';
 import path from 'node:path';
 
+const isDocker = !!process.env.DEV_DOCKER;
+
 export default defineConfig({
   plugins: [
     vue(),
@@ -20,16 +22,16 @@ export default defineConfig({
     },
   },
   server: {
-    host: '127.0.0.1',
+    host: isDocker ? '0.0.0.0' : '127.0.0.1',
     port: 8080,
-    open: true,
+    open: false,
     watch: {
-      usePolling: !!process.env.DEV_DOCKER,
+      usePolling: isDocker,
     },
   },
   preview: {
-    host: '127.0.0.1',
+    host: isDocker ? '0.0.0.0' : '127.0.0.1',
     port: 8080,
-    open: true,
+    open: false,
   },
 });

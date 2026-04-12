@@ -7,11 +7,15 @@ ENV PATH="$PNPM_HOME:$PATH"
 ENV PNPM_DISABLE_SELF_UPDATE_CHECK=true
 ENV PNPM_STORE_PATH=/pnpm/store
 ENV CI=true
+ENV SCARF_ANALYTICS=false
 
 WORKDIR /app
 
 # Включаем pnpm через Corepack
 RUN corepack enable
+
+
+FROM dev AS build
 
 # Копируем конфигурацию workspace и lockfile
 COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
@@ -32,4 +36,4 @@ COPY backend ./backend
 EXPOSE 3000
 
 # Запуск NestJS в watch-режиме
-CMD ["sh", "-c", "pnpm", "--filter", "@mse/backend", "db:deploy", "&&", "pnpm", "--filter", "@mse/backend", "start:dev"]
+CMD ["sh", "-c", "pnpm --filter @mse/backend db:deploy && pnpm --filter @mse/backend start:dev"]
