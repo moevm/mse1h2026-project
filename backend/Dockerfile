@@ -43,9 +43,11 @@ RUN pnpm --filter @mse/backend run db:generate
 RUN pnpm --filter @mse/backend run build
 
 # pnpm deploy: создаёт автономную копию пакета
-RUN pnpm --filter @mse/backend deploy --prod /app/deploy
+RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
+    pnpm --filter @mse/backend deploy --prod /app/deploy
 
-FROM node:24.14.1-alpine3.23 AS prod
+# FROM node:24.14.1-alpine3.23 AS prod
+FROM oven/bun:1.3.12-alpine AS prod
 
 # Устанавливаем переменные окружения для Node.js
 ENV NODE_ENV=production
@@ -56,12 +58,14 @@ ENV NPM_CONFIG_UPDATE_NOTIFIER=false
 WORKDIR /app
 
 # Копируем готовый пакет из builder
-COPY --from=build /app/deploy .
+COPY --from=build /app/deploy/node_modules ./node_modules
+COPY --from=build /app/deploy/prisma ./prisma
+COPY --from=build /app/deploy/prisma.config.ts ./prisma.config.ts
+COPY --from=build /app/deploy/dist ./dist
 
 # Устанавливаем порт
 EXPOSE 3000
 
 # Команда для запуска сервера
-CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main.js"]
-
-USER node
+# CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main.js"]
+CMD ["sh", "-c", "bunx prisma migrate deploy && bun dist/main.js"]
