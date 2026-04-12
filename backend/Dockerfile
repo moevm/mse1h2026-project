@@ -8,6 +8,7 @@ ENV PNPM_DISABLE_SELF_UPDATE_CHECK=true
 ENV PNPM_STORE_PATH=/pnpm/store
 # Устанавливаем переменную для CI-среды
 ENV CI=true
+ENV SCARF_ANALYTICS=false
 
 # Устанавливаем рабочую директорию
 WORKDIR /app
@@ -53,6 +54,7 @@ FROM oven/bun:1.3.12-alpine AS prod
 ENV NODE_ENV=production
 # Отключаем уведомления об обновлениях npm
 ENV NPM_CONFIG_UPDATE_NOTIFIER=false
+ENV SCARF_ANALYTICS=false
 
 # Устанавливаем рабочую директорию
 WORKDIR /app
