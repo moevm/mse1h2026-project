@@ -10,6 +10,7 @@ import { HelloWorldModule } from './hello-world/hello-world.module';
 import { ProjectsModule } from './projects/projects.module';
 import { TeamsModule } from './teams/teams.module';
 import { UsersModule } from './users/users.module';
+import { InvitationsModule } from './invitations/invitations.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { UsersModule } from './users/users.module';
       envFilePath: '../.env',
     }),
     TeamsModule,
+    InvitationsModule,
   ],
 })
 export class AppModule {}

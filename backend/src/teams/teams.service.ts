@@ -2,6 +2,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { Injectable, NotFoundException } from '@nestjs/common';
 
 import { UpdateLeaderDto } from './dto/update-leader.dto';
+import { CreateInvitationDto } from './dto/create-invitation.dto';
 
 @Injectable()
 export class TeamsService {
@@ -25,11 +26,19 @@ export class TeamsService {
     return course;
   }
 
-  async updateTeamLeader(id: string, dto: UpdateLeaderDto) {
+  createInvitation(createInvitationDto: CreateInvitationDto) {
+    return this.prisma.teamInvitation.create({
+      data: {
+        ...createInvitationDto,
+      },
+    });
+  }
+
+  async updateTeamLeader(id: string, updateLeaderDto: UpdateLeaderDto) {
     try {
       return await this.prisma.team.update({
         where: { id },
-        data: dto,
+        data: updateLeaderDto,
       });
     } catch {
       throw new NotFoundException(`Team ${id} not found.`);
@@ -43,6 +52,16 @@ export class TeamsService {
       });
     } catch {
       throw new NotFoundException(`Team ${id} not found.`);
+    }
+  }
+
+  async deleteMember(teamId: string, memberId: string) {
+    try {
+      return await this.prisma.teamMember.delete({
+        where: { id: memberId },
+      });
+    } catch {
+      throw new NotFoundException(`Team member ${memberId} not found.`);
     }
   }
 }
