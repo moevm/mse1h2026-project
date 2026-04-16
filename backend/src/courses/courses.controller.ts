@@ -31,14 +31,14 @@ export class CoursesController {
   @UseGuards(RolesGuard)
   @Roles(['admin'])
   @Post()
-  async create(@Body() createCourseDto: CreateCourseDto) {
+  create(@Body() createCourseDto: CreateCourseDto) {
     return this.coursesService.createCourse(createCourseDto);
   }
 
   @UseGuards(RolesGuard)
   @Roles(['user'])
   @Post(':id/teams')
-  async createTeam(@Param('id') id: string, @Body() createTeamDto: CreateTeamDto) {
+  createTeam(@Param('id') id: string, @Body() createTeamDto: CreateTeamDto) {
     return this.coursesService.createTeam(id, createTeamDto);
   }
 

@@ -9,7 +9,7 @@ import { UpdateCourseDto } from './dto/update-course.dto';
 export class CoursesService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getAllCourses() {
+  getAllCourses() {
     return this.prisma.course.findMany({
       include: {
         teacher: true,
@@ -36,15 +36,15 @@ export class CoursesService {
     return course;
   }
 
-  async createCourse(dto: CreateCourseDto) {
+  createCourse(createCourseDto: CreateCourseDto) {
     return this.prisma.course.create({
       data: {
-        ...dto,
+        ...createCourseDto,
       },
     });
   }
 
-  async createTeam(id: string, dto: CreateTeamDto) {
+  async createTeam(id: string, createTeamDto: CreateTeamDto) {
     const course = await this.getCourseById(id);
     if (course.maxTeamSize < course.teams.length + 1) {
       throw new BadRequestException('Team size is above limit for this course.');
@@ -52,17 +52,17 @@ export class CoursesService {
 
     return this.prisma.team.create({
       data: {
-        ...dto,
+        ...createTeamDto,
         courseId: id,
       },
     });
   }
 
-  async updateCourse(id: string, dto: UpdateCourseDto) {
+  async updateCourse(id: string, updateCourseDto: UpdateCourseDto) {
     try {
       return await this.prisma.course.update({
         where: { id },
-        data: dto,
+        data: updateCourseDto,
       });
     } catch {
       throw new NotFoundException(`Course ${id} not found.`);
