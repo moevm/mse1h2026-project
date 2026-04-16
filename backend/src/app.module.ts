@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { CoursesModule } from './courses/courses.module';
 import { HealthModule } from './health/health.module';
 import { HelloWorldModule } from './hello-world/hello-world.module';
+import { LdapModule } from './ldap/ldap.module';
 import { ProjectsModule } from './projects/projects.module';
 import { UsersModule } from './users/users.module';
 
@@ -24,6 +25,7 @@ import { UsersModule } from './users/users.module';
       isGlobal: true,
       envFilePath: '../.env',
     }),
+    LdapModule,
   ],
 })
 export class AppModule {}

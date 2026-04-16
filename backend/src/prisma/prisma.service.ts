@@ -1,9 +1,9 @@
 import { PrismaClient } from '@/generated/prisma/client';
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { PrismaMariaDb } from '@prisma/adapter-mariadb';
 
 @Injectable()
-export class PrismaService extends PrismaClient implements OnModuleInit {
+export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(PrismaService.name);
 
   constructor() {
@@ -30,5 +30,9 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
       this.logger.error('Ошибка БД:', error);
       throw error;
     }
+  }
+
+  async onModuleDestroy() {
+    await this.$disconnect();
   }
 }
