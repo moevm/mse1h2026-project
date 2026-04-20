@@ -1,6 +1,6 @@
 # Образ для разработки frontend (Vite + HMR)
 
-FROM node:lts-alpine
+FROM node:24.14.1-alpine3.23 AS dev
 
 # Переменные окружения для pnpm
 ENV PNPM_HOME="/pnpm"
@@ -13,6 +13,8 @@ WORKDIR /app
 
 # Включаем pnpm через Corepack
 RUN corepack enable
+
+FROM dev AS build
 
 # Копируем конфигурацию workspace и lockfile
 COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
@@ -31,7 +33,7 @@ RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
 # Копируем исходный код frontend
 COPY frontend ./frontend
 
-EXPOSE 5173
+EXPOSE 8080
 
-# Запуск Vite dev-сервера с прослушиванием всех интерфейсов (--host)
-CMD ["pnpm", "--filter", "@mse/frontend", "exec", "vite", "--host"]
+# Запуск Vite dev-сервера
+CMD ["pnpm", "--filter", "@mse/frontend", "run", "dev"]

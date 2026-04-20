@@ -2,9 +2,8 @@
 
 # Этап 1: Сборка приложения
 # Образ Node.js для сборки
-FROM node:lts-alpine AS build
+FROM node:24.14.1-alpine3.23 AS base
 
-# Аргумент для передачи базового URL API в Vite
 ARG VITE_API_BASE_URL
 
 # Устанавливаем переменные окружения для pnpm
@@ -18,7 +17,6 @@ ENV PNPM_STORE_PATH=/pnpm/store
 # Устанавливаем переменную для CI-среды
 ENV CI=true
 
-# Устанавливаем переменную окружения для Vite, чтобы она была доступна во время сборки
 ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
 
 # Устанавливаем рабочую директорию
@@ -26,6 +24,9 @@ WORKDIR /app
 
 # Включаем Corepack для управления пакетными менеджерами
 RUN corepack enable
+
+
+FROM base AS deps
 
 # Копируем lockfile, package.json и конфигурацию workspace для установки зависимостей
 COPY pnpm-lock.yaml package.json pnpm-workspace.yaml ./
@@ -41,17 +42,19 @@ COPY frontend/package.json ./frontend/
 RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
     pnpm install --offline --frozen-lockfile --filter @mse/frontend
 
+
+FROM deps AS build
+
 # Копируем исходный код frontend
 COPY frontend ./frontend
 
 # Собираем Vite-приложение
 RUN pnpm --filter @mse/frontend run build
 
-# ----
 
 # Этап 2: Запуск приложения
 # Финальный образ для запуска приложения
-FROM nginx:stable-alpine AS production
+FROM nginx:1.28.3-alpine3.23-slim AS production
 
 # Копируем собранные файлы из этапа сборки в директорию Nginx
 COPY --from=build /app/frontend/dist /usr/share/nginx/html

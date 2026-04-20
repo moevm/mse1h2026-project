@@ -1,7 +1,6 @@
 # Зависимости
 node_modules/
 .pnpm-store/
-.pnpm-debug.log*
 
 # Файлы окружения
 .env
@@ -10,9 +9,8 @@ node_modules/
 
 # Логи
 npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
 pnpm-debug.log*
+.pnpm-debug.log*
 
 # Директории сборки
 dist/
@@ -26,7 +24,12 @@ Thumbs.db
 
 # Редакторы
 .vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
 !.vscode/extensions.json
+!.vscode/*.code-snippets
+!*.code-workspace
 
 .idea/
 *.swp
@@ -42,3 +45,10 @@ Thumbs.db
 
 # Prisma
 **/generated/prisma/**
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/

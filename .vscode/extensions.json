@@ -7,7 +7,6 @@
     "dbaeumer.vscode-eslint",
     "esbenp.prettier-vscode",
     "streetsidesoftware.code-spell-checker-russian",
-    "wayou.vscode-todo-highlight",
     "tomoki1207.pdf",
     "redhat.vscode-yaml",
     "redhat.vscode-xml",
@@ -15,5 +14,8 @@
     "ahmadalli.vscode-nginx-conf",
     "github.vscode-github-actions",
     "github.vscode-pull-request-github",
+    "ms-playwright.playwright",
+    "vitest.explorer",
+    "orta.vscode-jest",
   ]
 }
