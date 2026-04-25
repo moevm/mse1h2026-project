@@ -71,12 +71,17 @@ export class TeamsService {
   }
 
   async deleteMember(teamId: string, memberId: string) {
-    try {
-      return await this.prisma.teamMember.delete({
-        where: { id: memberId },
-      });
-    } catch {
-      throw new NotFoundException(`Team member ${memberId} not found.`);
+    const member = await this.prisma.teamMember.findFirst({
+      where: {
+        teamId: teamId,
+        userId: memberId,
+      },
+    });
+    if (!member) {
+      throw new NotFoundException(`User ${memberId} is not in team ${teamId}`);
     }
+    return this.prisma.teamMember.delete({
+      where: { id: member.id },
+    });
   }
 }
