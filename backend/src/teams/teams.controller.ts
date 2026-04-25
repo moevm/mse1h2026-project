@@ -16,7 +16,7 @@ export class TeamsController {
   }
 
   // + роль
-  @Post(':id/teams')
+  @Post(':id/invitations')
   createInvitation(@Body() createInvitationDto: CreateInvitationDto) {
     return this.teamsService.createInvitation(createInvitationDto)
   }
