@@ -2,7 +2,6 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 
 import { CreateCourseDto } from './dto/create-course.dto';
-import { CreateTeamDto } from './dto/create-team.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
 
 @Injectable()
@@ -44,17 +43,35 @@ export class CoursesService {
     });
   }
 
-  async createTeam(id: string, createTeamDto: CreateTeamDto) {
-    const course = await this.getCourseById(id);
-    if (course.maxTeamSize < course.teams.length + 1) {
-      throw new BadRequestException('Team size is above limit for this course.');
+  async createTeam(courseId: string, userId: string) {
+    const course = await this.prisma.course.findUnique({
+      where: { id: courseId },
+    });
+    if (!course) {
+      throw new NotFoundException(`Course ${courseId} not found.`);
     }
+    const existingMembership = await this.prisma.teamMember.findFirst({
+      where: { userId },
+    });
 
-    return this.prisma.team.create({
-      data: {
-        ...createTeamDto,
-        courseId: id,
-      },
+    if (existingMembership) {
+      throw new BadRequestException('Student is already in a team.');
+    }
+    return this.prisma.$transaction(async (prisma) => {
+      const team = await prisma.team.create({
+        data: {
+          courseId,
+          leaderId: userId,
+          status: 'forming',
+        },
+      });
+      await prisma.teamMember.create({
+        data: {
+          teamId: team.id,
+          userId,
+        },
+      });
+      return team;
     });
   }
 
@@ -77,5 +94,12 @@ export class CoursesService {
     } catch {
       throw new NotFoundException(`Course ${id} not found.`);
     }
+  }
+
+  async getCourseTeams(courseId: string) {
+    return this.prisma.team.findMany({
+      where: { courseId },
+      include: { members: true },
+    });
   }
 }

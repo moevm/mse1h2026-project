@@ -1,10 +1,9 @@
 import { Roles } from '@/common/decorators/roles.decorator';
 import { RolesGuard } from '@/common/guards/roles.guard';
-import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
 
 import { CoursesService } from './courses.service';
 import { CreateCourseDto } from './dto/create-course.dto';
-import { CreateTeamDto } from './dto/create-team.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
 
 @Controller('api/courses')
@@ -24,8 +23,9 @@ export class CoursesController {
   @UseGuards(RolesGuard)
   @Roles(['admin'])
   @Get(':id/teams')
+  @Get(':id/teams')
   findTeams(@Param('id') id: string) {
-    return this.coursesService.getCourseById(id).then((course) => course.teams);
+    return this.coursesService.getCourseTeams(id);
   }
 
   @UseGuards(RolesGuard)
@@ -36,10 +36,10 @@ export class CoursesController {
   }
 
   @UseGuards(RolesGuard)
-  @Roles(['user'])
+  @Roles(['student'])
   @Post(':id/teams')
-  createTeam(@Param('id') id: string, @Body() createTeamDto: CreateTeamDto) {
-    return this.coursesService.createTeam(id, createTeamDto);
+  createTeam(@Param('id') id: string, @Req() req) {
+    return this.coursesService.createTeam(id, req.user.id);
   }
 
   @UseGuards(RolesGuard)

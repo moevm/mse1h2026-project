@@ -1,6 +1,6 @@
 import { Roles } from '@/common/decorators/roles.decorator';
 import { RolesGuard } from '@/common/guards/roles.guard';
-import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
 
 import { CreateInvitationDto } from './dto/create-invitation.dto';
 import { UpdateLeaderDto } from './dto/update-leader.dto';
@@ -17,16 +17,18 @@ export class TeamsController {
 
   // + роль
   @Post(':id/invitations')
-  createInvitation(@Param('id') teamId: string, @Body() createInvitationDto: CreateInvitationDto) {
-    return this.teamsService.createInvitation(teamId, createInvitationDto);
+  createInvitation(
+    @Param('id') teamId: string,
+    @Body() createInvitationDto: CreateInvitationDto,
+    @Req() req,
+  ) {
+    return this.teamsService.createInvitation(teamId, createInvitationDto, req.user.id);
   }
 
   // не хватает роли лидера или как-то ещё обозначить
-  @UseGuards(RolesGuard)
-  @Roles(['admin'])
   @Put(':id')
-  updateLeader(@Param('id') id: string, @Body() updateLeaderDto: UpdateLeaderDto) {
-    return this.teamsService.updateTeamLeader(id, updateLeaderDto);
+  updateLeader(@Param('id') id: string, @Body() dto: UpdateLeaderDto, @Req() req) {
+    return this.teamsService.updateTeamLeader(id, dto, req.user);
   }
 
   // тут тоже

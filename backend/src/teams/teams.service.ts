@@ -1,5 +1,10 @@
 import { PrismaService } from '@/prisma/prisma.service';
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 
 import { CreateInvitationDto } from './dto/create-invitation.dto';
 import { UpdateLeaderDto } from './dto/update-leader.dto';
@@ -26,7 +31,7 @@ export class TeamsService {
     return course;
   }
 
-  async createInvitation(teamId: string, dto: CreateInvitationDto) {
+  async createInvitation(teamId: string, dto: CreateInvitationDto, userId: string) {
     const team = await this.prisma.team.findUnique({
       where: { id: teamId },
       include: {
@@ -36,6 +41,9 @@ export class TeamsService {
     });
     if (!team) {
       throw new NotFoundException(`Team ${teamId} not found.`);
+    }
+    if (team.leaderId !== userId) {
+      throw new ForbiddenException('You have not rights for this team.');
     }
     if (team.members.length >= team.course.maxTeamSize) {
       throw new BadRequestException('Team is already full.');
@@ -49,15 +57,33 @@ export class TeamsService {
     });
   }
 
-  async updateTeamLeader(id: string, updateLeaderDto: UpdateLeaderDto) {
-    try {
-      return await this.prisma.team.update({
-        where: { id },
-        data: updateLeaderDto,
-      });
-    } catch {
+  async updateTeamLeader(
+    id: string,
+    updateLeaderDto: UpdateLeaderDto,
+    user: { id: string; role: string },
+  ) {
+    const team = await this.prisma.team.findUnique({
+      where: { id },
+      include: {
+        members: true,
+      },
+    });
+    if (!team) {
       throw new NotFoundException(`Team ${id} not found.`);
     }
+    if (team.leaderId !== user.id && user.role !== 'admin') {
+      throw new ForbiddenException('Only team leader or admin can update team leader');
+    }
+    const newLeaderId = updateLeaderDto.leaderId;
+
+    const isMember = team.members.some((member) => member.userId === newLeaderId);
+    if (!isMember) {
+      throw new ForbiddenException('New leader must be a member of the team');
+    }
+    return this.prisma.team.update({
+      where: { id },
+      data: updateLeaderDto,
+    });
   }
 
   async deleteTeam(id: string) {
