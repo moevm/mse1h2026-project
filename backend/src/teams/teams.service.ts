@@ -45,8 +45,20 @@ export class TeamsService {
     if (team.leaderId !== userId) {
       throw new ForbiddenException('You have not rights for this team.');
     }
+    const isMember = await this.prisma.teamMember.findFirst({
+      where: {
+        teamId,
+        userId: dto.inviteeId,
+      },
+    });
+    if (isMember) {
+      throw new BadRequestException('User already in team');
+    }
     if (team.members.length >= team.course.maxTeamSize) {
       throw new BadRequestException('Team is already full.');
+    }
+    if (!team.leaderId) {
+      throw new BadRequestException('Team has no leader');
     }
     return this.prisma.teamInvitation.create({
       data: {
@@ -82,21 +94,40 @@ export class TeamsService {
     }
     return this.prisma.team.update({
       where: { id },
-      data: updateLeaderDto,
+      data: {
+        leaderId: updateLeaderDto.leaderId,
+      },
     });
   }
 
-  async deleteTeam(id: string) {
-    try {
-      return await this.prisma.team.delete({
-        where: { id },
-      });
-    } catch {
+  async deleteTeam(id: string, user: { id: string; role: string }) {
+    const team = await this.prisma.team.findUnique({
+      where: { id },
+    });
+    if (!team) {
       throw new NotFoundException(`Team ${id} not found.`);
     }
+    if (team.leaderId !== user.id && user.role !== 'admin') {
+      throw new ForbiddenException('Only leader or admin can delete team');
+    }
+    return this.prisma.team.delete({
+      where: { id },
+    });
   }
 
-  async deleteMember(teamId: string, memberId: string) {
+  async deleteMember(teamId: string, memberId: string, user: { id: string; role: string }) {
+    const team = await this.prisma.team.findUnique({
+      where: { id: teamId },
+    });
+    if (!team) {
+      throw new NotFoundException(`Team ${teamId} not found`);
+    }
+    if (memberId === team.leaderId) {
+      throw new BadRequestException('Leader cannot be removed from team');
+    }
+    if (team.leaderId !== user.id) {
+      throw new ForbiddenException('Only team leader can remove members');
+    }
     const member = await this.prisma.teamMember.findFirst({
       where: {
         teamId: teamId,

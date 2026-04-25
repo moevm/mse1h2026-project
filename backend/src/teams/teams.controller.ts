@@ -1,6 +1,4 @@
-import { Roles } from '@/common/decorators/roles.decorator';
-import { RolesGuard } from '@/common/guards/roles.guard';
-import { Body, Controller, Delete, Get, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Req } from '@nestjs/common';
 
 import { CreateInvitationDto } from './dto/create-invitation.dto';
 import { UpdateLeaderDto } from './dto/update-leader.dto';
@@ -25,22 +23,19 @@ export class TeamsController {
     return this.teamsService.createInvitation(teamId, createInvitationDto, req.user.id);
   }
 
-  // не хватает роли лидера или как-то ещё обозначить
   @Put(':id')
   updateLeader(@Param('id') id: string, @Body() dto: UpdateLeaderDto, @Req() req) {
     return this.teamsService.updateTeamLeader(id, dto, req.user);
   }
 
   // тут тоже
-  @UseGuards(RolesGuard)
-  @Roles(['admin'])
   @Delete(':id')
-  delete(@Param('id') id: string) {
-    return this.teamsService.deleteTeam(id);
+  delete(@Param('id') id: string, @Req() req) {
+    return this.teamsService.deleteTeam(id, req.user);
   }
 
   @Delete(':teamId/members/:userId')
-  deleteMember(@Param('teamId') teamId: string, @Param('userId') userId: string) {
-    return this.teamsService.deleteMember(teamId, userId);
+  deleteMember(@Param('teamId') teamId: string, @Param('userId') userId: string, @Req() req) {
+    return this.teamsService.deleteMember(teamId, userId, req.user);
   }
 }
