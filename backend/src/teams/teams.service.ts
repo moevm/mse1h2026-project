@@ -1,8 +1,8 @@
 import { PrismaService } from '@/prisma/prisma.service';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 
-import { UpdateLeaderDto } from './dto/update-leader.dto';
 import { CreateInvitationDto } from './dto/create-invitation.dto';
+import { UpdateLeaderDto } from './dto/update-leader.dto';
 
 @Injectable()
 export class TeamsService {
@@ -26,10 +26,25 @@ export class TeamsService {
     return course;
   }
 
-  createInvitation(createInvitationDto: CreateInvitationDto) {
+  async createInvitation(teamId: string, dto: CreateInvitationDto) {
+    const team = await this.prisma.team.findUnique({
+      where: { id: teamId },
+      include: {
+        course: true,
+        members: true,
+      },
+    });
+    if (!team) {
+      throw new NotFoundException(`Team ${teamId} not found.`);
+    }
+    if (team.members.length >= team.course.maxTeamSize) {
+      throw new BadRequestException('Team is already full.');
+    }
     return this.prisma.teamInvitation.create({
       data: {
-        ...createInvitationDto,
+        teamId,
+        inviteeId: dto.inviteeId,
+        invitedBy: team.leaderId!,
       },
     });
   }

@@ -1,6 +1,7 @@
 import { Body, Controller, Param, Put } from '@nestjs/common';
-import { InvitationsService } from './invitations.service';
+
 import { UpdateInvitationDto } from './dto/update-invitation.dto';
+import { InvitationsService } from './invitations.service';
 
 @Controller('invitations')
 export class InvitationsController {

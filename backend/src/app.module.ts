@@ -7,10 +7,10 @@ import { AuthModule } from './auth/auth.module';
 import { CoursesModule } from './courses/courses.module';
 import { HealthModule } from './health/health.module';
 import { HelloWorldModule } from './hello-world/hello-world.module';
+import { InvitationsModule } from './invitations/invitations.module';
 import { ProjectsModule } from './projects/projects.module';
 import { TeamsModule } from './teams/teams.module';
 import { UsersModule } from './users/users.module';
-import { InvitationsModule } from './invitations/invitations.module';
 
 @Module({
   imports: [

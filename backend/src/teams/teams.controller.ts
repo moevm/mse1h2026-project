@@ -2,9 +2,9 @@ import { Roles } from '@/common/decorators/roles.decorator';
 import { RolesGuard } from '@/common/guards/roles.guard';
 import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
 
+import { CreateInvitationDto } from './dto/create-invitation.dto';
 import { UpdateLeaderDto } from './dto/update-leader.dto';
 import { TeamsService } from './teams.service';
-import { CreateInvitationDto } from './dto/create-invitation.dto';
 
 @Controller('api/teams')
 export class TeamsController {
@@ -17,8 +17,8 @@ export class TeamsController {
 
   // + роль
   @Post(':id/invitations')
-  createInvitation(@Body() createInvitationDto: CreateInvitationDto) {
-    return this.teamsService.createInvitation(createInvitationDto)
+  createInvitation(@Param('id') teamId: string, @Body() createInvitationDto: CreateInvitationDto) {
+    return this.teamsService.createInvitation(teamId, createInvitationDto);
   }
 
   // не хватает роли лидера или как-то ещё обозначить
@@ -37,8 +37,8 @@ export class TeamsController {
     return this.teamsService.deleteTeam(id);
   }
 
-  @Delete('teams/:teamId/members/:userId')
-  deleteMember(@Param('teamId') teamId: string, @Param('memberId') memberId: string) {
-    return this.teamsService.deleteMember(teamId, memberId);
+  @Delete(':teamId/members/:userId')
+  deleteMember(@Param('teamId') teamId: string, @Param('userId') userId: string) {
+    return this.teamsService.deleteMember(teamId, userId);
   }
 }
