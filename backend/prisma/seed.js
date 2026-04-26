@@ -1,6 +1,25 @@
-import { PrismaMariaDb } from '@prisma/adapter-mariadb';
+const { PrismaMariaDb } = require('@prisma/adapter-mariadb');
 
-import { PrismaClient } from '../src/generated/prisma/client';
+function loadPrismaClient() {
+  const candidates = [
+    '../src/generated/prisma/client',
+    '../dist/generated/prisma/client',
+    '@prisma/client',
+  ];
+
+  for (const candidate of candidates) {
+    try {
+      const mod = require(candidate);
+      if (mod && mod.PrismaClient) {
+        return mod.PrismaClient;
+      }
+    } catch {}
+  }
+
+  throw new Error('PrismaClient module not found in src/dist/@prisma paths');
+}
+
+const PrismaClient = loadPrismaClient();
 
 async function main() {
   const adapter = new PrismaMariaDb({

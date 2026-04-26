@@ -68,7 +68,7 @@ export class CoursesService {
       await prisma.teamMember.create({
         data: {
           teamId: team.id,
-          userId,
+          userId: userId,
         },
       });
       return team;

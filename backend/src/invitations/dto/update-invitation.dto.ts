@@ -1,4 +1,7 @@
-import { CreateInvitationDto } from '@/teams/dto/create-invitation.dto';
-import { PartialType } from '@nestjs/mapped-types';
+import { InvitationStatus } from '@/generated/prisma/enums';
+import { IsEnum } from 'class-validator';
 
-export class UpdateInvitationDto extends PartialType(CreateInvitationDto) {}
+export class UpdateInvitationDto {
+  @IsEnum(InvitationStatus)
+  status: InvitationStatus;
+}

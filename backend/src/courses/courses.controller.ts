@@ -23,7 +23,6 @@ export class CoursesController {
   @UseGuards(RolesGuard)
   @Roles(['admin'])
   @Get(':id/teams')
-  @Get(':id/teams')
   findTeams(@Param('id') id: string) {
     return this.coursesService.getCourseTeams(id);
   }
@@ -39,7 +38,7 @@ export class CoursesController {
   @Roles(['student'])
   @Post(':id/teams')
   createTeam(@Param('id') id: string, @Req() req) {
-    return this.coursesService.createTeam(id, req.user.id);
+    return this.coursesService.createTeam(id, req.user.sub);
   }
 
   @UseGuards(RolesGuard)

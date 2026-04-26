@@ -9,9 +9,14 @@ export class InvitationsService {
 
   async updateInvitation(id: string, updateInvitationDto: UpdateInvitationDto) {
     try {
+      const respondedAt = updateInvitationDto.status === 'pending' ? null : new Date();
+
       return await this.prisma.teamInvitation.update({
         where: { id },
-        data: updateInvitationDto,
+        data: {
+          status: updateInvitationDto.status,
+          respondedAt,
+        },
       });
     } catch {
       throw new NotFoundException(`Invitation ${id} not found.`);

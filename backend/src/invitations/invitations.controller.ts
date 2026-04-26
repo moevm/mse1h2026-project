@@ -3,7 +3,7 @@ import { Body, Controller, Param, Put } from '@nestjs/common';
 import { UpdateInvitationDto } from './dto/update-invitation.dto';
 import { InvitationsService } from './invitations.service';
 
-@Controller('invitations')
+@Controller('api/invitations')
 export class InvitationsController {
   constructor(private readonly invitationsService: InvitationsService) {}
 

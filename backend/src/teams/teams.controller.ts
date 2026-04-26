@@ -20,7 +20,7 @@ export class TeamsController {
     @Body() createInvitationDto: CreateInvitationDto,
     @Req() req,
   ) {
-    return this.teamsService.createInvitation(teamId, createInvitationDto, req.user.id);
+    return this.teamsService.createInvitation(teamId, createInvitationDto, req.user.sub);
   }
 
   @Put(':id')
