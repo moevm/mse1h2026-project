@@ -18,6 +18,7 @@
     "typecheck": "pnpm -r typecheck",
     "format": "pnpm -r format",
     "format:check": "pnpm -r format:check",
+    "pre-commit-check": "pnpm -r pre-commit-check",
     "build": "concurrently -n backend,frontend -c blue,magenta \"pnpm --filter @mse/backend db:generate && pnpm --filter @mse/backend build\" \"pnpm --filter @mse/frontend build\"",
     "dev": "pnpm --filter=@mse/backend db:dev && concurrently -n backend,frontend -c blue,magenta \"pnpm --filter @mse/backend start:dev\" \"pnpm --filter @mse/frontend dev\"",
     "preview": "concurrently -n backend,frontend -c blue,magenta \"pnpm --filter @mse/backend start:prod\" \"pnpm --filter @mse/frontend preview\""
@@ -28,21 +29,22 @@
   "license": "ISC",
   "packageManager": "pnpm@10.30.1+sha512.3590e550d5384caa39bd5c7c739f72270234b2f6059e13018f975c313b1eb9fefcc09714048765d4d9efe961382c312e624572c0420762bdc5d5940cdf9be73a",
   "devDependencies": {
-    "@dotenvx/dotenvx": "^1.54.1",
+    "@dotenvx/dotenvx": "^1.60.2",
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.59.1",
     "@trivago/prettier-plugin-sort-imports": "^6.0.2",
-    "@types/node": "^25.3.0",
+    "@types/node": "^25.5.2",
     "concurrently": "^9.2.1",
-    "eslint": "^10.0.1",
+    "eslint": "^10.2.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-vue": "~10.8.0",
-    "globals": "^17.3.0",
+    "globals": "^17.4.0",
     "jiti": "^2.6.1",
-    "lefthook": "^2.1.4",
+    "lefthook": "^2.1.5",
     "prettier": "^3.8.1",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.56.0",
+    "typescript-eslint": "^8.58.1",
     "vue-eslint-parser": "^10.4.0"
   }
 }

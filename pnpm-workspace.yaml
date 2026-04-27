@@ -8,7 +8,9 @@ onlyBuiltDependencies:
   - '@nestjs/core'
   - '@parcel/watcher'
   - '@prisma/engines'
+  - '@scarf/scarf'
   - esbuild
   - lefthook
   - prisma
   - unrs-resolver
+  - vue-demi

@@ -1,8 +1,5 @@
 # Образ для разработки backend
-FROM node:lts-alpine AS dev
-
-# Устанавливаем curl для healthcheck
-RUN apk add --no-cache curl
+FROM node:24.14.1-alpine3.23 AS dev
 
 # Переменные окружения для pnpm
 ENV PNPM_HOME="/pnpm"
@@ -10,11 +7,15 @@ ENV PATH="$PNPM_HOME:$PATH"
 ENV PNPM_DISABLE_SELF_UPDATE_CHECK=true
 ENV PNPM_STORE_PATH=/pnpm/store
 ENV CI=true
+ENV SCARF_ANALYTICS=false
 
 WORKDIR /app
 
 # Включаем pnpm через Corepack
 RUN corepack enable
+
+
+FROM dev AS build
 
 # Копируем конфигурацию workspace и lockfile
 COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./

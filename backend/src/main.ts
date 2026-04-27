@@ -1,10 +1,13 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import helmet from 'helmet';
 
 import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  app.use(helmet());
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -16,21 +19,18 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       'http://127.0.0.1:80',
-      'http://127.0.0.1:5173',
-      // Docker frontend url
       'http://127.0.0.1:8080',
-      // Localhost frontend url
+      'http://127.0.0.1:8081',
       'http://localhost:8080',
-      // Docker nginx url
-      'http://172.20.0.1:80',
-      // Vite dev server
-      'http://localhost:5173',
-      // Vite preview server
-      'http://localhost:4173',
+      'http://localhost:8081',
+      'http://localhost:80',
     ],
   });
 
-  await app.listen(3000);
-  console.log('Server running on http://localhost:3000');
+  const port = 3000;
+
+  await app.listen(port, () => {
+    console.log(`Server running on http://localhost:${port}`);
+  });
 }
 bootstrap();
