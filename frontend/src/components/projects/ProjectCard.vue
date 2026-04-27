@@ -23,7 +23,7 @@ const props = defineProps<{
 const handleCardClick = () => {
   const courseId = props.project.courseId;
   const projectId = props.project.uid;
-  router.push(`/course/${courseId}/projects/${projectId}`);
+  router.push(`/courses/${courseId}/projects/${projectId}`);
 };
 </script>
 
