@@ -21,14 +21,14 @@ export interface FormData {
 }
 
 export interface Project {
-  id: string;
+  uid: number;
   title: string;
   description?: string;
   teacherId: string;
   teacherFirstName: string;
   teacherLastName: string;
   courseName: string;
-  courseId: string;
+  courseId: number;
   createdAt?: Date;
   updatedAt?: Date;
 }

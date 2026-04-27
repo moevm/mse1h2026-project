@@ -65,13 +65,13 @@ const handleShow = (e: MouseEvent) => {
   width: 100%;
   border-radius: 15px;
   overflow: hidden;
-  background: #d9d9d9;
+  background: var(--secondary-color);
   padding: 1.5rem 0;
 }
 
 .course-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow);
 }
 
 .card-header {
