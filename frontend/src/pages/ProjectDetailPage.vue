@@ -17,9 +17,7 @@
       <template #header>
         <div class="card-header">
           <h1 class="project-title">{{ project.title }}</h1>
-          <n-tag type="info" :bordered="false">
-            #{{ project.uid }}
-          </n-tag>
+          <n-tag type="info" :bordered="false"> #{{ project.uid }} </n-tag>
         </div>
       </template>
 
@@ -32,11 +30,7 @@
 
         <n-descriptions-item label="Курс">
           <div class="info-item">
-            <n-button
-              text
-              type="primary"
-              @click="router.push(`/courses/${project.courseId}`)"
-            >
+            <n-button text type="primary" @click="router.push(`/courses/${project.courseId}`)">
               {{ project.courseName }}
             </n-button>
           </div>
@@ -52,27 +46,23 @@
         </n-descriptions-item>
 
         <n-descriptions-item v-if="userStore.isAdmin && project.createdAt" label="Создан">
-            <div class="info-item">
-                <span>{{ formatDate(project.createdAt) }}</span>
-            </div>
-            </n-descriptions-item>
+          <div class="info-item">
+            <span>{{ formatDate(project.createdAt) }}</span>
+          </div>
+        </n-descriptions-item>
 
-            <n-descriptions-item v-if="userStore.isAdmin && project.updatedAt" label="Обновлен">
-            <div class="info-item">
-                <span>{{ formatDate(project.updatedAt) }}</span>
-            </div>
+        <n-descriptions-item v-if="userStore.isAdmin && project.updatedAt" label="Обновлен">
+          <div class="info-item">
+            <span>{{ formatDate(project.updatedAt) }}</span>
+          </div>
         </n-descriptions-item>
       </n-descriptions>
 
       <!-- Кнопки действий -->
       <template v-if="userStore.isAdmin" #footer>
         <n-space justify="end" :size="16">
-          <n-button type="error" @click="showDeleteDialog = true">
-            Удалить
-          </n-button>
-          <n-button type="primary" @click="handleEditProject">
-            Редактировать
-          </n-button>
+          <n-button type="error" @click="showDeleteDialog = true"> Удалить </n-button>
+          <n-button type="primary" @click="handleEditProject"> Редактировать </n-button>
         </n-space>
       </template>
     </n-card>
@@ -85,9 +75,7 @@
       description="Возможно, проект был удален или ссылка неверна"
     >
       <template #footer>
-        <n-button @click="router.push('/courses')">
-          Вернуться к списку курсов
-        </n-button>
+        <n-button @click="router.push('/courses')"> Вернуться к списку курсов </n-button>
       </template>
     </n-result>
 
@@ -177,17 +165,17 @@ const handleEditProject = () => {
 
 const handleConfirmDelete = async () => {
   if (!project.value) return;
-  
+
   try {
     await projectsApi.delete(project.value.uid);
-    
+
     notification.success({
       title: 'Проект удален',
       content: 'Проект успешно удален',
       duration: 3000,
       keepAliveOnHover: true,
     });
-    
+
     // Переход на страницу курса
     router.push(`/courses/${project.value.courseId}`);
   } catch (error) {
