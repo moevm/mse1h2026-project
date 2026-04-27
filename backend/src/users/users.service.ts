@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 export type UserRole = 'admin' | 'student';
 
 export type UserAuth = {
-  userId: string;
+  id: string;
   email: string;
   password: string;
   role: UserRole;
@@ -30,7 +30,7 @@ export class UsersService {
     }
 
     return {
-      userId: user.id,
+      id: user.id,
       email: user.email,
       password: user.password,
       role: user.role,
