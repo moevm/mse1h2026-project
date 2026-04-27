@@ -5,57 +5,25 @@
         <div class="project-id">#{{ project.uid }}</div>
         <div class="project-title">{{ project.title }}</div>
       </div>
-
-      <div class="right-section">
-        <n-button
-          v-if="userStore.isAdmin"
-          type="error"
-          size="small"
-          :loading="deleting"
-          @click.stop="handleDelete"
-        >
-          <template #icon>
-            <n-icon>
-              <DeleteRound />
-            </n-icon>
-          </template>
-          Удалить
-        </n-button>
-      </div>
     </div>
   </n-card>
 </template>
 
 <script setup lang="ts">
-import { useUserStore } from '@/stores/userStore';
 import type { Project } from '@/types';
-import { DeleteRound } from '@vicons/material';
-import { NButton, NCard, NIcon } from 'naive-ui';
-import { ref } from 'vue';
+import { NCard } from 'naive-ui';
 import { useRouter } from 'vue-router';
 
-const userStore = useUserStore();
 const router = useRouter();
 
 const props = defineProps<{
   project: Project;
 }>();
 
-const deleting = ref(false);
-
-const emit = defineEmits<{
-  (e: 'delete', project: Project): void;
-}>();
-
 const handleCardClick = () => {
   const courseId = props.project.courseId;
   const projectId = props.project.uid;
   router.push(`/course/${courseId}/projects/${projectId}`);
-};
-
-const handleDelete = () => {
-  deleting.value = true;
-  emit('delete', props.project);
 };
 </script>
 

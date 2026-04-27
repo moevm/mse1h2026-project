@@ -49,37 +49,6 @@
         </n-descriptions-item>
       </n-descriptions>
 
-      <!-- Вкладка проектов -->
-      <div class="projects-section">
-        <div class="projects-header" @click="toggleProjects">
-          <div class="projects-title">
-            <n-icon size="20" class="projects-icon">
-              <FolderOutline />
-            </n-icon>
-            <span>Проекты курса</span>
-            <n-tag size="small" :bordered="false">
-              {{ projects.length }}
-            </n-tag>
-          </div>
-          <n-icon size="20" class="expand-icon" :class="{ rotated: isProjectsExpanded }">
-            <ChevronDownOutline />
-          </n-icon>
-        </div>
-
-        <!-- Список проектов (разворачивается/сворачивается) -->
-        <Transition name="expand">
-          <div v-show="isProjectsExpanded" class="projects-content">
-            <ProjectsList
-              :projects="projects"
-              :loading="projectsLoading"
-              :current-course-id="course?.id"
-              @project-delete="handleDeleteProject"
-              @project-add="handleAddProject"
-            />
-          </div>
-        </Transition>
-      </div>
-
       <!-- Кнопки действий -->
       <template v-if="userStore.isAdmin" #footer>
         <n-space justify="end" :size="16">
@@ -87,6 +56,40 @@
           <n-button type="primary" @click="handleEditCourse"> Редактировать </n-button>
         </n-space>
       </template>
+    </n-card>
+
+    <!-- Карточка со списком проектов -->
+    <n-card v-if="course" class="projects-card" :bordered="true">
+      <div class="projects-container">
+        <div class="projects-list_header">
+          <h2 class="projects-list_title">Список проектов</h2>
+          <n-button v-if="userStore.isAdmin && course?.id" type="primary" @click="handleAddProject">
+            <template #icon>
+              <n-icon>
+                <AddRound />
+              </n-icon>
+            </template>
+            Добавить проект
+          </n-button>
+        </div>
+
+        <LoadingSpinner v-if="projectsLoading" text="Загрузка проектов..." />
+
+        <div v-else-if="!projects.length" class="center-wrapper">
+          <n-empty :description="emptyStateMessage" class="empty">
+            <template #icon>
+              <n-icon>
+                <SentimentDissatisfiedRound />
+              </n-icon>
+            </template>
+          </n-empty>
+        </div>
+
+        <!-- Список проектов -->
+        <div v-else class="projects-list">
+          <ProjectCard v-for="project in projects" :key="project.uid" :project="project" />
+        </div>
+      </div>
     </n-card>
 
     <!-- Ошибка загрузки -->
@@ -102,6 +105,7 @@
         </n-button>
       </template>
     </n-result>
+
     <ConfirmDialog
       :show="showDialog"
       title="Подтверждение действия"
@@ -117,9 +121,10 @@
 import { coursesApi, projectsApi, usersApi } from '@/api';
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue';
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue';
-import ProjectsList from '@/components/projects/ProjectsList.vue';
+import ProjectCard from '@/components/projects/ProjectCard.vue';
 import { useUserStore } from '@/stores/userStore';
 import type { Course, Project, User } from '@/types';
+import { AddRound, SentimentDissatisfiedRound } from '@vicons/material';
 import {
   NBreadcrumb,
   NBreadcrumbItem,
@@ -127,13 +132,14 @@ import {
   NCard,
   NDescriptions,
   NDescriptionsItem,
+  NEmpty,
   NIcon,
   NResult,
   NSpace,
   NTag,
   useNotification,
 } from 'naive-ui';
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 const userStore = useUserStore();
@@ -149,7 +155,6 @@ const teacher = ref<User | null>(null);
 // Состояние для проектов
 const projects = ref<Project[]>([]);
 const projectsLoading = ref(false);
-const isProjectsExpanded = ref(true); // По умолчанию развернуто
 
 // Форматирование даты
 const formatDate = (date: Date): string => {
@@ -162,19 +167,24 @@ const formatDate = (date: Date): string => {
   });
 };
 
-// Переключение видимости проектов
-const toggleProjects = () => {
-  isProjectsExpanded.value = !isProjectsExpanded.value;
-};
+// Сообщение для пустого состояния
+const emptyStateMessage = computed(() => {
+  if (userStore.isAdmin) {
+    return course.value?.id
+      ? 'Нет доступных проектов для управления в этом курсе'
+      : 'Выберите курс, чтобы управлять проектами';
+  } else {
+    return 'Нет доступных активных проектов';
+  }
+});
 
 // Загрузка проектов курса
 const loadProjects = async () => {
   if (!course.value) return;
-  
+
   try {
     projectsLoading.value = true;
-    // Здесь используйте ваш API для получения проектов по ID курса
-    projects.value = await projectsApi.getByCourseId(course.value.id);
+    projects.value = await projectsApi.getAll();
   } catch (error) {
     console.error('Ошибка загрузки проектов:', error);
     notification.error({
@@ -202,7 +212,7 @@ const loadCourse = async () => {
     if (course.value?.adminId) {
       teacher.value = await usersApi.getById(course.value.adminId);
     }
-    
+
     // Загружаем проекты после загрузки курса
     await loadProjects();
   } catch (error) {
@@ -256,26 +266,6 @@ const handleConfirmDelete = async () => {
   }
 };
 
-const handleDeleteProject = async (project: Project) => {
-  try {
-    await projectsApi.delete(project.uid);
-    notification.success({
-      title: 'Проект удален',
-      content: 'Проект успешно удален',
-      duration: 3000,
-    });
-    // Перезагружаем список проектов
-    await loadProjects();
-  } catch (error) {
-    console.error('Ошибка удаления проекта:', error);
-    notification.error({
-      title: 'Ошибка',
-      content: 'Не удалось удалить проект',
-      duration: 3000,
-    });
-  }
-};
-
 const handleAddProject = () => {
   if (!course.value) return;
   // Переход на страницу создания проекта для этого курса
@@ -300,7 +290,7 @@ onMounted(() => {
 }
 
 .course-card {
-  margin-top: 24px;
+  margin-block: 24px;
   box-shadow: var(--shadow);
 }
 
@@ -327,5 +317,47 @@ onMounted(() => {
   padding: 8px 0;
 }
 
-/* ToDo: Адаптивность */
+.projects-card {
+  box-shadow: var(--shadow);
+}
+
+.projects-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  font-size: 1.5rem;
+}
+
+.projects-list_header {
+  grid-row: 1;
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.projects-list_title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.center-wrapper {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 500px;
+  width: 100%;
+}
+
+.empty {
+  --n-font-size: 1.2rem !important;
+}
+
+.projects-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
 </style>
