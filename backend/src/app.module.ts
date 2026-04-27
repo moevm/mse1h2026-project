@@ -24,7 +24,7 @@ import { UsersModule } from './users/users.module';
     HealthModule,
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '../.env',
+      envFilePath: '../../.env',
     }),
     TeamsModule,
     InvitationsModule,
