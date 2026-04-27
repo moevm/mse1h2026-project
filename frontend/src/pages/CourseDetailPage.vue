@@ -49,6 +49,37 @@
         </n-descriptions-item>
       </n-descriptions>
 
+      <!-- Вкладка проектов -->
+      <div class="projects-section">
+        <div class="projects-header" @click="toggleProjects">
+          <div class="projects-title">
+            <n-icon size="20" class="projects-icon">
+              <FolderOutline />
+            </n-icon>
+            <span>Проекты курса</span>
+            <n-tag size="small" :bordered="false">
+              {{ projects.length }}
+            </n-tag>
+          </div>
+          <n-icon size="20" class="expand-icon" :class="{ rotated: isProjectsExpanded }">
+            <ChevronDownOutline />
+          </n-icon>
+        </div>
+
+        <!-- Список проектов (разворачивается/сворачивается) -->
+        <Transition name="expand">
+          <div v-show="isProjectsExpanded" class="projects-content">
+            <ProjectsList
+              :projects="projects"
+              :loading="projectsLoading"
+              :current-course-id="course?.id"
+              @project-delete="handleDeleteProject"
+              @project-add="handleAddProject"
+            />
+          </div>
+        </Transition>
+      </div>
+
       <!-- Кнопки действий -->
       <template v-if="userStore.isAdmin" #footer>
         <n-space justify="end" :size="16">
@@ -83,11 +114,12 @@
 </template>
 
 <script setup lang="ts">
-import { coursesApi, usersApi } from '@/api';
+import { coursesApi, projectsApi, usersApi } from '@/api';
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue';
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue';
+import ProjectsList from '@/components/projects/ProjectsList.vue';
 import { useUserStore } from '@/stores/userStore';
-import type { Course, User } from '@/types';
+import type { Course, Project, User } from '@/types';
 import {
   NBreadcrumb,
   NBreadcrumbItem,
@@ -95,6 +127,7 @@ import {
   NCard,
   NDescriptions,
   NDescriptionsItem,
+  NIcon,
   NResult,
   NSpace,
   NTag,
@@ -113,6 +146,11 @@ const loading = ref(true);
 const showDialog = ref(false);
 const teacher = ref<User | null>(null);
 
+// Состояние для проектов
+const projects = ref<Project[]>([]);
+const projectsLoading = ref(false);
+const isProjectsExpanded = ref(true); // По умолчанию развернуто
+
 // Форматирование даты
 const formatDate = (date: Date): string => {
   return new Date(date).toLocaleString('ru-RU', {
@@ -122,6 +160,31 @@ const formatDate = (date: Date): string => {
     hour: '2-digit',
     minute: '2-digit',
   });
+};
+
+// Переключение видимости проектов
+const toggleProjects = () => {
+  isProjectsExpanded.value = !isProjectsExpanded.value;
+};
+
+// Загрузка проектов курса
+const loadProjects = async () => {
+  if (!course.value) return;
+  
+  try {
+    projectsLoading.value = true;
+    // Здесь используйте ваш API для получения проектов по ID курса
+    projects.value = await projectsApi.getByCourseId(course.value.id);
+  } catch (error) {
+    console.error('Ошибка загрузки проектов:', error);
+    notification.error({
+      title: 'Ошибка',
+      content: 'Не удалось загрузить проекты курса',
+      duration: 3000,
+    });
+  } finally {
+    projectsLoading.value = false;
+  }
 };
 
 // Загрузка данных курса
@@ -139,6 +202,9 @@ const loadCourse = async () => {
     if (course.value?.adminId) {
       teacher.value = await usersApi.getById(course.value.adminId);
     }
+    
+    // Загружаем проекты после загрузки курса
+    await loadProjects();
   } catch (error) {
     console.error('Ошибка загрузки курса:', error);
     notification.error({
@@ -170,7 +236,6 @@ const handleConfirmDelete = async () => {
   try {
     await coursesApi.delete(course.value.id);
 
-    // Уведомление об успехе
     notification.success({
       title: 'Курс удален',
       content: 'Курс успешно удален',
@@ -189,6 +254,32 @@ const handleConfirmDelete = async () => {
   } finally {
     closeDialog();
   }
+};
+
+const handleDeleteProject = async (project: Project) => {
+  try {
+    await projectsApi.delete(project.uid);
+    notification.success({
+      title: 'Проект удален',
+      content: 'Проект успешно удален',
+      duration: 3000,
+    });
+    // Перезагружаем список проектов
+    await loadProjects();
+  } catch (error) {
+    console.error('Ошибка удаления проекта:', error);
+    notification.error({
+      title: 'Ошибка',
+      content: 'Не удалось удалить проект',
+      duration: 3000,
+    });
+  }
+};
+
+const handleAddProject = () => {
+  if (!course.value) return;
+  // Переход на страницу создания проекта для этого курса
+  router.push(`/courses/${course.value.id}/projects/create`);
 };
 
 // Загружаем данные при монтировании
