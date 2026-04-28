@@ -27,8 +27,10 @@ export class TeamsService {
         exchangeConfirmations: true,
       },
     });
-    if (!course) throw new NotFoundException(`Team ${id} not found.`);
-    return course;
+    if (!course) {
+      throw new NotFoundException(`Team ${id} not found.`);
+    }
+      return course;
   }
 
   async createInvitation(teamId: string, dto: CreateInvitationDto, userId: string) {

@@ -37,9 +37,7 @@ export class CoursesService {
 
   async createCourse(createCourseDto: CreateCourseDto) {
     return await this.prisma.course.create({
-      data: {
-        ...createCourseDto,
-      },
+      data: createCourseDto,
     });
   }
 
