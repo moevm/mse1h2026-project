@@ -25,7 +25,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
   async onModuleInit() {
     try {
       await this.$connect();
-      this.logger.log('MySQL подключение успешно');
+      this.logger.log('MySQL подключение успешно.');
     } catch (error) {
       this.logger.error('Ошибка БД:', error);
       throw error;
@@ -392,5 +392,15 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
     });
 
     this.logger.log('Teams prepared: 2 teams.');
+  }
+
+  async onModuleDestroy() {
+    try {
+      await this.$disconnect();
+      this.logger.log('MySQL соединение закрыто.');
+    } catch (error) {
+      this.logger.error('Ошибка при закрытии соединения БД:', error);
+      throw error;
+    }
   }
 }

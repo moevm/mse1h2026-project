@@ -1,6 +1,7 @@
-import { IsUUID } from 'class-validator';
+import { IsNotEmpty, IsUUID } from 'class-validator';
 
 export class UpdateLeaderDto {
+  @IsNotEmpty()
   @IsUUID()
-  leaderId: string;
+  leaderId!: string;
 }

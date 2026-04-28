@@ -30,7 +30,7 @@ export class TeamsService {
     if (!course) {
       throw new NotFoundException(`Team ${id} not found.`);
     }
-      return course;
+    return course;
   }
 
   async createInvitation(teamId: string, dto: CreateInvitationDto, userId: string) {

@@ -1,7 +1,8 @@
 import { InvitationStatus } from '@/generated/prisma/enums';
-import { IsEnum } from 'class-validator';
+import { IsEnum, IsNotEmpty } from 'class-validator';
 
 export class UpdateInvitationDto {
   @IsEnum(InvitationStatus)
-  status: InvitationStatus;
+  @IsNotEmpty()
+  status!: InvitationStatus;
 }
