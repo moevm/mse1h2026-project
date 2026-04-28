@@ -8,8 +8,8 @@ import { UpdateCourseDto } from './dto/update-course.dto';
 export class CoursesService {
   constructor(private readonly prisma: PrismaService) {}
 
-  getAllCourses() {
-    return this.prisma.course.findMany({
+  async getAllCourses() {
+    return await this.prisma.course.findMany({
       include: {
         teacher: true,
         teams: true,
@@ -35,8 +35,8 @@ export class CoursesService {
     return course;
   }
 
-  createCourse(createCourseDto: CreateCourseDto) {
-    return this.prisma.course.create({
+  async createCourse(createCourseDto: CreateCourseDto) {
+    return await this.prisma.course.create({
       data: {
         ...createCourseDto,
       },
