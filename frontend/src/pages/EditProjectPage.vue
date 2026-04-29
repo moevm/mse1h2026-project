@@ -1,22 +1,22 @@
 <template>
-  <div class="edit-course-page">
+  <div class="edit-project-page">
     <n-page-header @back="goBack">
       <template #title>
-        <span class="title">Редактировать курс</span>
+        <span class="title">Редактировать проект</span>
       </template>
     </n-page-header>
 
     <!-- Состояние загрузки -->
     <div v-if="loading" class="loading-container">
-      <LoadingSpinner text="Загрузка данных курса..." />
+      <LoadingSpinner text="Загрузка данных проекта..." />
     </div>
 
-    <!-- Курс не найден -->
+    <!-- Проект не найден -->
     <n-result
-      v-else-if="!course"
+      v-else-if="!project"
       status="404"
-      title="Курс не найден"
-      description="Возможно, курс был удален или ссылка неверна"
+      title="Проект не найден"
+      description="Возможно, проект был удален или ссылка неверна"
       size="large"
       class="result-container"
     >
@@ -26,11 +26,10 @@
     </n-result>
 
     <!-- Форма редактирования (когда данные загружены) -->
-    <CourseForm
+    <ProjectForm
       v-else
       mode="edit"
-      :initial-data="course"
-      :disabled-fields="['teamSize']"
+      :initial-data="project"
       @submit="handleEdit"
       @cancel="goBack"
     />
@@ -38,10 +37,10 @@
 </template>
 
 <script setup lang="ts">
-import { coursesApi } from '@/api';
+import { projectsApi } from '@/api';
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue';
-import CourseForm from '@/components/courses/CourseForm.vue';
-import type { Course } from '@/types';
+import ProjectForm from '@/components/projects/ProjectForm.vue';
+import type { Project } from '@/types';
 import { NButton, NPageHeader, NResult, useNotification } from 'naive-ui';
 import { onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
@@ -50,58 +49,58 @@ const router = useRouter();
 const route = useRoute();
 const notification = useNotification();
 
-const course = ref<Course | null>(null);
+const project = ref<Project | null>(null);
 const loading = ref(true);
 
-// Загрузка данных курса
-const loadCourse = async () => {
-  const courseId = String(route.params.id);
+// Загрузка данных проекта
+const loadProject = async () => {
+  const projectId = route.params.id;
 
-  if (!courseId || courseId === 'undefined' || courseId === 'null') {
+  if (!projectId || projectId === 'undefined' || projectId === 'null') {
     router.push('/404');
     return;
   }
 
   try {
     loading.value = true;
-    course.value = await coursesApi.getById(courseId);
+    project.value = await projectsApi.getById(Number(projectId));
   } catch (error) {
-    console.error('Ошибка загрузки курса:', error);
+    console.error('Ошибка загрузки проекта:', error);
     notification.error({
       title: 'Ошибка',
-      content: 'Не удалось загрузить информацию о курсе',
+      content: 'Не удалось загрузить информацию о проекте',
       duration: 5000,
     });
-    // При ошибке курс остается null, покажется n-result
-    course.value = null;
+    // При ошибке проект остается null, покажется n-result
+    project.value = null;
   } finally {
     loading.value = false;
   }
 };
 
-const handleEdit = async (formData: Course): Promise<void> => {
-  if (!course.value) return;
+const handleEdit = async (formData: Partial<Project>): Promise<void> => {
+  if (!project.value) return;
 
   try {
-    const editedCourse = await coursesApi.update(course.value.id, formData);
+    const editedProject = await projectsApi.update(project.value.uid, formData);
 
-    console.log('Курс успешно обновлен:', editedCourse);
+    console.log('Проект успешно обновлен:', editedProject);
 
     notification.success({
       title: 'Успешно',
-      content: 'Курс успешно отредактирован',
+      content: 'Проект успешно отредактирован',
       duration: 3000,
       keepAliveOnHover: true,
     });
 
-    // Переход на страницу курса
-    router.push(`/courses/${course.value.id}`);
+    // Переход на страницу проекта
+    router.push(`/projects/${project.value.uid}`);
   } catch (error) {
-    console.error('Ошибка редактирования курса:', error);
+    console.error('Ошибка редактирования проекта:', error);
 
     notification.error({
       title: 'Ошибка редактирования',
-      content: error instanceof Error ? error.message : 'Не удалось отредактировать курс',
+      content: error instanceof Error ? error.message : 'Не удалось отредактировать проект',
       duration: 5000,
       keepAliveOnHover: true,
     });
@@ -109,8 +108,8 @@ const handleEdit = async (formData: Course): Promise<void> => {
 };
 
 const goBack = (): void => {
-  if (course.value) {
-    router.push(`/courses/${course.value.id}`);
+  if (project.value) {
+    router.push(`/projects/${project.value.uid}`);
   } else {
     router.push('/courses');
   }
@@ -122,12 +121,12 @@ const goToCoursesList = (): void => {
 
 // Загружаем данные при монтировании
 onMounted(() => {
-  loadCourse();
+  loadProject();
 });
 </script>
 
 <style scoped>
-.edit-course-page {
+.edit-project-page {
   max-width: 800px;
   margin: 0 auto;
   padding: 24px;

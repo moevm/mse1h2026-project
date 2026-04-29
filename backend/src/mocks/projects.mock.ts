@@ -10,7 +10,7 @@ export const mockProjects: Project[] = [
     teacherFirstName: 'Анна',
     teacherLastName: 'Иванова',
     courseName: 'MSE',
-    courseId: 1,
+    courseId: '1',
     createdAt: new Date(),
   },
   {
@@ -22,7 +22,7 @@ export const mockProjects: Project[] = [
     teacherFirstName: 'Олег',
     teacherLastName: 'Синичкин',
     courseName: 'noSQL',
-    courseId: 1,
+    courseId: '1',
     createdAt: new Date(),
   },
 ];

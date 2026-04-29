@@ -10,7 +10,7 @@ export const projectsApi = {
   create: (data: Partial<Project>) =>
     axiosInstance.post<Project>('/projects', data).then((res) => res.data),
 
-  update: (id: number, data: Project) =>
+  update: (id: number, data: Partial<Project>) =>
     axiosInstance.put<Project>(`/projects/${id}`, data).then((res) => res.data),
 
   delete: (id: number) => axiosInstance.delete(`/projects/${id}`).then((res) => res.data),

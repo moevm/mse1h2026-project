@@ -48,6 +48,12 @@ const routes: RouterOptions['routes'] = [
         name: 'project-detail',
         meta: { requiresAuthentication: true },
       },
+      {
+        path: '/courses/:id/projects/create',
+        component: () => import('@/pages/CreateProjectPage.vue'),
+        name: 'project-create',
+        meta: { requiresAuthentication: true, requiresAdmin: true },
+      }
     ],
   },
 ];

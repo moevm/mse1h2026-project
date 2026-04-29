@@ -20,7 +20,7 @@ export class ProjectService {
       title: projectData.title || 'New project',
       description: projectData.description || '',
       teacherId: projectData.teacherId || 12,
-      courseId: projectData.courseId || 1,
+      courseId: projectData.courseId || '1',
       teacherFirstName: projectData.teacherFirstName || 'Иван',
       teacherLastName: projectData.teacherLastName || 'Иванов',
       courseName: 'MSE',
