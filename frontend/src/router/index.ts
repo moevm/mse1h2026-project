@@ -53,7 +53,7 @@ const routes: RouterOptions['routes'] = [
         component: () => import('@/pages/CreateProjectPage.vue'),
         name: 'project-create',
         meta: { requiresAuthentication: true, requiresAdmin: true },
-      }
+      },
     ],
   },
 ];

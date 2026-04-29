@@ -26,13 +26,7 @@
     </n-result>
 
     <!-- Форма редактирования (когда данные загружены) -->
-    <ProjectForm
-      v-else
-      mode="edit"
-      :initial-data="project"
-      @submit="handleEdit"
-      @cancel="goBack"
-    />
+    <ProjectForm v-else mode="edit" :initial-data="project" @submit="handleEdit" @cancel="goBack" />
   </div>
 </template>
 

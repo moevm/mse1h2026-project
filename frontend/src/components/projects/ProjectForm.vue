@@ -229,8 +229,8 @@ const handleSubmit = async () => {
     submitting.value = true;
 
     // Находим выбранный курс для получения courseName
-    const selectedCourse = courses.value.find(c => c.id === formData.value.courseId);
-    
+    const selectedCourse = courses.value.find((c) => c.id === formData.value.courseId);
+
     const projectData: Partial<Project> = {
       uid: props.mode === 'edit' && props.initialData?.uid ? props.initialData.uid : undefined,
       title: formData.value.title,
