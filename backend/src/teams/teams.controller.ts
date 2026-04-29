@@ -13,7 +13,6 @@ export class TeamsController {
     return this.teamsService.getTeamById(id);
   }
 
-  // + роль
   @Post(':id/invitations')
   createInvitation(
     @Param('id') teamId: string,
@@ -28,7 +27,6 @@ export class TeamsController {
     return this.teamsService.updateTeamLeader(id, dto, req.user);
   }
 
-  // тут тоже
   @Delete(':id')
   delete(@Param('id') id: string, @Req() req) {
     return this.teamsService.deleteTeam(id, req.user);
