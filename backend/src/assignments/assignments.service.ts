@@ -1,9 +1,16 @@
-import { mockAssignments } from '@/mocks/assignments.mock';
+import { PrismaService } from '@/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class AssignmentsService {
-  getAllAssignments() {
-    return mockAssignments;
+  constructor(private readonly prisma: PrismaService) {}
+
+  async getAllAssignments() {
+    return this.prisma.assignment.findMany({
+      include: {
+        team: true,
+        project: true,
+      },
+    });
   }
 }

@@ -1,45 +1,80 @@
-import { Project } from '@/common/interfaces/project.interface';
-import { mockProjects } from '@/mocks/projects.mock';
+import { PrismaService } from '@/prisma/prisma.service';
 import { Injectable, NotFoundException } from '@nestjs/common';
 
 @Injectable()
 export class ProjectService {
-  getAllProjects() {
-    return mockProjects;
+  constructor(private readonly prisma: PrismaService) {}
+
+  async getAllProjects() {
+    return this.prisma.project.findMany({
+      include: {
+        teacher: true,
+        course: true,
+      },
+    });
   }
 
-  getProjectById(id: number) {
-    return mockProjects.find((project) => project.uid === id);
-  }
+  async getProjectById(id: string) {
+    const project = await this.prisma.project.findUnique({
+      where: { id },
+      include: {
+        teacher: true,
+        course: true,
+      },
+    });
+    if (!project) {
+      throw new NotFoundException(`Project ${id} not found`);
+    }
 
-  createProject(projectData: Project) {
-    const newUid = mockProjects.length === 0 ? 1 : Math.max(...mockProjects.map((c) => c.uid)) + 1;
-
-    const newProject: Project = {
-      uid: newUid,
-      title: projectData.title || 'New project',
-      description: projectData.description || '',
-      teacherId: projectData.teacherId || 12,
-      courseId: projectData.courseId || 1,
-      teacherFirstName: projectData.teacherFirstName || 'Иван',
-      teacherLastName: projectData.teacherLastName || 'Иванов',
-      courseName: 'MSE',
-    };
-
-    mockProjects.push(newProject);
-    return newProject;
-  }
-
-  updateProject(id: number, projectData: Project) {
-    const project = mockProjects.find((p) => p.uid === id);
-    if (!project) throw new NotFoundException(`Project ${id} not found`);
-    Object.assign(project, projectData);
     return project;
   }
 
-  deleteProject(id: number) {
-    const index = mockProjects.findIndex((p) => p.uid === id);
-    if (index === -1) throw new NotFoundException(`Project ${id} not found`);
-    return mockProjects.splice(index, 1)[0];
+  async createProject(projectData: {
+    title: string;
+    description?: string;
+    teacherId: string;
+    courseId: string;
+  }) {
+    return this.prisma.project.create({
+      data: {
+        title: projectData.title,
+        description: projectData.description,
+        teacherId: projectData.teacherId,
+        courseId: projectData.courseId,
+      },
+    });
+  }
+
+  async updateProject(
+    id: string,
+    projectData: {
+      title?: string;
+      description?: string;
+      teacherId?: string;
+      courseId?: string;
+    },
+  ) {
+    const existingProject = await this.prisma.project.findUnique({
+      where: { id },
+    });
+    if (!existingProject) {
+      throw new NotFoundException(`Project ${id} not found`);
+    }
+    return this.prisma.project.update({
+      where: { id },
+      data: projectData,
+    });
+  }
+
+  async deleteProject(id: string) {
+    const existingProject = await this.prisma.project.findUnique({
+      where: { id },
+    });
+    if (!existingProject) {
+      throw new NotFoundException(`Project ${id} not found`);
+    }
+    return this.prisma.project.delete({
+      where: { id },
+    });
   }
 }
