@@ -9,7 +9,7 @@ export class CoursesService {
   constructor(private readonly prisma: PrismaService) {}
 
   async getAllCourses() {
-    return await this.prisma.course.findMany({
+    return this.prisma.course.findMany({
       include: {
         teacher: true,
         teams: true,
