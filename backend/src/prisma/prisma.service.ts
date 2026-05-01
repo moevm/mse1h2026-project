@@ -1,7 +1,8 @@
+import { randomUUID } from 'node:crypto';
+
 import { PrismaClient } from '@/generated/prisma/client';
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { PrismaMariaDb } from '@prisma/adapter-mariadb';
-import { randomUUID } from 'node:crypto';
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit {
