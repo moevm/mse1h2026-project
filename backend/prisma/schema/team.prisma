@@ -26,6 +26,7 @@ model Team {
   initiatedExchanges    ExchangeRequest[]      @relation("InitiatorTeam")
   targetedExchanges     ExchangeRequest[]      @relation("TargetTeam")
   exchangeConfirmations ExchangeConfirmation[]
+  project               Project?               @relation(fields: [projectId], references: [id])
 
   @@map("teams")
 }

@@ -36,12 +36,12 @@ export class CoursesService {
   }
 
   async createCourse(createCourseDto: CreateCourseDto) {
-    return await this.prisma.course.create({
+    return this.prisma.course.create({
       data: createCourseDto,
     });
   }
 
-  async createTeam(courseId: string, userId: string) {
+  async createTeam(courseId: string, userId: string, projectId?: string) {
     const course = await this.prisma.course.findUnique({
       where: { id: courseId },
     });
@@ -52,14 +52,27 @@ export class CoursesService {
       where: { userId },
     });
 
+    if (projectId) {
+      const project = await this.prisma.project.findUnique({
+        where: { id: projectId },
+      });
+      if (!project) {
+        throw new NotFoundException(`Project ${projectId} not found`);
+      }
+      if (project.courseId !== courseId) {
+        throw new BadRequestException('Project does not belong to this course');
+      }
+    }
+
     if (existingMembership) {
       throw new BadRequestException('Student is already in a team.');
     }
     return this.prisma.$transaction(async (prisma) => {
-      const team = await prisma.team.create({
+      const team = await this.prisma.team.create({
         data: {
           courseId,
           leaderId: userId,
+          projectId: projectId ?? null,
           status: 'forming',
         },
       });
