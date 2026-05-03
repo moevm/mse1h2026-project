@@ -9,7 +9,6 @@ import { PrismaMariaDb } from '@prisma/adapter-mariadb';
 export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(PrismaService.name);
 
-
   constructor(private readonly configService: ConfigService) {
     const adapter = new PrismaMariaDb({
       host: configService.get<string>('MYSQL_HOST') || 'localhost',
