@@ -2,8 +2,8 @@ import { randomUUID } from 'node:crypto';
 
 import { PrismaClient } from '@/generated/prisma/client';
 import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
-import { PrismaMariaDb } from '@prisma/adapter-mariadb';
 import { ConfigService } from '@nestjs/config';
+import { PrismaMariaDb } from '@prisma/adapter-mariadb';
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
