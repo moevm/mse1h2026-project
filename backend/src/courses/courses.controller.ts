@@ -29,6 +29,13 @@ export class CoursesController {
 
   @UseGuards(RolesGuard)
   @Roles(['admin'])
+  @Get(':id/exchanges')
+  findExchanges(@Param('id') id: string) {
+    return this.coursesService.getCourseExchanges(id);
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(['admin'])
   @Post()
   create(@Body() createCourseDto: CreateCourseDto) {
     return this.coursesService.createCourse(createCourseDto);
