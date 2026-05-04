@@ -2,12 +2,12 @@ services:
   db:
     image: mysql:8.4.8
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 10s
-    volumes: [db_data:/var/lib/mysql]
+    volumes: [ db_data:/var/lib/mysql ]
     restart: unless-stopped
     env_file: .env
     logging:
@@ -27,7 +27,7 @@ services:
           "CMD",
           "/usr/local/bin/bun",
           "-e",
-          "fetch('http://127.0.0.1:3000/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"
+          "fetch('http://127.0.0.1:3000/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))",
         ]
       interval: 5s
       timeout: 5s
@@ -38,7 +38,7 @@ services:
         condition: service_healthy
     restart: unless-stopped
     env_file: .env
-    ports: ["127.0.0.1:3000:3000"]
+    ports: [ "127.0.0.1:3000:3000" ]
     logging:
       driver: "json-file"
       options:
@@ -56,7 +56,7 @@ services:
         condition: service_healthy
     restart: unless-stopped
     env_file: .env
-    ports: ["127.0.0.1:8080:80"]
+    ports: [ "127.0.0.1:8080:80" ]
     logging:
       driver: "json-file"
       options:

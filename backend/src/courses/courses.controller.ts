@@ -37,8 +37,8 @@ export class CoursesController {
   @UseGuards(RolesGuard)
   @Roles(['student'])
   @Post(':id/teams')
-  createTeam(@Param('id') id: string, @Req() req) {
-    return this.coursesService.createTeam(id, req.user.sub);
+  createTeam(@Param('id') courseId: string, @Req() req, @Body() body: { projectId?: string }) {
+    return this.coursesService.createTeam(courseId, req.user.sub, body.projectId);
   }
 
   @UseGuards(RolesGuard)

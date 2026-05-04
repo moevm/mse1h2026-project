@@ -14,7 +14,7 @@ export class TeamsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async getTeamById(id: string) {
-    const course = await this.prisma.team.findUnique({
+    const team = await this.prisma.team.findUnique({
       where: { id },
       include: {
         course: true,
@@ -25,12 +25,13 @@ export class TeamsService {
         initiatedExchanges: true,
         targetedExchanges: true,
         exchangeConfirmations: true,
+        project: true,
       },
     });
-    if (!course) {
+    if (!team) {
       throw new NotFoundException(`Team ${id} not found.`);
     }
-    return course;
+    return team;
   }
 
   async createInvitation(teamId: string, dto: CreateInvitationDto, userId: string) {
