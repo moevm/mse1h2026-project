@@ -1,5 +1,5 @@
 import { PrismaService } from '@/prisma/prisma.service';
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 
 export type UserRole = 'admin' | 'student';
 
@@ -66,8 +66,8 @@ export class UsersService {
     });
   }
 
-  getUsersByRole(role: UserRole) {
-    return this.prisma.user.findMany({
+  async getUsersByRole(role: UserRole) {
+    return await this.prisma.user.findMany({
       where: { role },
       select: {
         id: true,
@@ -79,5 +79,17 @@ export class UsersService {
         ldapUid: true,
       },
     });
+  }
+
+  async checkTeamLeader(userId: string, teamId: string) {
+    const team = await this.prisma.team.findUnique({
+      where: { id: teamId },
+    });
+    if (!team) {
+      throw new NotFoundException(`Team ${teamId} not found.`);
+    }
+    if (team.leaderId !== userId) {
+      throw new ForbiddenException('You have no rights for this team.');
+    }
   }
 }

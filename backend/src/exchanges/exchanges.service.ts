@@ -1,13 +1,18 @@
 import { PrismaService } from '@/prisma/prisma.service';
+import { UsersService } from '@/users/users.service';
 import { Injectable, NotFoundException } from '@nestjs/common';
 
 import { CreateRequestDto } from './dto/create-request.dto';
 
 @Injectable()
 export class ExchangesService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly usersService: UsersService,
+  ) {}
 
-  async createRequest(createRequestDto: CreateRequestDto) {
+  async createRequest(createRequestDto: CreateRequestDto, userId: string) {
+    this.usersService.checkTeamLeader(userId, createRequestDto.initiatorTeamId);
     return await this.prisma.exchangeRequest.create({
       data: createRequestDto,
     });
@@ -68,9 +73,17 @@ export class ExchangesService {
     });
   }
 
-  async confirmRequest(id: string, role: string, approvedBy?: string) {
+  async confirmRequest(id: string, user: { sub: string; email: string; role: string }) {
     try {
-      if (role === 'student') {
+      if (user.role === 'student') {
+        const request = await this.prisma.exchangeRequest.findUnique({
+          where: { id },
+        });
+        if (!request) {
+          throw new NotFoundException(`Exchange request ${id} not found.`);
+        }
+        this.usersService.checkTeamLeader(user.sub, request.targetTeamId);
+
         return await this.prisma.exchangeRequest.update({
           where: { id },
           data: {
@@ -79,16 +92,25 @@ export class ExchangesService {
         });
       }
 
-      if (role === 'admin') {
-        return await this.updateAssignments(id, approvedBy);
+      if (user.role === 'admin') {
+        return await this.updateAssignments(id, user.sub);
       }
     } catch {
       throw new NotFoundException(`Exchange request ${id} not found.`);
     }
   }
 
-  async deleteRequest(id: string) {
+  async deleteRequest(id: string, user: { sub: string; email: string; role: string }) {
     try {
+      if (user.role === 'student') {
+        const request = await this.prisma.exchangeRequest.findUnique({
+          where: { id },
+        });
+        if (!request) {
+          throw new NotFoundException(`Exchange request ${id} not found.`);
+        }
+        this.usersService.checkTeamLeader(user.sub, request.initiatorTeamId);
+      }
       return await this.prisma.exchangeRequest.delete({
         where: { id },
       });

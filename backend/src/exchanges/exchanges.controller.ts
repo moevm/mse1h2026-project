@@ -12,8 +12,11 @@ export class ExchangesController {
   @UseGuards(RolesGuard)
   @Roles(['student'])
   @Post()
-  create(@Body() createRequestDto: CreateRequestDto) {
-    return this.exchangesService.createRequest(createRequestDto);
+  create(
+    @Body() createRequestDto: CreateRequestDto,
+    @Req() req: Request & { user: { sub: string; email: string; role: string } },
+  ) {
+    return this.exchangesService.createRequest(createRequestDto, req.user.sub);
   }
 
   @UseGuards(RolesGuard)
@@ -23,13 +26,16 @@ export class ExchangesController {
     @Param('id') id: string,
     @Req() req: Request & { user: { sub: string; email: string; role: string } },
   ) {
-    return this.exchangesService.confirmRequest(id, req.user.role, req.user.sub);
+    return this.exchangesService.confirmRequest(id, req.user);
   }
 
   @UseGuards(RolesGuard)
   @Roles(['student', 'admin'])
   @Delete(':id')
-  delete(@Param('id') id: string) {
-    return this.exchangesService.deleteRequest(id);
+  delete(
+    @Param('id') id: string,
+    @Req() req: Request & { user: { sub: string; email: string; role: string } },
+  ) {
+    return this.exchangesService.deleteRequest(id, req.user);
   }
 }

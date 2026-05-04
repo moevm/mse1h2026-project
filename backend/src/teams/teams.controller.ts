@@ -33,10 +33,10 @@ export class TeamsController {
   @Put(':id')
   updateLeader(
     @Param('id') id: string,
-    @Body() dto: UpdateLeaderDto,
+    @Body() updateLeaderDto: UpdateLeaderDto,
     @Req() req: Request & { user: { sub: string; email: string; role: string } },
   ) {
-    return this.teamsService.updateTeamLeader(id, dto, req.user);
+    return this.teamsService.updateTeamLeader(id, updateLeaderDto, req.user);
   }
 
   @UseGuards(RolesGuard)
