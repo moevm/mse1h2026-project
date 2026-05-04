@@ -9,12 +9,8 @@
     - [Администратор](#администратор)
   - [Установка и запуск](#установка-и-запуск)
     - [Подготовка к запуску](#подготовка-к-запуску)
-    - [Запуск без **Docker**](#запуск-без-docker)
-      - [Production](#production)
-      - [Development](#development)
-    - [Запуск с помощью **Docker**](#запуск-с-помощью-docker)
-      - [Production](#production-1)
-      - [Development](#development-1)
+    - [Запуск Docker Compose (production)](#запуск-docker-compose-production)
+    - [Запуск окружения для разработки (development)](#запуск-окружения-для-разработки-development)
     - [Переменные окружения](#переменные-окружения)
   - [Проверка работоспособности](#проверка-работоспособности)
   - [Дополнительная информация](#дополнительная-информация)
@@ -96,7 +92,7 @@
   - Операционная система: **Windows 10/11**, **macOS**, **Linux**
   - Разрядность системы: **64-битная**
   - Браузер: Современный браузер на базе Chromium (например, Google Chrome) или Gecko (например, Firefox) желательно последней версии.
-  - Свободны порты: **3000** (backend), **8080** (frontend) и **3306**.
+  - Свободны порты: **3000** (backend), **8080** (frontend) и **3306** (db).
 
 - Клонируйте репозиторий:
 
@@ -116,49 +112,7 @@
   cp .env.example .env
   ```
 
-### Запуск без **Docker**
-
-- Для локальной разработки (без Docker) убедитесь, что у вас установлены:
-  - [Node.js 24.14.1](https://nodejs.org/en/download/)
-  - [pnpm 10.30.1](https://pnpm.io/installation#using-corepack)
-  - [MySQL Community Server 8.4.8](https://dev.mysql.com/downloads/mysql/)
- 
-- Установите зависимости:
-
-  ```bash
-  pnpm i
-  ```
-
-- Введите в `.env` значения
-
-  ```env
-  MYSQL_DATABASE=<your_database_name>
-  MYSQL_USER=root
-  MYSQL_PASSWORD=<your_root_password>
-  MYSQL_HOST=localhost
-  MYSQL_PORT=3306
-
-  JWT_SECRET=<your_jwt_secret>
-  ```
-
-- Запустите проект:
-
-  #### Production
-
-    ```bash
-    pnpm build && pnpm preview
-    ```
-
-  #### Development
-
-    ```bash
-    pnpm dev
-    ```
-  
-- Смотри раздел **[Проверка работоспособности](#проверка-работоспособности)**
-
-### Запуск с помощью **Docker**
-
+### Запуск Docker Compose (production)
 - Введите в `.env` значения для инициализации и запуска `MySQL` контейнера:
 
   ```env
@@ -172,7 +126,11 @@
   JWT_SECRET=<your_jwt_secret>
   ```
 
-#### Production
+- [Для проверяющего] Если вы раньше запускали compose для проверки работоспособности, не забудьте сбросить контейнеры и volumes, чтобы изменения в `.env` и БД вступили в силу:
+
+  ```bash
+  docker compose down -v
+  ```
 
 - Запустите docker compose:
 
@@ -182,15 +140,42 @@
 
 - Смотри раздел **[Проверка работоспособности](#проверка-работоспособности)**
 
-#### Development
 
-- Запустите docker compose для разработки:
+### Запуск окружения для разработки (development)
+
+- Для локальной разработки убедитесь, что у вас установлены и корректно настроены:
+  - [Node.js 24.14.1](https://nodejs.org/en/download/)
+  - [pnpm 10.30.1](https://pnpm.io/installation#using-corepack)
+  - [MySQL Community Server 8.4.8](https://dev.mysql.com/downloads/mysql/) ИЛИ [Docker образ](https://hub.docker.com/_/mysql/)
+ 
+- Установите зависимости:
 
   ```bash
-  docker compose -f docker-compose.dev.yaml up --build
+  pnpm i
   ```
 
+- Введите в `.env` значения
+
+  ```env
+  MYSQL_ROOT_DATABASE=<you_root_password>
+  MYSQL_DATABASE=<your_database_name>
+  MYSQL_USER=<your_username>
+  MYSQL_PASSWORD=<your_root_password>
+  MYSQL_HOST=localhost
+  MYSQL_PORT=3306
+
+  JWT_SECRET=<your_jwt_secret>
+  ```
+
+- Запустите проект вместе с БД (Docker):
+
+    ```bash
+    docker compose up --build -d db
+    pnpm dev
+    ```
+  
 - Смотри раздел **[Проверка работоспособности](#проверка-работоспособности)**
+- P.S. Если у вас локальная БД, то необходимо настроить пользователя или использовать данные пользователя root.
 
 ### Переменные окружения
 
@@ -208,11 +193,13 @@
   - `DATABASE_URL` - URL для подключения к базе данных в формате `mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DATABASE}`. Нужна исключительно для генерации миграций.
   - `JWT_SECRET` - секрет для генерации JWT токенов (может быть любым строковым значением, но рекомендуется использовать сложную строку для безопасности).
 
+- frontend:
+  - `VITE_API_BASE_URL` - базовый URL для API запросов с фронтенда (например, `http://127.0.0.1:3000/api`)
 ## Проверка работоспособности
 
 1. После запуска приложения, откройте браузер и перейдите по адресу http://127.0.0.1:8080.
 2. В локальной разработке и в docker compose для разработки, доступен путь к backend API по адресу http://127.0.0.1:3000/api.
-  
+3. БД будет доступна по адресу `127.0.0.1:3306`
 
 ## Дополнительная информация
 Любая информация, которую команда посчитает нужной разместить.
