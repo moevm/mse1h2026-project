@@ -61,28 +61,142 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
 
   private async seedUsers(tx: Prisma.TransactionClient) {
     const studentDefs = [
-      { uid: 'seed_student_1', email: 'student1@example.ru', firstName: 'Student1', secondName: 'Student1', group: 2410 },
-      { uid: 'seed_student_2', email: 'student2@example.ru', firstName: 'Student2', secondName: 'Student2', group: 2410 },
-      { uid: 'seed_student_3', email: 'student3@example.ru', firstName: 'Student3', secondName: 'Student3', group: 2410 },
-      { uid: 'seed_student_4', email: 'student4@example.ru', firstName: 'Student4', secondName: 'Student4', group: 2410 },
-      { uid: 'seed_student_5', email: 'student5@example.ru', firstName: 'Student5', secondName: 'Student5', group: 2410 },
-      { uid: 'seed_student_6', email: 'student6@example.ru', firstName: 'Student6', secondName: 'Student6', group: 2411 },
-      { uid: 'seed_student_7', email: 'student7@example.ru', firstName: 'Student7', secondName: 'Student7', group: 2411 },
-      { uid: 'seed_student_8', email: 'student8@example.ru', firstName: 'Student8', secondName: 'Student8', group: 2411 },
-      { uid: 'seed_student_9', email: 'student9@example.ru', firstName: 'Student9', secondName: 'Student9', group: 2411 },
-      { uid: 'seed_student_10', email: 'student10@example.ru', firstName: 'Student10', secondName: 'Student10', group: 2411 },
-      { uid: 'seed_student_11', email: 'student11@example.ru', firstName: 'Student11', secondName: 'Student11', group: 2412 },
-      { uid: 'seed_student_12', email: 'student12@example.ru', firstName: 'Student12', secondName: 'Student12', group: 2412 },
-      { uid: 'seed_student_13', email: 'student13@example.ru', firstName: 'Student13', secondName: 'Student13', group: 2412 },
-      { uid: 'seed_student_14', email: 'student14@example.ru', firstName: 'Student14', secondName: 'Student14', group: 2412 },
-      { uid: 'seed_student_15', email: 'student15@example.ru', firstName: 'Student15', secondName: 'Student15', group: 2412 },
+      {
+        uid: 'seed_student_1',
+        email: 'student1@example.ru',
+        firstName: 'Student1',
+        secondName: 'Student1',
+        group: 2410,
+      },
+      {
+        uid: 'seed_student_2',
+        email: 'student2@example.ru',
+        firstName: 'Student2',
+        secondName: 'Student2',
+        group: 2410,
+      },
+      {
+        uid: 'seed_student_3',
+        email: 'student3@example.ru',
+        firstName: 'Student3',
+        secondName: 'Student3',
+        group: 2410,
+      },
+      {
+        uid: 'seed_student_4',
+        email: 'student4@example.ru',
+        firstName: 'Student4',
+        secondName: 'Student4',
+        group: 2410,
+      },
+      {
+        uid: 'seed_student_5',
+        email: 'student5@example.ru',
+        firstName: 'Student5',
+        secondName: 'Student5',
+        group: 2410,
+      },
+      {
+        uid: 'seed_student_6',
+        email: 'student6@example.ru',
+        firstName: 'Student6',
+        secondName: 'Student6',
+        group: 2411,
+      },
+      {
+        uid: 'seed_student_7',
+        email: 'student7@example.ru',
+        firstName: 'Student7',
+        secondName: 'Student7',
+        group: 2411,
+      },
+      {
+        uid: 'seed_student_8',
+        email: 'student8@example.ru',
+        firstName: 'Student8',
+        secondName: 'Student8',
+        group: 2411,
+      },
+      {
+        uid: 'seed_student_9',
+        email: 'student9@example.ru',
+        firstName: 'Student9',
+        secondName: 'Student9',
+        group: 2411,
+      },
+      {
+        uid: 'seed_student_10',
+        email: 'student10@example.ru',
+        firstName: 'Student10',
+        secondName: 'Student10',
+        group: 2411,
+      },
+      {
+        uid: 'seed_student_11',
+        email: 'student11@example.ru',
+        firstName: 'Student11',
+        secondName: 'Student11',
+        group: 2412,
+      },
+      {
+        uid: 'seed_student_12',
+        email: 'student12@example.ru',
+        firstName: 'Student12',
+        secondName: 'Student12',
+        group: 2412,
+      },
+      {
+        uid: 'seed_student_13',
+        email: 'student13@example.ru',
+        firstName: 'Student13',
+        secondName: 'Student13',
+        group: 2412,
+      },
+      {
+        uid: 'seed_student_14',
+        email: 'student14@example.ru',
+        firstName: 'Student14',
+        secondName: 'Student14',
+        group: 2412,
+      },
+      {
+        uid: 'seed_student_15',
+        email: 'student15@example.ru',
+        firstName: 'Student15',
+        secondName: 'Student15',
+        group: 2412,
+      },
     ];
 
     await tx.user.createMany({
       data: [
-        { ldapUid: 'seed_admin_main', email: 'admin.main@example.ru', firstName: 'Admin', secondName: 'Admin', groupNumber: 0, role: 'admin', password: 'admin123' },
-        { ldapUid: 'seed_admin_teacher_1', email: 'teacher1@example.ru', firstName: 'Teacher1', secondName: 'Teacher1', groupNumber: 0, role: 'admin', password: 'teacher123' },
-        { ldapUid: 'seed_teacher_2', email: 'teacher2@example.ru', firstName: 'Teacher2', secondName: 'Teacher2', groupNumber: 0, role: 'admin', password: 'teacher123' },
+        {
+          ldapUid: 'seed_admin_main',
+          email: 'admin.main@example.ru',
+          firstName: 'Admin',
+          secondName: 'Admin',
+          groupNumber: 0,
+          role: 'admin',
+          password: 'admin123',
+        },
+        {
+          ldapUid: 'seed_admin_teacher_1',
+          email: 'teacher1@example.ru',
+          firstName: 'Teacher1',
+          secondName: 'Teacher1',
+          groupNumber: 0,
+          role: 'admin',
+          password: 'teacher123',
+        },
+        {
+          ldapUid: 'seed_teacher_2',
+          email: 'teacher2@example.ru',
+          firstName: 'Teacher2',
+          secondName: 'Teacher2',
+          groupNumber: 0,
+          role: 'admin',
+          password: 'teacher123',
+        },
         ...studentDefs.map((s) => ({
           ldapUid: s.uid,
           email: s.email,
@@ -97,7 +211,16 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
     });
 
     const allUsers = await tx.user.findMany({
-      where: { ldapUid: { in: ['seed_admin_main', 'seed_admin_teacher_1', 'seed_teacher_2', ...studentDefs.map((s) => s.uid)] } },
+      where: {
+        ldapUid: {
+          in: [
+            'seed_admin_main',
+            'seed_admin_teacher_1',
+            'seed_teacher_2',
+            ...studentDefs.map((s) => s.uid),
+          ],
+        },
+      },
     });
 
     const byUid = new Map(allUsers.map((u) => [u.ldapUid, u]));
@@ -111,7 +234,11 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
     return { mainAdmin, teacherOne, teacherTwo, students };
   }
 
-  private async seedCourses(tx: Prisma.TransactionClient, teacherOne: { id: string }, teacherTwo: { id: string }) {
+  private async seedCourses(
+    tx: Prisma.TransactionClient,
+    teacherOne: { id: string },
+    teacherTwo: { id: string },
+  ) {
     const [courseOne, courseTwo] = await Promise.all([
       tx.course.upsert({
         where: { id: 'course_1' },
