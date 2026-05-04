@@ -1,5 +1,6 @@
 import { PrismaService } from '@/prisma/prisma.service';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { get } from 'axios';
 
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
@@ -43,9 +44,7 @@ export class CoursesService {
   }
 
   async getCourseExchanges(courseId: string) {
-    return await this.prisma.exchangeRequest.findMany({
-      where: { courseId },
-    });
+    return (await this.getCourseById(courseId)).exchangeRequests;
   }
 
   async createCourse(createCourseDto: CreateCourseDto) {
