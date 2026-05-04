@@ -1,3 +1,5 @@
+import { resolve } from 'path';
+
 import { PrismaModule } from '@/prisma/prisma.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
@@ -14,20 +16,21 @@ import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: resolve(__dirname, '../../.env'),
+      expandVariables: true,
+    }),
+    PrismaModule,
+    AuthModule,
     HelloWorldModule,
     CoursesModule,
     ProjectsModule,
     AssignmentsModule,
-    AuthModule,
-    PrismaModule,
     UsersModule,
-    HealthModule,
-    ConfigModule.forRoot({
-      isGlobal: true,
-      envFilePath: '../../.env',
-    }),
     TeamsModule,
     InvitationsModule,
+    HealthModule,
   ],
 })
 export class AppModule {}

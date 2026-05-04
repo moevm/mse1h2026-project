@@ -1,18 +1,22 @@
+import { randomUUID } from 'node:crypto';
+
 import { PrismaClient } from '@/generated/prisma/client';
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { PrismaMariaDb } from '@prisma/adapter-mariadb';
 
 @Injectable()
-export class PrismaService extends PrismaClient implements OnModuleInit {
+export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(PrismaService.name);
 
-  constructor() {
+  constructor(private readonly configService: ConfigService) {
     const adapter = new PrismaMariaDb({
-      host: process.env.MYSQL_HOST || 'localhost',
-      port: parseInt(process.env.MYSQL_PORT || '3306'),
-      user: process.env.MYSQL_USER,
-      password: process.env.MYSQL_PASSWORD,
-      database: process.env.MYSQL_DATABASE,
+      host: configService.get<string>('MYSQL_HOST') || 'localhost',
+      port: parseInt(configService.get<string>('MYSQL_PORT') || '3306'),
+      user: configService.get<string>('MYSQL_USER'),
+      password: configService.get<string>('MYSQL_PASSWORD'),
+      database: configService.get<string>('MYSQL_DATABASE'),
+      allowPublicKeyRetrieval: true,
       connectionLimit: 10,
       acquireTimeout: 60000, // максимальное время ожидания свободного соединения из пула 60 сек
       idleTimeout: 600000, // время простоя соединения перед его закрытием 10 минут
