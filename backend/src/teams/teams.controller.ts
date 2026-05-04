@@ -1,5 +1,6 @@
 import { Roles } from '@/common/decorators/roles.decorator';
 import { RolesGuard } from '@/common/guards/roles.guard';
+import { UserPayload } from '@/common/interfaces/user.interface';
 import { Body, Controller, Delete, Get, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
 
 import { CreateInvitationDto } from './dto/create-invitation.dto';
@@ -23,7 +24,7 @@ export class TeamsController {
   createInvitation(
     @Param('id') teamId: string,
     @Body() createInvitationDto: CreateInvitationDto,
-    @Req() req: Request & { user: { sub: string; email: string; role: string } },
+    @Req() req: Request & UserPayload,
   ) {
     return this.teamsService.createInvitation(teamId, createInvitationDto, req.user.sub);
   }
@@ -34,7 +35,7 @@ export class TeamsController {
   updateLeader(
     @Param('id') id: string,
     @Body() updateLeaderDto: UpdateLeaderDto,
-    @Req() req: Request & { user: { sub: string; email: string; role: string } },
+    @Req() req: Request & UserPayload,
   ) {
     return this.teamsService.updateTeamLeader(id, updateLeaderDto, req.user);
   }
@@ -42,10 +43,7 @@ export class TeamsController {
   @UseGuards(RolesGuard)
   @Roles(['student', 'admin'])
   @Delete(':id')
-  delete(
-    @Param('id') id: string,
-    @Req() req: Request & { user: { sub: string; email: string; role: string } },
-  ) {
+  delete(@Param('id') id: string, @Req() req: Request & UserPayload) {
     return this.teamsService.deleteTeam(id, req.user);
   }
 
@@ -55,7 +53,7 @@ export class TeamsController {
   deleteMember(
     @Param('teamId') teamId: string,
     @Param('userId') userId: string,
-    @Req() req: Request & { user: { sub: string; email: string; role: string } },
+    @Req() req: Request & UserPayload,
   ) {
     return this.teamsService.deleteMember(teamId, userId, req.user);
   }

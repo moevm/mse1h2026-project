@@ -1,3 +1,4 @@
+import { UserPayload } from '@/common/interfaces/user.interface';
 import { PrismaService } from '@/prisma/prisma.service';
 import { UsersService } from '@/users/users.service';
 import {
@@ -97,7 +98,7 @@ export class TeamsService {
   async updateTeamLeader(
     teamId: string,
     updateLeaderDto: UpdateLeaderDto,
-    user: { sub: string; email: string; role: string },
+    user: UserPayload['user'],
   ) {
     const team = await this.prisma.team.findUnique({
       where: { id: teamId },
@@ -123,7 +124,7 @@ export class TeamsService {
     });
   }
 
-  async deleteTeam(teamId: string, user: { sub: string; email: string; role: string }) {
+  async deleteTeam(teamId: string, user: UserPayload['user']) {
     const team = await this.prisma.team.findUnique({
       where: { id: teamId },
     });
@@ -179,11 +180,7 @@ export class TeamsService {
     });
   }
 
-  async deleteMember(
-    teamId: string,
-    memberId: string,
-    user: { sub: string; email: string; role: string },
-  ) {
+  async deleteMember(teamId: string, memberId: string, user: UserPayload['user']) {
     const team = await this.prisma.team.findUnique({
       where: { id: teamId },
     });

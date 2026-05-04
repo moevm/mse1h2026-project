@@ -1,3 +1,4 @@
+import { UserPayload } from '@/common/interfaces/user.interface';
 import { PrismaService } from '@/prisma/prisma.service';
 import { UsersService } from '@/users/users.service';
 import { Injectable, NotFoundException } from '@nestjs/common';
@@ -73,7 +74,7 @@ export class ExchangesService {
     });
   }
 
-  async confirmRequest(id: string, user: { sub: string; email: string; role: string }) {
+  async confirmRequest(id: string, user: UserPayload['user']) {
     try {
       if (user.role === 'student') {
         const request = await this.prisma.exchangeRequest.findUnique({
@@ -100,7 +101,7 @@ export class ExchangesService {
     }
   }
 
-  async deleteRequest(id: string, user: { sub: string; email: string; role: string }) {
+  async deleteRequest(id: string, user: UserPayload['user']) {
     try {
       if (user.role === 'student') {
         const request = await this.prisma.exchangeRequest.findUnique({
