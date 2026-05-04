@@ -135,9 +135,9 @@ const formatDate = (date: Date | string): string => {
 
 // Загрузка данных проекта
 const loadProject = async () => {
-  const projectId = Array.isArray(route.params.projectId) 
-  ? route.params.projectId[0] 
-  : route.params.projectId;
+  const projectId = Array.isArray(route.params.projectId)
+    ? route.params.projectId[0]
+    : route.params.projectId;
 
   if (!projectId || projectId === 'undefined' || projectId === 'null') {
     router.push('/404');

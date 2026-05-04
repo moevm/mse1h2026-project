@@ -102,12 +102,15 @@ const props = withDefaults(
 );
 
 const emit = defineEmits<{
-  (e: 'submit', data: {
-    title: string;
-    description?: string;
-    teacherId: string;
-    courseId: string;
-  }): void;
+  (
+    e: 'submit',
+    data: {
+      title: string;
+      description?: string;
+      teacherId: string;
+      courseId: string;
+    },
+  ): void;
   (e: 'cancel'): void;
 }>();
 
@@ -198,7 +201,7 @@ const handleCourseSearch = (query: string) => {
     }));
 };
 
-// Загрузка преподавателей 
+// Загрузка преподавателей
 const loadTeachers = async () => {
   loadingTeachers.value = true;
   try {

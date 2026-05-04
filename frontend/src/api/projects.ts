@@ -5,7 +5,7 @@ import axiosInstance from './axios';
 export const projectsApi = {
   getAll: () => axiosInstance.get<Project[]>('/projects').then((res) => res.data),
 
-  getByCourseId: (courseId: string) => 
+  getByCourseId: (courseId: string) =>
     axiosInstance.get<Project[]>(`/projects?courseId=${courseId}`).then((res) => res.data),
 
   getById: (id: string) => axiosInstance.get<Project>(`/projects/${id}`).then((res) => res.data),

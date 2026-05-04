@@ -10,13 +10,13 @@
 </template>
 
 <script setup lang="ts">
+import { useUserStore } from '@/stores/userStore';
 import type { Project } from '@/types';
 import { NCard } from 'naive-ui';
 import { useRouter } from 'vue-router';
-import { useUserStore } from '@/stores/userStore';
 
 const router = useRouter();
-const userStore = useUserStore()
+const userStore = useUserStore();
 
 const props = defineProps<{
   project: Project;
