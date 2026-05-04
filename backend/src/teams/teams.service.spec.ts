@@ -5,7 +5,7 @@ import { TeamsService } from './teams.service';
 
 jest.mock('@/prisma/prisma.service', () => {
   return {
-    PrismaService: jest.fn()
+    PrismaService: jest.fn(),
   };
 });
 
@@ -26,13 +26,9 @@ describe('TeamsService', () => {
     expect(service).toBeDefined();
   });
 
-  it('should get team by id', async () => {
-
-  });
+  it('should get team by id', async () => {});
 
   it('should create invitation', async () => {});
-
-
 
   afterEach(async () => {});
 
