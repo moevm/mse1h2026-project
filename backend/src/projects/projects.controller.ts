@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
 
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
@@ -9,8 +9,8 @@ export class ProjectController {
   constructor(private readonly projectsService: ProjectService) {}
 
   @Get()
-  findAll() {
-    return this.projectsService.getAllProjects();
+  findAll(@Query('courseId') courseId?: string) {
+    return this.projectsService.getAllProjects(courseId);
   }
 
   @Get(':id')
