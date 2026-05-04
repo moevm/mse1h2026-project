@@ -29,6 +29,10 @@ jobs:
       - name: 'Setup Project'
         uses: ./.github/actions/setup
 
+      - name: 'Generate Prisma Client'
+        if: matrix.task == 'test'
+        run: pnpm --filter @mse/backend db:generate
+
       - name: 'Run Checks'
         run: pnpm --filter "...[origin/main]" --filter "!mse1h2026-project" -r --if-present ${{ matrix.task }}
 
