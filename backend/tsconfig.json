@@ -20,6 +20,8 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
+    "strict": true,
+    "types": ["jest"],
     "paths": {
       "@/*": ["./src/*"]
     },
