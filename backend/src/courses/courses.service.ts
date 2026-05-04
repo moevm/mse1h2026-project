@@ -107,6 +107,22 @@ export class CoursesService {
     }
   }
 
+  async getStudentTeam(courseId: string, userId: string) {
+    const membership = await this.prisma.teamMember.findFirst({
+      where: { userId, team: { courseId } },
+      include: {
+        team: {
+          include: {
+            leader: true,
+            members: { include: { user: true } },
+            project: true,
+          },
+        },
+      },
+    });
+    return membership?.team ?? null;
+  }
+
   async getCourseTeams(courseId: string) {
     return this.prisma.team.findMany({
       where: { courseId },
