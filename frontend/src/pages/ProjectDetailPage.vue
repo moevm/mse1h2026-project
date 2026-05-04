@@ -4,7 +4,7 @@
     <n-breadcrumb>
       <n-breadcrumb-item @click="router.push('/courses')"> Курсы </n-breadcrumb-item>
       <n-breadcrumb-item @click="router.push(`/courses/${project?.courseId}`)">
-        {{ project?.courseName || 'Загрузка...' }}
+        {{ project?.course.name || 'Загрузка...' }}
       </n-breadcrumb-item>
       <n-breadcrumb-item>
         {{ project?.title || 'Загрузка...' }}
@@ -17,21 +17,21 @@
       <template #header>
         <div class="card-header">
           <h1 class="project-title">{{ project.title }}</h1>
-          <n-tag type="info" :bordered="false"> #{{ project.uid }} </n-tag>
+          <n-tag v-if="userStore.isAdmin" type="info" :bordered="false"> #{{ project.id }} </n-tag>
         </div>
       </template>
 
       <n-descriptions label-placement="left" bordered :column="1" class="project-info">
         <n-descriptions-item label="Преподаватель">
           <div class="info-item">
-            <span>{{ project.teacherFirstName }} {{ project.teacherLastName }}</span>
+            <span>{{ project.teacher.firstName }} {{ project.teacher.secondName }}</span>
           </div>
         </n-descriptions-item>
 
         <n-descriptions-item label="Курс">
           <div class="info-item">
             <n-button text type="primary" @click="router.push(`/courses/${project.courseId}`)">
-              {{ project.courseName }}
+              {{ project.course.name }}
             </n-button>
           </div>
         </n-descriptions-item>
@@ -135,7 +135,9 @@ const formatDate = (date: Date | string): string => {
 
 // Загрузка данных проекта
 const loadProject = async () => {
-  const projectId = route.params.id;
+  const projectId = Array.isArray(route.params.projectId) 
+  ? route.params.projectId[0] 
+  : route.params.projectId;
 
   if (!projectId || projectId === 'undefined' || projectId === 'null') {
     router.push('/404');
@@ -144,7 +146,7 @@ const loadProject = async () => {
 
   try {
     loading.value = true;
-    project.value = await projectsApi.getById(Number(projectId));
+    project.value = await projectsApi.getById(projectId);
   } catch (error) {
     console.error('Ошибка загрузки проекта:', error);
     notification.error({
@@ -160,14 +162,14 @@ const loadProject = async () => {
 
 const handleEditProject = () => {
   if (!project.value) return;
-  router.push(`/projects/${project.value.uid}/edit`);
+  router.push(`/projects/${project.value.id}/edit`);
 };
 
 const handleConfirmDelete = async () => {
   if (!project.value) return;
 
   try {
-    await projectsApi.delete(project.value.uid);
+    await projectsApi.delete(project.value.id);
 
     notification.success({
       title: 'Проект удален',
@@ -176,7 +178,6 @@ const handleConfirmDelete = async () => {
       keepAliveOnHover: true,
     });
 
-    // Переход на страницу курса
     router.push(`/courses/${project.value.courseId}`);
   } catch (error) {
     console.error('Ошибка удаления проекта:', error);
@@ -190,7 +191,6 @@ const handleConfirmDelete = async () => {
   }
 };
 
-// Загружаем данные при монтировании
 onMounted(() => {
   loadProject();
 });

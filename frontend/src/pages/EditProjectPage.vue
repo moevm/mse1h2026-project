@@ -25,7 +25,6 @@
       </template>
     </n-result>
 
-    <!-- Форма редактирования (когда данные загружены) -->
     <ProjectForm v-else mode="edit" :initial-data="project" @submit="handleEdit" @cancel="goBack" />
   </div>
 </template>
@@ -46,9 +45,10 @@ const notification = useNotification();
 const project = ref<Project | null>(null);
 const loading = ref(true);
 
-// Загрузка данных проекта
 const loadProject = async () => {
-  const projectId = route.params.id;
+  const projectId = Array.isArray(route.params.projectId) 
+  ? route.params.projectId[0] 
+  : route.params.projectId;
 
   if (!projectId || projectId === 'undefined' || projectId === 'null') {
     router.push('/404');
@@ -57,7 +57,7 @@ const loadProject = async () => {
 
   try {
     loading.value = true;
-    project.value = await projectsApi.getById(Number(projectId));
+    project.value = await projectsApi.getById(projectId);
   } catch (error) {
     console.error('Ошибка загрузки проекта:', error);
     notification.error({
@@ -76,7 +76,7 @@ const handleEdit = async (formData: Partial<Project>): Promise<void> => {
   if (!project.value) return;
 
   try {
-    const editedProject = await projectsApi.update(project.value.uid, formData);
+    const editedProject = await projectsApi.update(project.value.id, formData);
 
     console.log('Проект успешно обновлен:', editedProject);
 
@@ -87,8 +87,7 @@ const handleEdit = async (formData: Partial<Project>): Promise<void> => {
       keepAliveOnHover: true,
     });
 
-    // Переход на страницу проекта
-    router.push(`/projects/${project.value.uid}`);
+    router.push(`/courses/${project.value.courseId}/projects/${project.value.id}`);
   } catch (error) {
     console.error('Ошибка редактирования проекта:', error);
 
@@ -103,7 +102,7 @@ const handleEdit = async (formData: Partial<Project>): Promise<void> => {
 
 const goBack = (): void => {
   if (project.value) {
-    router.push(`/projects/${project.value.uid}`);
+    router.push(`/courses/${project.value.courseId}/projects/${project.value.id}`);
   } else {
     router.push('/courses');
   }
@@ -113,7 +112,6 @@ const goToCoursesList = (): void => {
   router.push('/courses');
 };
 
-// Загружаем данные при монтировании
 onMounted(() => {
   loadProject();
 });

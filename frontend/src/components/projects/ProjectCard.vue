@@ -2,7 +2,7 @@
   <n-card class="project-card" :bordered="true" @click="handleCardClick">
     <div class="card-content">
       <div class="left-section">
-        <div class="project-id">#{{ project.uid }}</div>
+        <div v-if="userStore.isAdmin" class="project-id">#{{ project.id }}</div>
         <div class="project-title">{{ project.title }}</div>
       </div>
     </div>
@@ -13,8 +13,10 @@
 import type { Project } from '@/types';
 import { NCard } from 'naive-ui';
 import { useRouter } from 'vue-router';
+import { useUserStore } from '@/stores/userStore';
 
 const router = useRouter();
+const userStore = useUserStore()
 
 const props = defineProps<{
   project: Project;
@@ -22,7 +24,7 @@ const props = defineProps<{
 
 const handleCardClick = () => {
   const courseId = props.project.courseId;
-  const projectId = props.project.uid;
+  const projectId = props.project.id;
   router.push(`/courses/${courseId}/projects/${projectId}`);
 };
 </script>

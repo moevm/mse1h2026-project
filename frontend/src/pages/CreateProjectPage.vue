@@ -22,7 +22,6 @@ const notification = useNotification();
 
 const handleCreate = async (formData: Partial<Project>): Promise<void> => {
   try {
-    // Вызов API для создания проекта
     const createdProject = await projectsApi.create(formData);
 
     console.log('Проект успешно создан:', createdProject);

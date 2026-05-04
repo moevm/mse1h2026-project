@@ -43,21 +43,16 @@
         />
       </n-form-item>
 
-      <n-form-item label="Имя преподавателя" path="teacherFirstName" required>
-        <n-input
-          v-model:value="formData.teacherFirstName"
-          placeholder="Введите имя преподавателя"
-          :disabled="disabledFields?.includes('teacher')"
-          :maxlength="50"
-        />
-      </n-form-item>
-
-      <n-form-item label="Фамилия преподавателя" path="teacherLastName" required>
-        <n-input
-          v-model:value="formData.teacherLastName"
-          placeholder="Введите фамилию преподавателя"
-          :disabled="disabledFields?.includes('teacher')"
-          :maxlength="50"
+      <n-form-item label="Преподаватель" path="teacherId" required>
+        <n-select
+          v-model:value="formData.teacherId"
+          :options="teacherOptions"
+          :loading="loadingTeachers"
+          placeholder="Выберите преподавателя"
+          :disabled="disabledFields?.includes('teacher') || loadingTeachers"
+          filterable
+          clearable
+          @search="handleTeacherSearch"
         />
       </n-form-item>
 
@@ -79,8 +74,8 @@
 </template>
 
 <script setup lang="ts">
-import { coursesApi } from '@/api';
-import type { Course, Project } from '@/types';
+import { coursesApi, usersApi } from '@/api';
+import type { Course, Project, User } from '@/types';
 import {
   NButton,
   NCard,
@@ -107,7 +102,12 @@ const props = withDefaults(
 );
 
 const emit = defineEmits<{
-  (e: 'submit', data: Partial<Project>): void;
+  (e: 'submit', data: {
+    title: string;
+    description?: string;
+    teacherId: string;
+    courseId: string;
+  }): void;
   (e: 'cancel'): void;
 }>();
 
@@ -120,13 +120,16 @@ const courses = ref<Course[]>([]);
 const loadingCourses = ref(false);
 const courseOptions = ref<SelectOption[]>([]);
 
+const teachers = ref<User[]>([]);
+const loadingTeachers = ref(false);
+const teacherOptions = ref<SelectOption[]>([]);
+
 // Данные формы
 const formData = ref({
   title: '',
   description: '',
   courseId: null as string | null,
-  teacherFirstName: '',
-  teacherLastName: '',
+  teacherId: null as string | null,
 });
 
 // Правила валидации
@@ -146,15 +149,10 @@ const rules: FormRules = {
     message: 'Выберите курс',
     trigger: ['blur', 'change'],
   },
-  teacherFirstName: {
+  teacherId: {
     required: true,
-    message: 'Введите имя преподавателя',
-    trigger: ['blur', 'input'],
-  },
-  teacherLastName: {
-    required: true,
-    message: 'Введите фамилию преподавателя',
-    trigger: ['blur', 'input'],
+    message: 'Выберите преподавателя',
+    trigger: ['blur', 'change'],
   },
 };
 
@@ -167,7 +165,7 @@ const loadCourses = async () => {
     // Преобразуем в формат для n-select
     courseOptions.value = courses.value.map((course) => ({
       label: course.name,
-      value: course.id, // id курса как string
+      value: course.id,
     }));
   } catch (error) {
     console.error('Ошибка загрузки курсов:', error);
@@ -184,7 +182,6 @@ const loadCourses = async () => {
 // Поиск курсов
 const handleCourseSearch = (query: string) => {
   if (!query) {
-    // Если поиск пустой, показываем все
     courseOptions.value = courses.value.map((course) => ({
       label: course.name,
       value: course.id,
@@ -192,16 +189,63 @@ const handleCourseSearch = (query: string) => {
     return;
   }
 
-  // Фильтруем по названию курса
   const searchQuery = query.toLowerCase();
   courseOptions.value = courses.value
-    .filter((course) => {
-      const courseName = course.name.toLowerCase();
-      return courseName.includes(searchQuery);
-    })
+    .filter((course) => course.name.toLowerCase().includes(searchQuery))
     .map((course) => ({
       label: course.name,
       value: course.id,
+    }));
+};
+
+// Загрузка преподавателей 
+const loadTeachers = async () => {
+  loadingTeachers.value = true;
+  try {
+    teachers.value = await usersApi.getUsers({ role: 'admin' });
+
+    // Преобразуем в формат для n-select
+    teacherOptions.value = teachers.value.map((teacher) => ({
+      label: `${teacher.firstName} ${teacher.secondName}`,
+      value: teacher.id,
+    }));
+  } catch (error) {
+    console.error('Ошибка загрузки преподавателей:', error);
+    notification.error({
+      title: 'Ошибка',
+      content: 'Не удалось загрузить список преподавателей',
+      duration: 3000,
+    });
+  } finally {
+    loadingTeachers.value = false;
+  }
+};
+
+// Поиск преподавателей
+const handleTeacherSearch = (query: string) => {
+  if (!query) {
+    teacherOptions.value = teachers.value.map((teacher) => ({
+      label: `${teacher.firstName} ${teacher.secondName}`,
+      value: teacher.id,
+    }));
+    return;
+  }
+
+  const searchQuery = query.toLowerCase();
+  teacherOptions.value = teachers.value
+    .filter((teacher) => {
+      const fullName = `${teacher.firstName} ${teacher.secondName}`.toLowerCase();
+      const firstName = teacher.firstName.toLowerCase();
+      const lastName = teacher.secondName.toLowerCase();
+      return (
+        fullName.includes(searchQuery) ||
+        firstName.includes(searchQuery) ||
+        lastName.includes(searchQuery)
+      );
+    })
+    .map((teacher) => ({
+      label: `${teacher.firstName} ${teacher.secondName}`,
+      value: teacher.id,
     }));
 };
 
@@ -211,10 +255,7 @@ const isFormValid = computed(() => {
 
   if (!props.disabledFields?.includes('title')) checks.push(formData.value.title);
   if (!props.disabledFields?.includes('course')) checks.push(formData.value.courseId);
-  if (!props.disabledFields?.includes('teacher')) {
-    checks.push(formData.value.teacherFirstName);
-    checks.push(formData.value.teacherLastName);
-  }
+  if (!props.disabledFields?.includes('teacher')) checks.push(formData.value.teacherId);
 
   return checks.every(Boolean);
 });
@@ -228,17 +269,12 @@ const handleSubmit = async () => {
     await formRef.value?.validate();
     submitting.value = true;
 
-    // Находим выбранный курс для получения courseName
-    const selectedCourse = courses.value.find((c) => c.id === formData.value.courseId);
-
-    const projectData: Partial<Project> = {
-      uid: props.mode === 'edit' && props.initialData?.uid ? props.initialData.uid : undefined,
+    // Отправляем данные в том формате, который ожидает бэкенд
+    const projectData = {
       title: formData.value.title,
-      description: formData.value.description || '',
-      teacherFirstName: formData.value.teacherFirstName,
-      teacherLastName: formData.value.teacherLastName,
-      courseName: selectedCourse?.name || '',
-      courseId: formData.value.courseId || '',
+      description: formData.value.description || undefined,
+      teacherId: formData.value.teacherId!,
+      courseId: formData.value.courseId!,
     };
 
     emit('submit', projectData);
@@ -256,8 +292,7 @@ const mapProjectToFormData = (project: Partial<Project> | null | undefined) => {
       title: '',
       description: '',
       courseId: null,
-      teacherFirstName: '',
-      teacherLastName: '',
+      teacherId: null,
     };
   }
 
@@ -265,14 +300,14 @@ const mapProjectToFormData = (project: Partial<Project> | null | undefined) => {
     title: project.title || '',
     description: project.description || '',
     courseId: project.courseId || null,
-    teacherFirstName: project.teacherFirstName || '',
-    teacherLastName: project.teacherLastName || '',
+    teacherId: project.teacherId || null,
   };
 };
 
-// Загружаем курсы при монтировании
+// Загружаем курсы и преподавателей при монтировании
 onMounted(() => {
   loadCourses();
+  loadTeachers();
 });
 
 // Загружаем данные при изменении initialData

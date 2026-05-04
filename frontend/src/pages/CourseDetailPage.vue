@@ -27,7 +27,7 @@
         <!-- Преподаватель -->
         <n-descriptions-item label="Преподаватель">
           <div class="info-item">
-            <span>{{ teacher ? `${teacher.firstName} ${teacher.lastName}` : 'Не назначен' }}</span>
+            <span>{{ teacher ? `${teacher.firstName} ${teacher.secondName}` : 'Не назначен' }}</span>
           </div>
         </n-descriptions-item>
 
@@ -87,7 +87,7 @@
 
         <!-- Список проектов -->
         <div v-else class="projects-list">
-          <ProjectCard v-for="project in projects" :key="project.uid" :project="project" />
+          <ProjectCard v-for="project in projects" :key="project.id" :project="project" />
         </div>
       </div>
     </n-card>
@@ -184,7 +184,7 @@ const loadProjects = async () => {
 
   try {
     projectsLoading.value = true;
-    projects.value = await projectsApi.getAll();
+    projects.value = await projectsApi.getByCourseId(course.value.id);
   } catch (error) {
     console.error('Ошибка загрузки проектов:', error);
     notification.error({
@@ -209,8 +209,8 @@ const loadCourse = async () => {
   try {
     loading.value = true;
     course.value = await coursesApi.getById(courseId);
-    if (course.value?.adminId) {
-      teacher.value = await usersApi.getById(course.value.adminId);
+    if (course.value?.teacherId) {
+      teacher.value = await usersApi.getById(course.value.teacherId);
     }
 
     // Загружаем проекты после загрузки курса
@@ -268,7 +268,6 @@ const handleConfirmDelete = async () => {
 
 const handleAddProject = () => {
   if (!course.value) return;
-  // Переход на страницу создания проекта для этого курса
   router.push(`/courses/${course.value.id}/projects/create`);
 };
 
