@@ -1,6 +1,4 @@
-import { randomUUID } from 'node:crypto';
-
-import { PrismaClient } from '@/generated/prisma/client';
+import { Prisma, PrismaClient } from '@/generated/prisma/client';
 import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaMariaDb } from '@prisma/adapter-mariadb';
@@ -50,214 +48,72 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
       return;
     }
 
-    const users = await this.seedUsers();
-    const courses = await this.seedCourses(users.teacherOne, users.teacherTwo);
-    await this.seedProjects(courses, users.teacherOne, users.teacherTwo);
-    await this.seedTeams(users.students, courses);
+    await this.$transaction(
+      async (tx) => {
+        const users = await this.seedUsers(tx);
+        const courses = await this.seedCourses(tx, users.teacherOne, users.teacherTwo);
+        await this.seedProjects(tx, courses, users.teacherOne, users.teacherTwo);
+        await this.seedTeams(tx, users.students, courses);
+      },
+      { timeout: 30000 },
+    );
   }
 
-  private async seedUsers() {
+  private async seedUsers(tx: Prisma.TransactionClient) {
     const studentDefs = [
-      {
-        uid: 'seed_student_1',
-        email: 'student1@example.ru',
-        firstName: 'Student1',
-        secondName: 'Student1',
-        group: 2410,
-      },
-      {
-        uid: 'seed_student_2',
-        email: 'student2@example.ru',
-        firstName: 'Student2',
-        secondName: 'Student2',
-        group: 2410,
-      },
-      {
-        uid: 'seed_student_3',
-        email: 'student3@example.ru',
-        firstName: 'Student3',
-        secondName: 'Student3',
-        group: 2410,
-      },
-      {
-        uid: 'seed_student_4',
-        email: 'student4@example.ru',
-        firstName: 'Student4',
-        secondName: 'Student4',
-        group: 2410,
-      },
-      {
-        uid: 'seed_student_5',
-        email: 'student5@example.ru',
-        firstName: 'Student5',
-        secondName: 'Student5',
-        group: 2410,
-      },
-      {
-        uid: 'seed_student_6',
-        email: 'student6@example.ru',
-        firstName: 'Student6',
-        secondName: 'Student6',
-        group: 2411,
-      },
-      {
-        uid: 'seed_student_7',
-        email: 'student7@example.ru',
-        firstName: 'Student7',
-        secondName: 'Student7',
-        group: 2411,
-      },
-      {
-        uid: 'seed_student_8',
-        email: 'student8@example.ru',
-        firstName: 'Student8',
-        secondName: 'Student8',
-        group: 2411,
-      },
-      {
-        uid: 'seed_student_9',
-        email: 'student9@example.ru',
-        firstName: 'Student9',
-        secondName: 'Student9',
-        group: 2411,
-      },
-      {
-        uid: 'seed_student_10',
-        email: 'student10@example.ru',
-        firstName: 'Student10',
-        secondName: 'Student10',
-        group: 2411,
-      },
-      {
-        uid: 'seed_student_11',
-        email: 'student11@example.ru',
-        firstName: 'Student11',
-        secondName: 'Student11',
-        group: 2412,
-      },
-      {
-        uid: 'seed_student_12',
-        email: 'student12@example.ru',
-        firstName: 'Student12',
-        secondName: 'Student12',
-        group: 2412,
-      },
-      {
-        uid: 'seed_student_13',
-        email: 'student13@example.ru',
-        firstName: 'Student13',
-        secondName: 'Student13',
-        group: 2412,
-      },
-      {
-        uid: 'seed_student_14',
-        email: 'student14@example.ru',
-        firstName: 'Student14',
-        secondName: 'Student14',
-        group: 2412,
-      },
-      {
-        uid: 'seed_student_15',
-        email: 'student15@example.ru',
-        firstName: 'Student15',
-        secondName: 'Student15',
-        group: 2412,
-      },
+      { uid: 'seed_student_1', email: 'student1@example.ru', firstName: 'Student1', secondName: 'Student1', group: 2410 },
+      { uid: 'seed_student_2', email: 'student2@example.ru', firstName: 'Student2', secondName: 'Student2', group: 2410 },
+      { uid: 'seed_student_3', email: 'student3@example.ru', firstName: 'Student3', secondName: 'Student3', group: 2410 },
+      { uid: 'seed_student_4', email: 'student4@example.ru', firstName: 'Student4', secondName: 'Student4', group: 2410 },
+      { uid: 'seed_student_5', email: 'student5@example.ru', firstName: 'Student5', secondName: 'Student5', group: 2410 },
+      { uid: 'seed_student_6', email: 'student6@example.ru', firstName: 'Student6', secondName: 'Student6', group: 2411 },
+      { uid: 'seed_student_7', email: 'student7@example.ru', firstName: 'Student7', secondName: 'Student7', group: 2411 },
+      { uid: 'seed_student_8', email: 'student8@example.ru', firstName: 'Student8', secondName: 'Student8', group: 2411 },
+      { uid: 'seed_student_9', email: 'student9@example.ru', firstName: 'Student9', secondName: 'Student9', group: 2411 },
+      { uid: 'seed_student_10', email: 'student10@example.ru', firstName: 'Student10', secondName: 'Student10', group: 2411 },
+      { uid: 'seed_student_11', email: 'student11@example.ru', firstName: 'Student11', secondName: 'Student11', group: 2412 },
+      { uid: 'seed_student_12', email: 'student12@example.ru', firstName: 'Student12', secondName: 'Student12', group: 2412 },
+      { uid: 'seed_student_13', email: 'student13@example.ru', firstName: 'Student13', secondName: 'Student13', group: 2412 },
+      { uid: 'seed_student_14', email: 'student14@example.ru', firstName: 'Student14', secondName: 'Student14', group: 2412 },
+      { uid: 'seed_student_15', email: 'student15@example.ru', firstName: 'Student15', secondName: 'Student15', group: 2412 },
     ];
 
-    const [mainAdmin, teacherOne, teacherTwo, ...students] = await Promise.all([
-      this.user.upsert({
-        where: { ldapUid: 'seed_admin_main' },
-        update: {
-          email: 'admin.main@example.ru',
-          firstName: 'Admin',
-          secondName: 'Admin',
-          groupNumber: 0,
-          role: 'admin',
-          password: 'admin123',
-        },
-        create: {
-          ldapUid: 'seed_admin_main',
-          email: 'admin.main@example.ru',
-          firstName: 'Admin',
-          secondName: 'Admin',
-          groupNumber: 0,
-          role: 'admin',
-          password: 'admin123',
-        },
-      }),
-      this.user.upsert({
-        where: { ldapUid: 'seed_admin_teacher_1' },
-        update: {
-          email: 'teacher1@example.ru',
-          firstName: 'Teacher1',
-          secondName: 'Teacher1',
-          groupNumber: 0,
-          role: 'admin',
-          password: 'teacher123',
-        },
-        create: {
-          ldapUid: 'seed_admin_teacher_1',
-          email: 'teacher1@example.ru',
-          firstName: 'Teacher1',
-          secondName: 'Teacher1',
-          groupNumber: 0,
-          role: 'admin',
-          password: 'teacher123',
-        },
-      }),
-      this.user.upsert({
-        where: { ldapUid: 'seed_teacher_2' },
-        update: {
-          email: 'teacher2@example.ru',
-          firstName: 'Teacher2',
-          secondName: 'Teacher2',
-          groupNumber: 0,
-          role: 'admin',
-          password: 'teacher123',
-        },
-        create: {
-          ldapUid: 'seed_teacher_2',
-          email: 'teacher2@example.ru',
-          firstName: 'Teacher2',
-          secondName: 'Teacher2',
-          groupNumber: 0,
-          role: 'admin',
-          password: 'teacher123',
-        },
-      }),
-      ...studentDefs.map((s) =>
-        this.user.upsert({
-          where: { ldapUid: s.uid },
-          update: {
-            email: s.email,
-            firstName: s.firstName,
-            secondName: s.secondName,
-            groupNumber: s.group,
-            role: 'student',
-            password: 'student123',
-          },
-          create: {
-            ldapUid: s.uid,
-            email: s.email,
-            firstName: s.firstName,
-            secondName: s.secondName,
-            groupNumber: s.group,
-            role: 'student',
-            password: 'student123',
-          },
-        }),
-      ),
-    ]);
+    await tx.user.createMany({
+      data: [
+        { ldapUid: 'seed_admin_main', email: 'admin.main@example.ru', firstName: 'Admin', secondName: 'Admin', groupNumber: 0, role: 'admin', password: 'admin123' },
+        { ldapUid: 'seed_admin_teacher_1', email: 'teacher1@example.ru', firstName: 'Teacher1', secondName: 'Teacher1', groupNumber: 0, role: 'admin', password: 'teacher123' },
+        { ldapUid: 'seed_teacher_2', email: 'teacher2@example.ru', firstName: 'Teacher2', secondName: 'Teacher2', groupNumber: 0, role: 'admin', password: 'teacher123' },
+        ...studentDefs.map((s) => ({
+          ldapUid: s.uid,
+          email: s.email,
+          firstName: s.firstName,
+          secondName: s.secondName,
+          groupNumber: s.group,
+          role: 'student' as const,
+          password: 'student123',
+        })),
+      ],
+      skipDuplicates: true,
+    });
+
+    const allUsers = await tx.user.findMany({
+      where: { ldapUid: { in: ['seed_admin_main', 'seed_admin_teacher_1', 'seed_teacher_2', ...studentDefs.map((s) => s.uid)] } },
+    });
+
+    const byUid = new Map(allUsers.map((u) => [u.ldapUid, u]));
+    const mainAdmin = byUid.get('seed_admin_main')!;
+    const teacherOne = byUid.get('seed_admin_teacher_1')!;
+    const teacherTwo = byUid.get('seed_teacher_2')!;
+    const students = studentDefs.map((s) => byUid.get(s.uid)!);
 
     this.logger.log(`Users prepared: 1 admin, 2 teachers, ${students.length} students.`);
 
     return { mainAdmin, teacherOne, teacherTwo, students };
   }
 
-  private async seedCourses(teacherOne: { id: string }, teacherTwo: { id: string }) {
+  private async seedCourses(tx: Prisma.TransactionClient, teacherOne: { id: string }, teacherTwo: { id: string }) {
     const [courseOne, courseTwo] = await Promise.all([
-      this.course.upsert({
+      tx.course.upsert({
         where: { id: 'course_1' },
         update: {
           name: 'Основы промышленной разработки ПО',
@@ -275,7 +131,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
           teacherId: teacherOne.id,
         },
       }),
-      this.course.upsert({
+      tx.course.upsert({
         where: { id: 'course_2' },
         update: {
           name: 'Введение в нереляционные базы данных',
@@ -301,13 +157,14 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
   }
 
   private async seedProjects(
+    tx: Prisma.TransactionClient,
     courses: { courseOne: { id: string }; courseTwo: { id: string } },
     teacherOne: { id: string },
     teacherTwo: { id: string },
   ) {
     await Promise.all([
       // Основы промышленной разработки ПО
-      this.project.upsert({
+      tx.project.upsert({
         where: { id: 'project_1' },
         update: {
           title: 'Помощник преподавателя на лабах',
@@ -325,7 +182,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
           teacherId: teacherOne.id,
         },
       }),
-      this.project.upsert({
+      tx.project.upsert({
         where: { id: 'project_2' },
         update: {
           title: 'Новые периферийные устройства в RIPES',
@@ -343,7 +200,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
           teacherId: teacherOne.id,
         },
       }),
-      this.project.upsert({
+      tx.project.upsert({
         where: { id: 'project_3' },
         update: {
           title: 'Генератор лабораторных по программированию',
@@ -361,7 +218,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
           teacherId: teacherOne.id,
         },
       }),
-      this.project.upsert({
+      tx.project.upsert({
         where: { id: 'project_4' },
         update: {
           title: 'Автоматизация деплоя self-hosted таблиц',
@@ -379,7 +236,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
           teacherId: teacherOne.id,
         },
       }),
-      this.project.upsert({
+      tx.project.upsert({
         where: { id: 'project_5' },
         update: {
           title: 'Замена coderunner на judge0',
@@ -398,7 +255,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
         },
       }),
       // Введение в нереляционные базы данных
-      this.project.upsert({
+      tx.project.upsert({
         where: { id: 'project_6' },
         update: {
           title: 'ИС для театральных декораций',
@@ -416,7 +273,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
           teacherId: teacherTwo.id,
         },
       }),
-      this.project.upsert({
+      tx.project.upsert({
         where: { id: 'project_7' },
         update: {
           title: 'БД актeров',
@@ -434,7 +291,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
           teacherId: teacherTwo.id,
         },
       }),
-      this.project.upsert({
+      tx.project.upsert({
         where: { id: 'project_8' },
         update: {
           title: 'ИС для ателье',
@@ -452,7 +309,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
           teacherId: teacherTwo.id,
         },
       }),
-      this.project.upsert({
+      tx.project.upsert({
         where: { id: 'project_9' },
         update: {
           title: 'Хранилище изображений с CRUD',
@@ -470,7 +327,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
           teacherId: teacherTwo.id,
         },
       }),
-      this.project.upsert({
+      tx.project.upsert({
         where: { id: 'project_10' },
         update: {
           title: 'БД биометрии СКУД для университета',
@@ -496,12 +353,13 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
   }
 
   private async seedTeams(
+    tx: Prisma.TransactionClient,
     students: { id: string }[],
     courses: { courseOne: { id: string }; courseTwo: { id: string } },
   ) {
     const [teamOne, teamTwo, teamThree, teamFour] = await Promise.all([
       // Основы промышленной разработки ПО
-      this.team.upsert({
+      tx.team.upsert({
         where: { id: 'team_1' },
         update: { courseId: courses.courseOne.id, leaderId: students[0].id, status: 'forming' },
         create: {
@@ -511,7 +369,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
           status: 'forming',
         },
       }),
-      this.team.upsert({
+      tx.team.upsert({
         where: { id: 'team_2' },
         update: { courseId: courses.courseOne.id, leaderId: students[5].id, status: 'forming' },
         create: {
@@ -522,7 +380,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
         },
       }),
       // Введение в нереляционные базы данных
-      this.team.upsert({
+      tx.team.upsert({
         where: { id: 'team_3' },
         update: { courseId: courses.courseTwo.id, leaderId: students[2].id, status: 'forming' },
         create: {
@@ -532,7 +390,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
           status: 'forming',
         },
       }),
-      this.team.upsert({
+      tx.team.upsert({
         where: { id: 'team_4' },
         update: { courseId: courses.courseTwo.id, leaderId: students[10].id, status: 'forming' },
         create: {
@@ -570,7 +428,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
 
     await Promise.all(
       members.map((m) =>
-        this.teamMember.upsert({
+        tx.teamMember.upsert({
           where: { id: m.id },
           update: { teamId: m.teamId, userId: m.userId },
           create: { id: m.id, teamId: m.teamId, userId: m.userId },
@@ -579,7 +437,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
     );
 
     await Promise.all([
-      this.teamInvitation.upsert({
+      tx.teamInvitation.upsert({
         where: { id: 'team_invitation_1' },
         update: {
           teamId: teamOne.id,
@@ -596,7 +454,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
           status: 'pending',
         },
       }),
-      this.teamInvitation.upsert({
+      tx.teamInvitation.upsert({
         where: { id: 'team_invitation_2' },
         update: {
           teamId: teamThree.id,
