@@ -11,7 +11,7 @@ export class ExchangesController {
   constructor(private readonly exchangesService: ExchangesService) {}
 
   @UseGuards(RolesGuard)
-  @Roles(['student'])
+  @Roles(['student', 'admin'])
   @Post()
   create(@Body() createRequestDto: CreateRequestDto, @Req() req: Request & UserPayload) {
     return this.exchangesService.createRequest(createRequestDto, req.user.sub);

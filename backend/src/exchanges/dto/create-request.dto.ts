@@ -1,6 +1,4 @@
-import { RequestStatus } from '@/generated/prisma/enums';
-import { Type } from 'class-transformer';
-import { IsDate, IsEnum, IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
+import { IsNotEmpty, IsUUID } from 'class-validator';
 
 export class CreateRequestDto {
   @IsNotEmpty()
@@ -22,17 +20,4 @@ export class CreateRequestDto {
   @IsNotEmpty()
   @IsUUID()
   targetProjectId!: string;
-
-  @IsEnum(RequestStatus)
-  @IsNotEmpty()
-  status!: RequestStatus;
-
-  @IsOptional()
-  @IsString()
-  approvedBy?: string;
-
-  @IsDate()
-  @IsOptional()
-  @Type(() => Date)
-  approvedAt?: Date;
 }

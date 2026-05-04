@@ -1,7 +1,8 @@
 import { UserPayload } from '@/common/interfaces/user.interface';
+import { RequestStatus } from '@/generated/prisma/enums';
 import { PrismaService } from '@/prisma/prisma.service';
 import { UsersService } from '@/users/users.service';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 
 import { CreateRequestDto } from './dto/create-request.dto';
 
@@ -13,14 +14,29 @@ export class ExchangesService {
   ) {}
 
   async createRequest(createRequestDto: CreateRequestDto, userId: string) {
-    this.usersService.checkTeamLeader(userId, createRequestDto.initiatorTeamId);
-    return await this.prisma.exchangeRequest.create({
-      data: createRequestDto,
+    await this.usersService.checkTeamLeader(userId, createRequestDto.initiatorTeamId);
+
+    return this.prisma.$transaction(async (tx) => {
+      const request = await tx.exchangeRequest.create({
+        data: {
+          ...createRequestDto,
+          status: 'confirmed_initiator',
+        },
+      });
+
+      await tx.exchangeConfirmation.create({
+        data: {
+          exchangeRequestId: request.id,
+          teamId: createRequestDto.initiatorTeamId,
+          confirmedBy: userId,
+        },
+      });
+      return request;
     });
   }
 
   async updateAssignments(exchangeRequestId: string, approvedBy?: string) {
-    return await this.prisma.$transaction(async (tx) => {
+    return this.prisma.$transaction(async (tx) => {
       const exchangeRequest = await tx.exchangeRequest.findUnique({
         where: { id: exchangeRequestId },
       });
@@ -63,7 +79,7 @@ export class ExchangesService {
         },
       });
 
-      return await tx.exchangeRequest.update({
+      return tx.exchangeRequest.update({
         where: { id: exchangeRequestId },
         data: {
           status: 'approved',
@@ -74,49 +90,119 @@ export class ExchangesService {
     });
   }
 
-  async confirmRequest(id: string, user: UserPayload['user']) {
-    try {
-      if (user.role === 'student') {
-        const request = await this.prisma.exchangeRequest.findUnique({
-          where: { id },
-        });
-        if (!request) {
-          throw new NotFoundException(`Exchange request ${id} not found.`);
-        }
-        this.usersService.checkTeamLeader(user.sub, request.targetTeamId);
+  private getNextStatus(confirmedTeamsCount: number): RequestStatus {
+    if (confirmedTeamsCount >= 2) {
+      return 'pending_teacher';
+    }
+    return 'confirmed_target';
+  }
 
-        return await this.prisma.exchangeRequest.update({
-          where: { id },
-          data: {
-            status: 'confirmed_target',
-          },
-        });
-      }
+  async confirmRequestByTeam(id: string, user: UserPayload['user']) {
+    const request = await this.prisma.exchangeRequest.findUnique({
+      where: { id },
+    });
 
-      if (user.role === 'admin') {
-        return await this.updateAssignments(id, user.sub);
-      }
-    } catch {
+    if (!request) {
       throw new NotFoundException(`Exchange request ${id} not found.`);
     }
+
+    if (
+      request.status === 'approved' ||
+      request.status === 'rejected' ||
+      request.status === 'cancelled'
+    ) {
+      throw new BadRequestException(`Exchange request ${id} is already finalized.`);
+    }
+
+    await this.usersService.checkTeamLeader(user.sub, request.targetTeamId);
+
+    const teamId = request.targetTeamId;
+    const existingConfirmation = await this.prisma.exchangeConfirmation.findFirst({
+      where: {
+        exchangeRequestId: id,
+        teamId,
+      },
+    });
+
+    if (!existingConfirmation) {
+      await this.prisma.exchangeConfirmation.create({
+        data: {
+          exchangeRequestId: id,
+          teamId,
+          confirmedBy: user.sub,
+        },
+      });
+    }
+
+    const confirmedTeamsCount = await this.prisma.exchangeConfirmation.count({
+      where: { exchangeRequestId: id },
+    });
+
+    return this.prisma.exchangeRequest.update({
+      where: { id },
+      data: {
+        status: this.getNextStatus(confirmedTeamsCount),
+      },
+    });
+  }
+
+  async approveRequestByTeacher(id: string, user: UserPayload['user']) {
+    const request = await this.prisma.exchangeRequest.findUnique({
+      where: { id },
+    });
+
+    if (!request) {
+      throw new NotFoundException(`Exchange request ${id} not found.`);
+    }
+
+    if (request.status !== 'pending_teacher') {
+      throw new BadRequestException('Both teams must confirm exchange before teacher approval.');
+    }
+
+    return this.updateAssignments(id, user.sub);
+  }
+
+  async cancelRequest(id: string, user: UserPayload['user']) {
+    const request = await this.prisma.exchangeRequest.findUnique({
+      where: { id },
+    });
+
+    if (!request) {
+      throw new NotFoundException(`Exchange request ${id} not found.`);
+    }
+
+    if (
+      request.status === 'approved' ||
+      request.status === 'rejected' ||
+      request.status === 'cancelled'
+    ) {
+      throw new BadRequestException(`Exchange request ${id} is already finalized.`);
+    }
+
+    if (user.role === 'student') {
+      await this.usersService.checkTeamLeader(user.sub, request.initiatorTeamId);
+    }
+
+    return this.prisma.exchangeRequest.update({
+      where: { id },
+      data: {
+        status: 'cancelled',
+      },
+    });
+  }
+
+  async confirmRequest(id: string, user: UserPayload['user']) {
+    if (user.role === 'student') {
+      return this.confirmRequestByTeam(id, user);
+    }
+
+    if (user.role === 'admin') {
+      return this.approveRequestByTeacher(id, user);
+    }
+    throw new BadRequestException('Unsupported role.');
   }
 
   async deleteRequest(id: string, user: UserPayload['user']) {
-    try {
-      if (user.role === 'student') {
-        const request = await this.prisma.exchangeRequest.findUnique({
-          where: { id },
-        });
-        if (!request) {
-          throw new NotFoundException(`Exchange request ${id} not found.`);
-        }
-        this.usersService.checkTeamLeader(user.sub, request.initiatorTeamId);
-      }
-      return await this.prisma.exchangeRequest.delete({
-        where: { id },
-      });
-    } catch {
-      throw new NotFoundException(`Exchange request ${id} not found.`);
-    }
+    return this.cancelRequest(id, user);
   }
 }
