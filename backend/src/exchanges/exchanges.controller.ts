@@ -23,7 +23,7 @@ export class ExchangesController {
     @Param('id') id: string,
     @Req() req: Request & { user: { sub: string; email: string; role: string } },
   ) {
-    return this.exchangesService.confirmRequest(id, req.user.role);
+    return this.exchangesService.confirmRequest(id, req.user.role, req.user.sub);
   }
 
   @UseGuards(RolesGuard)
