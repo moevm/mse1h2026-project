@@ -50,6 +50,53 @@ export interface UserAuth {
   role: 'student' | 'admin';
 }
 
+export interface TeamUser {
+  id: string;
+  firstName: string;
+  secondName: string;
+  email: string;
+  groupNumber?: number;
+}
+
+export interface TeamMember {
+  id: string;
+  userId: string;
+  teamId: string;
+  joinedAt: Date;
+  user: TeamUser;
+}
+
+export type TeamStatus = 'forming' | 'selected' | 'assigned' | 'locked';
+export type InvitationStatus = 'pending' | 'accepted' | 'declined' | 'cancelled' | 'expired';
+
+export interface Team {
+  id: string;
+  courseId: string;
+  leaderId?: string;
+  projectId?: string;
+  status: TeamStatus;
+  createdAt: Date;
+  leader?: TeamUser;
+  members: TeamMember[];
+  project?: Project;
+}
+
+export interface TeamInvitation {
+  id: string;
+  teamId: string;
+  inviteeId: string;
+  invitedBy: string;
+  status: InvitationStatus;
+  createdAt: Date;
+  respondedAt?: Date;
+  team: {
+    id: string;
+    courseId: string;
+    course: { id: string; name: string };
+    leader?: TeamUser;
+  };
+}
+
 export interface Assignment {
   studentId: string;
   studentFirstName: string;
