@@ -46,7 +46,7 @@ export class TeamsService {
       throw new NotFoundException(`Team ${teamId} not found.`);
     }
     if (team.leaderId !== userId) {
-      throw new ForbiddenException('You have not rights for this team.');
+      throw new ForbiddenException('You have no rights for this team.');
     }
     const invitee = await this.prisma.user.findUnique({
       where: { id: dto.inviteeId },

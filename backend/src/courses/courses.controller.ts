@@ -10,11 +10,15 @@ import { UpdateCourseDto } from './dto/update-course.dto';
 export class CoursesController {
   constructor(private readonly coursesService: CoursesService) {}
 
+  @UseGuards(RolesGuard)
+  @Roles(['student', 'admin'])
   @Get()
   findAll() {
     return this.coursesService.getAllCourses();
   }
 
+  @UseGuards(RolesGuard)
+  @Roles(['student', 'admin'])
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.coursesService.getCourseById(id);
