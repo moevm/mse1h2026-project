@@ -33,7 +33,7 @@
               <div class="member-row">
                 <div class="member-info">
                   <span class="member-name">
-                    {{ member.user.firstName }} {{ member.user.secondName }}
+                    {{ member.user.firstName }} {{ member.user.lastName }}
                   </span>
                   <n-tag v-if="member.userId === team.leaderId" size="small" type="info">
                     Лидер

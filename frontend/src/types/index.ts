@@ -53,7 +53,7 @@ export interface UserAuth {
 export interface TeamUser {
   id: string;
   firstName: string;
-  secondName: string;
+  lastName: string;
   email: string;
   groupNumber?: number;
 }

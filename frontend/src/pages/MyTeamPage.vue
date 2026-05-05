@@ -39,7 +39,7 @@
                 <div class="member-row">
                   <div class="member-info">
                     <span class="member-name">
-                      {{ member.user.firstName }} {{ member.user.secondName }}
+                      {{ member.user.firstName }} {{ member.user.lastName }}
                     </span>
                     <n-tag v-if="member.userId === team.leaderId" size="small" type="info">
                       Лидер
@@ -96,7 +96,7 @@
                   <span class="invitation-course">{{ inv.team.course.name }}</span>
                   <span class="invitation-from">
                     Приглашение от: {{ inv.team.leader?.firstName }}
-                    {{ inv.team.leader?.secondName }}
+                    {{ inv.team.leader?.lastName }}
                   </span>
                 </div>
                 <n-space>
@@ -212,7 +212,7 @@ const studentOptions = computed(() => {
   return allStudents.value
     .filter((s) => !memberIds.has(s.id) && !pendingInviteeIds.has(s.id))
     .map((s) => ({
-      label: `${s.firstName} ${(s as unknown as { secondName: string }).secondName ?? ''}`,
+      label: `${s.firstName} ${(s as unknown as { lastName: string }).lastName ?? ''}`,
       value: s.id,
     }));
 });
@@ -220,7 +220,7 @@ const studentOptions = computed(() => {
 const studentMap = computed(() => {
   const map = new Map<string, string>();
   for (const s of allStudents.value) {
-    map.set(s.id, `${s.firstName} ${(s as unknown as { secondName: string }).secondName ?? ''}`);
+    map.set(s.id, `${s.firstName} ${(s as unknown as { lastName: string }).lastName ?? ''}`);
   }
   return map;
 });
