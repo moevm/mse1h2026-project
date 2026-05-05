@@ -6,7 +6,7 @@ export interface Project {
   teacherFirstName: string;
   teacherLastName: string;
   courseName: string;
-  courseId: number;
+  courseId: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
