@@ -1,6 +1,6 @@
-import { Body, Controller, Get, Param, Put, Req, UseGuards } from '@nestjs/common';
 import { Roles } from '@/common/decorators/roles.decorator';
 import { RolesGuard } from '@/common/guards/roles.guard';
+import { Body, Controller, Get, Param, Put, Req, UseGuards } from '@nestjs/common';
 
 import { UpdateInvitationDto } from './dto/update-invitation.dto';
 import { InvitationsService } from './invitations.service';
