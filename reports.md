@@ -4,7 +4,7 @@
 - [Постановка задачи](docs/project_overview.md#постановка-задачи)
 - [Требования](docs/project_overview.md#требования)
 - [Сценарии использования](docs/project_overview.md#сценарии-использования)
-- [Инструкция по запуску](docs/project_overview.md#инструкция-по-запуску)
+- [Инструкция по запуску](docs/project_overview.md#Установка-и-запуск)
 
 ## Итерации
 
