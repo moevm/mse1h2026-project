@@ -126,7 +126,10 @@ export class CoursesService {
   async getCourseTeams(courseId: string) {
     return this.prisma.team.findMany({
       where: { courseId },
-      include: { members: true },
+      include: {
+        members: { include: { user: true } },
+        project: true,
+      },
     });
   }
 }
