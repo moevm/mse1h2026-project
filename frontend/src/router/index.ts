@@ -43,6 +43,7 @@ const routes: RouterOptions['routes'] = [
         meta: { requiresAuthentication: true, requiresAdmin: true },
       },
       {
+<<<<<<< feature/manage-team-page
         path: 'courses/:courseId/my-team',
         component: () => import('@/pages/MyTeamPage.vue'),
         name: 'my-team',
@@ -52,6 +53,23 @@ const routes: RouterOptions['routes'] = [
         path: 'courses/:courseId/teams',
         component: () => import('@/pages/CourseTeamsPage.vue'),
         name: 'course-teams',
+=======
+        path: 'courses/:id/projects/:projectId',
+        component: () => import('@/pages/ProjectDetailPage.vue'),
+        name: 'project-detail',
+        meta: { requiresAuthentication: true },
+      },
+      {
+        path: '/courses/:id/projects/create',
+        component: () => import('@/pages/CreateProjectPage.vue'),
+        name: 'project-create',
+        meta: { requiresAuthentication: true, requiresAdmin: true },
+      },
+      {
+        path: '/projects/:projectId/edit',
+        component: () => import('@/pages/EditProjectPage.vue'),
+        name: 'project-create',
+>>>>>>> main
         meta: { requiresAuthentication: true, requiresAdmin: true },
       },
     ],

@@ -1,14 +1,17 @@
-import { IsOptional, IsString, IsUUID } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
 
 export class CreateProjectDto {
+  @IsNotEmpty()
   @IsUUID()
-  courseId: string;
+  courseId!: string;
 
+  @IsNotEmpty()
   @IsUUID()
-  teacherId: string;
+  teacherId!: string;
 
+  @IsNotEmpty()
   @IsString()
-  title: string;
+  title!: string;
 
   @IsOptional()
   @IsString()

@@ -66,14 +66,4 @@ const goBack = (): void => {
   font-size: 1.8rem;
   font-weight: 600;
 }
-
-@media (max-width: 768px) {
-  .create-course-page {
-    padding: 16px;
-  }
-
-  .title {
-    font-size: 1.5rem;
-  }
-}
 </style>
