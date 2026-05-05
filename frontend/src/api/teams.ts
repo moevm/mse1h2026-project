@@ -6,6 +6,9 @@ export const teamsApi = {
   getMyTeam: (courseId: string) =>
     axiosInstance.get<Team | null>(`/courses/${courseId}/my-team`).then((res) => res.data),
 
+  getCourseTeams: (courseId: string) =>
+    axiosInstance.get<Team[]>(`/courses/${courseId}/teams`).then((res) => res.data),
+
   createTeam: (courseId: string, projectId?: string) =>
     axiosInstance.post<Team>(`/courses/${courseId}/teams`, { projectId }).then((res) => res.data),
 
