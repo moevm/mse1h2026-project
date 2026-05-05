@@ -43,7 +43,9 @@ export class CoursesService {
   }
 
   async getCourseExchanges(courseId: string) {
-    return (await this.getCourseById(courseId)).exchangeRequests;
+    return await this.prisma.exchangeRequest.findMany({
+      where: { courseId },
+    });
   }
 
   async createCourse(createCourseDto: CreateCourseDto) {
