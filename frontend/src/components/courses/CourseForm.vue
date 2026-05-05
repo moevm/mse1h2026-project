@@ -264,12 +264,11 @@ const rules: FormRules = {
 const loadTeachers = async () => {
   loadingTeachers.value = true;
   try {
-    // Запрашиваем только админов
     teachers.value = await usersApi.getUsers({ role: 'admin' });
 
     // Преобразуем в формат для n-select
     teacherOptions.value = teachers.value.map((teacher) => ({
-      label: `${teacher.firstName} ${teacher.lastName}`,
+      label: `${teacher.firstName} ${teacher.secondName}`,
       value: teacher.id,
     }));
   } catch (error) {
@@ -289,7 +288,7 @@ const handleTeacherSearch = (query: string) => {
   if (!query) {
     // Если поиск пустой, показываем всех
     teacherOptions.value = teachers.value.map((teacher) => ({
-      label: `${teacher.firstName} ${teacher.lastName}`,
+      label: `${teacher.firstName} ${teacher.secondName}`,
       value: teacher.id,
     }));
     return;
@@ -299,9 +298,9 @@ const handleTeacherSearch = (query: string) => {
   const searchQuery = query.toLowerCase();
   teacherOptions.value = teachers.value
     .filter((teacher) => {
-      const fullName = `${teacher.firstName} ${teacher.lastName}`.toLowerCase();
+      const fullName = `${teacher.firstName} ${teacher.secondName}`.toLowerCase();
       const firstName = teacher.firstName.toLowerCase();
-      const lastName = teacher.lastName.toLowerCase();
+      const lastName = teacher.secondName.toLowerCase();
 
       // Ищем по полному имени, имени или фамилии
       return (
@@ -311,7 +310,7 @@ const handleTeacherSearch = (query: string) => {
       );
     })
     .map((teacher) => ({
-      label: `${teacher.firstName} ${teacher.lastName}`,
+      label: `${teacher.firstName} ${teacher.secondName}`,
       value: teacher.id,
     }));
 };
@@ -321,7 +320,7 @@ const isFormValid = computed(() => {
   const checks = [];
 
   if (!props.disabledFields?.includes('name')) checks.push(formData.value.name);
-  // if (!props.disabledFields?.includes('teacher')) checks.push(formData.value.teacherId);
+  if (!props.disabledFields?.includes('teacher')) checks.push(formData.value.teacherId);
   if (!props.disabledFields?.includes('teamSize')) {
     checks.push(formData.value.minTeamSize);
     checks.push(formData.value.maxTeamSize);
@@ -351,11 +350,10 @@ const handleSubmit = async () => {
     await formRef.value?.validate();
     submitting.value = true;
 
-    // Преобразуем teacherId в число для Course
     const courseData: Course = {
       id: props.mode === 'edit' && props.initialData?.id ? props.initialData.id : '',
       name: formData.value.name,
-      // teacherId: formData.value.teacherId ? parseInt(formData.value.teacherId) : 0,
+      teacherId: formData.value.teacherId ? formData.value.teacherId : '',
       minTeamSize: formData.value.minTeamSize,
       maxTeamSize: formData.value.maxTeamSize,
       isActive: formData.value.isActive,
@@ -377,7 +375,7 @@ const mapCourseToFormData = (course: Partial<Course> | null | undefined) => {
   if (!course || Object.keys(course).length === 0) {
     return {
       name: '',
-      teacherId: null,
+      teacherId: '',
       minTeamSize: 2,
       maxTeamSize: 5,
       registrationDeadline: null,
@@ -387,7 +385,7 @@ const mapCourseToFormData = (course: Partial<Course> | null | undefined) => {
 
   return {
     name: course.name || '',
-    teacherId: course.adminId ? course.adminId.toString() : null,
+    teacherId: course.teacherId ? course.teacherId : null,
     minTeamSize: course.minTeamSize ?? 2,
     maxTeamSize: course.maxTeamSize ?? 5,
     registrationDeadline: course.registrationDeadline

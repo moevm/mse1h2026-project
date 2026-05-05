@@ -1,16 +1,16 @@
 import { IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
 
 export class CreateProjectDto {
-  @IsUUID()
   @IsNotEmpty()
+  @IsUUID()
   courseId!: string;
 
-  @IsUUID()
   @IsNotEmpty()
+  @IsUUID()
   teacherId!: string;
 
-  @IsString()
   @IsNotEmpty()
+  @IsString()
   title!: string;
 
   @IsOptional()

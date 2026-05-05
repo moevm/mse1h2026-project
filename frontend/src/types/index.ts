@@ -4,7 +4,7 @@ export interface Course {
   maxTeamSize: number;
   minTeamSize: number;
   isActive: boolean;
-  adminId?: string;
+  teacherId: string;
   description?: string;
   registrationDeadline?: Date;
   createdAt?: Date;
@@ -25,9 +25,8 @@ export interface Project {
   title: string;
   description?: string;
   teacherId: string;
-  teacherFirstName: string;
-  teacherLastName: string;
-  courseName: string;
+  teacher: User;
+  course: Course;
   courseId: string;
   createdAt?: Date;
   updatedAt?: Date;
@@ -36,11 +35,11 @@ export interface Project {
 export interface User {
   id: string;
   firstName: string;
-  lastName: string;
-  group?: number;
+  secondName: string;
   role: 'student' | 'admin';
   email: string;
-  ldapUid: number;
+  ldapUid: string;
+  groupNumber: number;
 }
 
 export interface UserAuth {
@@ -48,6 +47,54 @@ export interface UserAuth {
   email: string;
   password: string;
   role: 'student' | 'admin';
+}
+
+export interface TeamUser {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  groupNumber?: number;
+}
+
+export interface TeamMember {
+  id: string;
+  userId: string;
+  teamId: string;
+  joinedAt: Date;
+  user: TeamUser;
+}
+
+export type TeamStatus = 'forming' | 'selected' | 'assigned' | 'locked';
+export type InvitationStatus = 'pending' | 'accepted' | 'declined' | 'cancelled' | 'expired';
+
+export interface Team {
+  id: string;
+  courseId: string;
+  leaderId?: string;
+  projectId?: string;
+  status: TeamStatus;
+  createdAt: Date;
+  leader?: TeamUser;
+  members: TeamMember[];
+  project?: Project;
+  invitations?: { id: string; inviteeId: string }[];
+}
+
+export interface TeamInvitation {
+  id: string;
+  teamId: string;
+  inviteeId: string;
+  invitedBy: string;
+  status: InvitationStatus;
+  createdAt: Date;
+  respondedAt?: Date;
+  team: {
+    id: string;
+    courseId: string;
+    course: { id: string; name: string };
+    leader?: TeamUser;
+  };
 }
 
 export interface Assignment {

@@ -1,4 +1,6 @@
+import { UserPayload } from '@/common/interfaces/user.interface';
 import { PrismaService } from '@/prisma/prisma.service';
+import { UsersService } from '@/users/users.service';
 import {
   BadRequestException,
   ForbiddenException,
@@ -11,7 +13,10 @@ import { UpdateLeaderDto } from './dto/update-leader.dto';
 
 @Injectable()
 export class TeamsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly usersService: UsersService,
+  ) {}
 
   async getTeamById(id: string) {
     const team = await this.prisma.team.findUnique({
@@ -34,7 +39,7 @@ export class TeamsService {
     return team;
   }
 
-  async createInvitation(teamId: string, dto: CreateInvitationDto, userId: string) {
+  async createInvitation(teamId: string, createInvitationDto: CreateInvitationDto, userId: string) {
     const team = await this.prisma.team.findUnique({
       where: { id: teamId },
       include: {
@@ -45,15 +50,13 @@ export class TeamsService {
     if (!team) {
       throw new NotFoundException(`Team ${teamId} not found.`);
     }
-    if (team.leaderId !== userId) {
-      throw new ForbiddenException('You have not rights for this team.');
-    }
+    this.usersService.checkTeamLeader(userId, teamId);
     const invitee = await this.prisma.user.findUnique({
-      where: { id: dto.inviteeId },
+      where: { id: createInvitationDto.inviteeId },
       select: { id: true, role: true },
     });
     if (!invitee) {
-      throw new NotFoundException(`User ${dto.inviteeId} not found.`);
+      throw new NotFoundException(`User ${createInvitationDto.inviteeId} not found.`);
     }
     if (invitee.role !== 'student') {
       throw new BadRequestException('Only students can be invited to teams.');
@@ -61,7 +64,7 @@ export class TeamsService {
     const isMember = await this.prisma.teamMember.findFirst({
       where: {
         teamId,
-        userId: dto.inviteeId,
+        userId: createInvitationDto.inviteeId,
       },
     });
     if (isMember) {
@@ -76,7 +79,7 @@ export class TeamsService {
     const existingInvitation = await this.prisma.teamInvitation.findFirst({
       where: {
         teamId,
-        inviteeId: dto.inviteeId,
+        inviteeId: createInvitationDto.inviteeId,
         status: 'pending',
       },
     });
@@ -86,29 +89,27 @@ export class TeamsService {
     return this.prisma.teamInvitation.create({
       data: {
         teamId,
-        inviteeId: dto.inviteeId,
+        inviteeId: createInvitationDto.inviteeId,
         invitedBy: team.leaderId!,
       },
     });
   }
 
   async updateTeamLeader(
-    id: string,
+    teamId: string,
     updateLeaderDto: UpdateLeaderDto,
-    user: { sub: string; role: string },
+    user: UserPayload['user'],
   ) {
     const team = await this.prisma.team.findUnique({
-      where: { id },
+      where: { id: teamId },
       include: {
         members: true,
       },
     });
     if (!team) {
-      throw new NotFoundException(`Team ${id} not found.`);
+      throw new NotFoundException(`Team ${teamId} not found.`);
     }
-    if (team.leaderId !== user.sub && user.role !== 'admin') {
-      throw new ForbiddenException('Only team leader or admin can update team leader');
-    }
+    this.usersService.checkTeamLeader(user.sub, teamId);
     const newLeaderId = updateLeaderDto.leaderId;
 
     const isMember = team.members.some((member) => member.userId === newLeaderId);
@@ -116,19 +117,19 @@ export class TeamsService {
       throw new ForbiddenException('New leader must be a member of the team');
     }
     return this.prisma.team.update({
-      where: { id },
+      where: { id: teamId },
       data: {
         leaderId: updateLeaderDto.leaderId,
       },
     });
   }
 
-  async deleteTeam(id: string, user: { sub: string; role: string }) {
+  async deleteTeam(teamId: string, user: UserPayload['user']) {
     const team = await this.prisma.team.findUnique({
-      where: { id },
+      where: { id: teamId },
     });
     if (!team) {
-      throw new NotFoundException(`Team ${id} not found.`);
+      throw new NotFoundException(`Team ${teamId} not found.`);
     }
     if (team.leaderId !== user.sub && user.role !== 'admin') {
       throw new ForbiddenException('Only leader or admin can delete team');
@@ -136,7 +137,7 @@ export class TeamsService {
     return this.prisma.$transaction(async (prisma) => {
       const requests = await prisma.exchangeRequest.findMany({
         where: {
-          OR: [{ initiatorTeamId: id }, { targetTeamId: id }],
+          OR: [{ initiatorTeamId: teamId }, { targetTeamId: teamId }],
         },
         select: { id: true },
       });
@@ -146,40 +147,40 @@ export class TeamsService {
       if (requestIds.length > 0) {
         await prisma.exchangeConfirmation.deleteMany({
           where: {
-            OR: [{ teamId: id }, { exchangeRequestId: { in: requestIds } }],
+            OR: [{ teamId }, { exchangeRequestId: { in: requestIds } }],
           },
         });
       } else {
         await prisma.exchangeConfirmation.deleteMany({
-          where: { teamId: id },
+          where: { teamId },
         });
       }
 
       await prisma.exchangeRequest.deleteMany({
         where: {
-          OR: [{ initiatorTeamId: id }, { targetTeamId: id }],
+          OR: [{ initiatorTeamId: teamId }, { targetTeamId: teamId }],
         },
       });
 
       await prisma.assignment.deleteMany({
-        where: { teamId: id },
+        where: { teamId },
       });
 
       await prisma.teamInvitation.deleteMany({
-        where: { teamId: id },
+        where: { teamId },
       });
 
       await prisma.teamMember.deleteMany({
-        where: { teamId: id },
+        where: { teamId },
       });
 
       return prisma.team.delete({
-        where: { id },
+        where: { id: teamId },
       });
     });
   }
 
-  async deleteMember(teamId: string, memberId: string, user: { sub: string; role: string }) {
+  async deleteMember(teamId: string, memberId: string, user: UserPayload['user']) {
     const team = await this.prisma.team.findUnique({
       where: { id: teamId },
     });
@@ -189,8 +190,8 @@ export class TeamsService {
     if (memberId === team.leaderId) {
       throw new BadRequestException('Leader cannot be removed from team');
     }
-    if (team.leaderId !== user.sub) {
-      throw new ForbiddenException('Only team leader can remove members');
+    if (team.leaderId !== user.sub && memberId !== user.sub && user.role !== 'admin') {
+      throw new ForbiddenException('Only team leader can remove other members');
     }
     const member = await this.prisma.teamMember.findFirst({
       where: {
