@@ -49,7 +49,7 @@ export class CoursesService {
       throw new NotFoundException(`Course ${courseId} not found.`);
     }
     const existingMembership = await this.prisma.teamMember.findFirst({
-      where: { userId },
+      where: { userId, team: { courseId } },
     });
 
     if (projectId) {
@@ -116,6 +116,7 @@ export class CoursesService {
             leader: true,
             members: { include: { user: true } },
             project: true,
+            invitations: { where: { status: 'pending' }, select: { inviteeId: true } },
           },
         },
       },

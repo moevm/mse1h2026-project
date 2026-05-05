@@ -194,8 +194,9 @@ const statusType = computed(() => {
 
 const studentOptions = computed(() => {
   const memberIds = new Set(team.value?.members.map((m) => m.userId) ?? []);
+  const pendingInviteeIds = new Set(team.value?.invitations?.map((inv) => inv.inviteeId) ?? []);
   return allStudents.value
-    .filter((s) => !memberIds.has(s.id))
+    .filter((s) => !memberIds.has(s.id) && !pendingInviteeIds.has(s.id))
     .map((s) => ({
       label: `${s.firstName} ${(s as unknown as { secondName: string }).secondName ?? ''}`,
       value: s.id,

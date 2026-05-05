@@ -34,8 +34,12 @@ export class InvitationsService {
       });
 
       if (updateInvitationDto.status === 'accepted') {
+        const team = await this.prisma.team.findUnique({
+          where: { id: invitation.teamId },
+          select: { courseId: true },
+        });
         const existingMembership = await this.prisma.teamMember.findFirst({
-          where: { userId: invitation.inviteeId },
+          where: { userId: invitation.inviteeId, team: { courseId: team!.courseId } },
         });
         if (!existingMembership) {
           await this.prisma.teamMember.create({
