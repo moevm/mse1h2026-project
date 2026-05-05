@@ -1,5 +1,5 @@
 import { PrismaService } from '@/prisma/prisma.service';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 
 @Injectable()
 export class AssignmentsService {
@@ -12,5 +12,15 @@ export class AssignmentsService {
         project: true,
       },
     });
+  }
+
+  async deleteAssignment(id: string) {
+    try {
+      return await this.prisma.assignment.delete({
+        where: { id },
+      });
+    } catch {
+      throw new NotFoundException(`Assignment ${id} not found.`);
+    }
   }
 }
