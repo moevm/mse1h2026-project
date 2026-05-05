@@ -43,6 +43,16 @@
 
 ### Подготовка к запуску
 
+- Убедитесь, что у вас установлены:
+  - [Git](https://git-scm.com/downloads)
+  - [Docker Engine/Desktop](https://www.docker.com/get-started)
+
+- Требования к системе:
+  - Операционная система: **Windows 10/11**, **macOS**, **Linux**
+  - Разрядность системы: **64-битная**
+  - Браузер: Современный браузер на базе Chromium (например, Google Chrome) или Gecko (например, Firefox) желательно последней версии.
+  - Свободны порты: **3000** (backend), **8080** (frontend) и **3306** (db).
+
 - Клонируйте репозиторий:
 
   ```bash
@@ -56,49 +66,12 @@
   ```
 
 - Скопируйте файл `.env.example` в `.env` и отредактируйте переменные окружения. 
-Переменные, находящиеся под `# [service] dev-env` используются для dev разработки с Docker.
 
   ```bash
   cp .env.example .env
   ```
 
-### Запуск без **Docker**
-
-- Установите зависимости:
-
-  ```bash
-  pnpm i
-  ```
-
-- Введите в `.env` значения
-
-  ```env
-  MYSQL_DATABASE=<your_database_name>
-  MYSQL_USER=root
-  MYSQL_PASSWORD=<your_root_password>
-  MYSQL_HOST=localhost
-  MYSQL_PORT=3306
-
-  BACKEND_OUTPUT_HOST=localhost
-  BACKEND_OUTPUT_PORT=3000
-  ```
-
-- Запустите проект:
-
-#### Production
-
-  ```bash
-  pnpm build
-  pnpm preview
-  ```
-
-#### Development
-
-  ```bash
-  pnpm dev
-  ```
-
-### Запуск с помощью **Docker**
+### Запуск Docker Compose (production)
 
 - Введите в `.env` значения для инициализации и запуска `MySQL` контейнера:
 
@@ -110,11 +83,14 @@
   MYSQL_HOST=db
   MYSQL_PORT=3306
 
-  BACKEND_OUTPUT_HOST=127.0.0.1
-  BACKEND_OUTPUT_PORT=3000
+  JWT_SECRET=<your_jwt_secret>
   ```
 
-#### Production
+- [Для проверяющего] Если вы раньше запускали compose для проверки работоспособности, не забудьте сбросить контейнеры и volumes, чтобы изменения в `.env` и БД вступили в силу:
+
+  ```bash
+  docker compose down -v
+  ```
 
 - Запустите docker compose:
 
@@ -122,13 +98,44 @@
   docker compose up --build
   ```
 
-#### Development
+- Смотри раздел **[Проверка работоспособности](#проверка-работоспособности)**
 
-- Запустите docker compose для разработки:
+
+### Запуск окружения для разработки (development)
+
+- Для локальной разработки убедитесь, что у вас установлены и корректно настроены:
+  - [Node.js 24.14.1](https://nodejs.org/en/download/)
+  - [pnpm 10.30.1](https://pnpm.io/installation#using-corepack)
+  - [MySQL Community Server 8.4.8](https://dev.mysql.com/downloads/mysql/) ИЛИ [Docker образ](https://hub.docker.com/_/mysql/)
+ 
+- Установите зависимости:
 
   ```bash
-  docker compose -f docker-compose.dev.yaml up --build
+  pnpm i
   ```
+
+- Введите в `.env` значения
+
+  ```env
+  MYSQL_ROOT_DATABASE=<you_root_password>
+  MYSQL_DATABASE=<your_database_name>
+  MYSQL_USER=<your_username>
+  MYSQL_PASSWORD=<your_root_password>
+  MYSQL_HOST=localhost
+  MYSQL_PORT=3306
+
+  JWT_SECRET=<your_jwt_secret>
+  ```
+
+- Запустите проект вместе с БД (Docker):
+
+    ```bash
+    docker compose up --build -d db
+    pnpm dev
+    ```
+  
+- Смотри раздел **[Проверка работоспособности](#проверка-работоспособности)**
+- Если у вас локальная БД, то необходимо настроить пользователя или использовать данные пользователя root.
 
 ### Переменные окружения
 
@@ -138,24 +145,23 @@
   - `MYSQL_DATABASE` - имя базы данных, которая будет создана при запуске контейнера.
   - `MYSQL_USER` - имя пользователя для доступа к базе данных (обычно `root` для локальной разработки, и не `root` для docker).
   - `MYSQL_PASSWORD` - пароль для пользователя, указанного в `MYSQL_USER`.
-  - `MYSQL_HOST` - хост, на котором работает MySQL (обычно `db` для Docker, `localhost` для локальной разработки)
-  - `MYSQL_PORT` - порт, на котором работает MySQL (обычно `3306`)
-    
-    dev-env:
-    - `MYSQL_OUTPUT_HOST` - хост, на котором будет доступна база данных MySQL (обычно `127.0.0.1` для локальной разработки)
-    - `MYSQL_OUTPUT_PORT` - порт, на котором будет доступна база данных MySQL (обычно `3306`)
-    - `MYSQL_OUTPUT_URL` - URL, на котором будет доступна база данных MySQL (обычно `{MYSQL_OUTPUT_HOST}:${MYSQL_OUTPUT_PORT}`)
+  - `MYSQL_HOST` - хост, на котором работает MySQL (`db` для Docker, `localhost` для локальной разработки)
+  - `MYSQL_PORT` - порт, на котором работает MySQL (`3306`)
 
 - backend:
 
-  - `DATABASE_URL` - URL для подключения к базе данных MySQL (в частности для ORM Prisma)
-  - `BACKEND_OUTPUT_HOST` - хост, на котором будет доступен бэкенд (обычно `127.0.0.1`)
-  - `BACKEND_OUTPUT_PORT` - порт, на котором будет доступен бэкенд (обычно `3000`)
-  - `BACKEND_OUTPUT_URL` - URL, на котором будет доступен бэкенд (обычно `${BACKEND_OUTPUT_HOST}:${BACKEND_OUTPUT_PORT}`)
+  - `DATABASE_URL` - URL для подключения к базе данных в формате `mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DATABASE}`. Нужна исключительно для генерации миграций.
+  - `JWT_SECRET` - секрет для генерации JWT токенов (может быть любым строковым значением, но рекомендуется использовать сложную строку для безопасности).
 
 - frontend:
+  - `VITE_API_BASE_URL` - базовый URL для API запросов с фронтенда (например, `http://127.0.0.1:3000/api`)
 
-  - `VITE_API_BASE_URL` - базовый URL для API запросов к бэкенду (обычно `http://${BACKEND_OUTPUT_URL}/api`)
-  - `FRONTEND_OUTPUT_HOST` - хост, на котором будет доступен фронтенд (обычно `127.0.0.1`)
-  - `FRONTEND_OUTPUT_PORT` - порт, на котором будет доступен фронтенд (обычно `8080`)
-  - `FRONTEND_OUTPUT_URL` - URL, на котором будет доступен фронтенд (обычно `http://${FRONTEND_OUTPUT_HOST}:${FRONTEND_OUTPUT_PORT}`)
+## Проверка работоспособности
+
+1. После запуска приложения, откройте браузер и перейдите по адресу http://127.0.0.1:8080.
+2. В локальной разработке и в docker compose для разработки, доступен путь к backend API по адресу http://127.0.0.1:3000/api.
+3. БД будет доступна по адресу http://127.0.0.1:3306.
+
+## Дополнительная информация
+Любая информация, которую команда посчитает нужной разместить.
+
