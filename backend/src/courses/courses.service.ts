@@ -35,13 +35,6 @@ export class CoursesService {
     return course;
   }
 
-  async getCourseTeams(courseId: string) {
-    return await this.prisma.team.findMany({
-      where: { courseId },
-      include: { members: true },
-    });
-  }
-
   async getCourseExchanges(courseId: string) {
     return await this.prisma.exchangeRequest.findMany({
       where: { courseId },
