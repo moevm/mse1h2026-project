@@ -4,7 +4,7 @@ import type { User } from '@/types';
 import axiosInstance from './axios';
 
 export interface GetUsersParams {
-  role?: 'user' | 'admin';
+  role?: 'student' | 'admin';
 }
 
 export const usersApi = {
@@ -24,8 +24,8 @@ export const usersApi = {
     return usersApi.getUsers({ role: 'admin' });
   },
 
-  getRegularUsers: async (): Promise<User[]> => {
-    return usersApi.getUsers({ role: 'user' });
+  getStudents: async (): Promise<User[]> => {
+    return usersApi.getUsers({ role: 'student' });
   },
 
   getById: async (id: string): Promise<User> => {
