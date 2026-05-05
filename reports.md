@@ -22,7 +22,11 @@
 - [Демонстрация программы](iterations/iteration-2/demo.mp4)
 
 ### Итерация 3 (даты: 25.03 – 05.05)
-- 
+- [Презентация](iterations/iteration-3/presentation.pdf)
+- [Запланированные задачи](iterations/iteration-3/tasks_planned.md)
+- [Выполненные задачи](iterations/iteration-3/tasks_completed.md)
+- [Задачи на следующую итерацию](iterations/iteration-3/next_tasks.md)
+- [Демонстрация программы](iterations/iteration-3/demo.mp4)
 
 ### Итерация 4 (даты: 05.05 – 25.05)
 - 
