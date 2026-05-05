@@ -1,4 +1,6 @@
+import { UserPayload } from '@/common/interfaces/user.interface';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Request } from 'express';
 
 import { TeamsController } from './teams.controller';
 import { TeamsService } from './teams.service';
@@ -47,7 +49,9 @@ describe('TeamsController', () => {
   });
 
   it('creates invitation', async () => {
-    const req = { user: { sub: 'user-1' } };
+    const req = {
+      user: { sub: 'user-1', email: 'user-1@example.com', role: 'student' },
+    } as Request & UserPayload;
     const dto = { inviteeId: 'user-2' };
     const invitation = { id: 'inv-1' };
     mockTeamsService.createInvitation.mockResolvedValue(invitation);
@@ -59,7 +63,9 @@ describe('TeamsController', () => {
   });
 
   it('updates team leader', async () => {
-    const req = { user: { sub: 'user-1', role: 'student' } };
+    const req = {
+      user: { sub: 'user-1', email: 'user-1@example.com', role: 'student' },
+    } as Request & UserPayload;
     const dto = { leaderId: 'user-2' };
     const updatedTeam = { id: 'team-1', leaderId: 'user-2' };
     mockTeamsService.updateTeamLeader.mockResolvedValue(updatedTeam);
@@ -71,7 +77,9 @@ describe('TeamsController', () => {
   });
 
   it('deletes team', async () => {
-    const req = { user: { sub: 'user-1', role: 'student' } };
+    const req = {
+      user: { sub: 'user-1', email: 'user-1@example.com', role: 'student' },
+    } as Request & UserPayload;
     const deletedTeam = { id: 'team-1' };
     mockTeamsService.deleteTeam.mockResolvedValue(deletedTeam);
 
@@ -82,7 +90,9 @@ describe('TeamsController', () => {
   });
 
   it('deletes team member', async () => {
-    const req = { user: { sub: 'user-1', role: 'student' } };
+    const req = {
+      user: { sub: 'user-1', email: 'user-1@example.com', role: 'student' },
+    } as Request & UserPayload;
     const deletedMember = { id: 'member-1' };
     mockTeamsService.deleteMember.mockResolvedValue(deletedMember);
 

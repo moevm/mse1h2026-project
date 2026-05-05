@@ -50,7 +50,7 @@ export class TeamsService {
     if (!team) {
       throw new NotFoundException(`Team ${teamId} not found.`);
     }
-    this.usersService.checkTeamLeader(userId, teamId);
+    await this.usersService.checkTeamLeader(userId, teamId);
     const invitee = await this.prisma.user.findUnique({
       where: { id: createInvitationDto.inviteeId },
       select: { id: true, role: true },
@@ -109,7 +109,7 @@ export class TeamsService {
     if (!team) {
       throw new NotFoundException(`Team ${teamId} not found.`);
     }
-    this.usersService.checkTeamLeader(user.sub, teamId);
+    await this.usersService.checkTeamLeader(user.sub, teamId);
     const newLeaderId = updateLeaderDto.leaderId;
 
     const isMember = team.members.some((member) => member.userId === newLeaderId);

@@ -13,6 +13,13 @@ describe('InvitationsService', () => {
     teamInvitation: {
       update: jest.fn(),
     },
+    team: {
+      findUnique: jest.fn(),
+    },
+    teamMember: {
+      findFirst: jest.fn(),
+      create: jest.fn(),
+    },
   };
 
   beforeEach(async () => {
@@ -61,6 +68,8 @@ describe('InvitationsService', () => {
 
     const invitation = { id: 'inv-2', status: InvitationStatus.accepted, respondedAt: now };
     mockPrismaService.teamInvitation.update.mockResolvedValue(invitation);
+    mockPrismaService.team.findUnique.mockResolvedValue({ courseId: 'course-1' });
+    mockPrismaService.teamMember.findFirst.mockResolvedValue({ id: 'member-1' });
 
     const result = await service.updateInvitation('inv-2', {
       status: InvitationStatus.accepted,

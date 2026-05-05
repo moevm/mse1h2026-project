@@ -1,4 +1,5 @@
 import { PrismaService } from '@/prisma/prisma.service';
+import { UsersService } from '@/users/users.service';
 import { BadRequestException, ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 
@@ -18,6 +19,9 @@ describe('TeamsService', () => {
     exchangeConfirmation: { deleteMany: jest.fn() },
     $transaction: jest.fn(async (callback) => callback(mockPrismaService)),
   };
+  const mockUsersService = {
+    checkTeamLeader: jest.fn(),
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -27,6 +31,10 @@ describe('TeamsService', () => {
           provide: PrismaService,
           useValue: mockPrismaService,
         },
+        {
+          provide: UsersService,
+          useValue: mockUsersService,
+        },
       ],
     }).compile();
 
@@ -35,6 +43,7 @@ describe('TeamsService', () => {
 
     // Очищаем моки перед каждым тестом, чтобы вызовы не наслаивались
     jest.clearAllMocks();
+    mockUsersService.checkTeamLeader.mockResolvedValue(undefined);
   });
 
   it('should be defined', () => {
@@ -91,6 +100,9 @@ describe('TeamsService', () => {
         id: 'team-1',
         leaderId: 'another-user',
       });
+      mockUsersService.checkTeamLeader.mockRejectedValue(
+        new ForbiddenException('You have no rights for this team.'),
+      );
 
       await expect(service.createInvitation('team-1', mockDto, mockUser.sub)).rejects.toThrow(
         ForbiddenException,
@@ -132,7 +144,7 @@ describe('TeamsService', () => {
   });
 
   describe('updateTeamLeader', () => {
-    const user = { sub: 'leader-1', role: 'student' };
+    const user = { sub: 'leader-1', email: 'leader-1@example.com', role: 'student' };
 
     it('should update the team leader successfully', async () => {
       const mockTeam = {
@@ -164,25 +176,28 @@ describe('TeamsService', () => {
       ).rejects.toThrow(ForbiddenException);
     });
 
-    it('should throw if user is not leader or admin', async () => {
+    it('should throw if user is not leader', async () => {
       mockPrismaService.team.findUnique.mockResolvedValue({
         id: 'team-1',
         leaderId: 'leader-1',
         members: [{ userId: 'leader-1' }],
       });
+      mockUsersService.checkTeamLeader.mockRejectedValue(
+        new ForbiddenException('You have no rights for this team.'),
+      );
 
       await expect(
         service.updateTeamLeader(
           'team-1',
           { leaderId: 'leader-1' },
-          { sub: 'random', role: 'student' },
+          { sub: 'random', email: 'random@example.com', role: 'student' },
         ),
-      ).rejects.toThrow('Only team leader or admin can update team leader');
+      ).rejects.toThrow('You have no rights for this team.');
     });
   });
 
   describe('deleteMember', () => {
-    const user = { sub: 'leader-1', role: 'student' };
+    const user = { sub: 'leader-1', email: 'leader-1@example.com', role: 'student' };
 
     it('should delete a member successfully', async () => {
       mockPrismaService.team.findUnique.mockResolvedValue({ id: 'team-1', leaderId: 'leader-1' });
@@ -212,13 +227,17 @@ describe('TeamsService', () => {
       });
 
       await expect(
-        service.deleteMember('team-1', 'student-2', { sub: 'other', role: 'student' }),
-      ).rejects.toThrow('Only team leader can remove members');
+        service.deleteMember('team-1', 'student-2', {
+          sub: 'other',
+          email: 'other@example.com',
+          role: 'student',
+        }),
+      ).rejects.toThrow('Only team leader can remove other members');
     });
   });
 
   describe('deleteTeam', () => {
-    const user = { sub: 'leader-1', role: 'student' };
+    const user = { sub: 'leader-1', email: 'leader-1@example.com', role: 'student' };
 
     it('should delete team and all related records inside a transaction', async () => {
       const teamId = 'team-1';
@@ -263,7 +282,11 @@ describe('TeamsService', () => {
 
       mockPrismaService.exchangeRequest.findMany.mockResolvedValue([]);
 
-      await service.deleteTeam(teamId, { sub: 'leader-1', role: 'student' });
+      await service.deleteTeam(teamId, {
+        sub: 'leader-1',
+        email: 'leader-1@example.com',
+        role: 'student',
+      });
 
       expect(prisma.exchangeConfirmation.deleteMany).toHaveBeenCalledWith({
         where: { teamId },

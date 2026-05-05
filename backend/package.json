@@ -18,7 +18,7 @@
     "format:check": "prettier --cache --check src",
     "typecheck": "prisma generate && tsc --noEmit -p tsconfig.build.json",
     "pre-commit-check": "pnpm typecheck && pnpm lint && pnpm format",
-    "test": "jest",
+    "test": "pnpm run db:generate && jest",
     "test:watch": "jest --watch"
   },
   "dependencies": {
