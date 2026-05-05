@@ -12,6 +12,7 @@ const mockPrismaService = {
     update: jest.fn(),
     delete: jest.fn(),
   },
+  $transaction: jest.fn(),
 };
 describe('CoursesService', () => {
   let service: CoursesService;
@@ -105,13 +106,13 @@ describe('CoursesService', () => {
 
   it('should delete course', async () => {
     const course = { id: '1', name: 'Deleted Course' };
-    mockPrismaService.course.delete.mockResolvedValue(course);
+    mockPrismaService.course.findUnique.mockResolvedValue(course);
+    mockPrismaService.$transaction.mockResolvedValue(course);
 
     const result = await service.deleteCourse('1');
     expect(result).toEqual(course);
-    expect(mockPrismaService.course.delete).toHaveBeenCalledWith({
-      where: { id: course.id },
-    });
+    expect(mockPrismaService.course.findUnique).toHaveBeenCalledWith({ where: { id: '1' } });
+    expect(mockPrismaService.$transaction).toHaveBeenCalled();
   });
 
   afterEach(() => {
