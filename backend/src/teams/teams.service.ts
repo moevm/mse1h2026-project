@@ -189,8 +189,8 @@ export class TeamsService {
     if (memberId === team.leaderId) {
       throw new BadRequestException('Leader cannot be removed from team');
     }
-    if (team.leaderId !== user.sub) {
-      throw new ForbiddenException('Only team leader can remove members');
+    if (team.leaderId !== user.sub && memberId !== user.sub && user.role !== 'admin') {
+      throw new ForbiddenException('Only team leader can remove other members');
     }
     const member = await this.prisma.teamMember.findFirst({
       where: {
