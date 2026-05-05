@@ -50,10 +50,13 @@
       </n-descriptions>
 
       <!-- Кнопки действий -->
-      <template v-if="userStore.isAdmin" #footer>
+      <template #footer>
         <n-space justify="end" :size="16">
-          <n-button type="error" @click="handleDeleteCourse"> Удалить </n-button>
-          <n-button type="primary" @click="handleEditCourse"> Редактировать </n-button>
+          <template v-if="userStore.isAdmin">
+            <n-button type="error" @click="handleDeleteCourse"> Удалить </n-button>
+            <n-button type="primary" @click="handleEditCourse"> Редактировать </n-button>
+          </template>
+          <n-button v-if="userStore.isStudent" @click="handleMyTeam"> Моя команда </n-button>
         </n-space>
       </template>
     </n-card>
@@ -154,6 +157,11 @@ const loadCourse = async () => {
 const handleEditCourse = () => {
   if (!course.value) return;
   router.push(`/courses/${course.value.id}/edit`);
+};
+
+const handleMyTeam = () => {
+  if (!course.value) return;
+  router.push(`/courses/${course.value.id}/my-team`);
 };
 
 const handleDeleteCourse = () => {
