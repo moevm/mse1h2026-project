@@ -42,6 +42,12 @@ const routes: RouterOptions['routes'] = [
         name: 'course-edit',
         meta: { requiresAuthentication: true, requiresAdmin: true },
       },
+      {
+        path: 'courses/:courseId/my-team',
+        component: () => import('@/pages/MyTeamPage.vue'),
+        name: 'my-team',
+        meta: { requiresAuthentication: true },
+      },
     ],
   },
 ];
