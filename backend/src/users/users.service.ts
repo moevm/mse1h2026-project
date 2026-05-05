@@ -42,7 +42,7 @@ export class UsersService {
       select: {
         id: true,
         firstName: true,
-        secondName: true,
+        lastName: true,
         email: true,
         groupNumber: true,
         role: true,
@@ -57,7 +57,7 @@ export class UsersService {
       select: {
         id: true,
         firstName: true,
-        secondName: true,
+        lastName: true,
         email: true,
         groupNumber: true,
         role: true,
@@ -72,7 +72,7 @@ export class UsersService {
       select: {
         id: true,
         firstName: true,
-        secondName: true,
+        lastName: true,
         email: true,
         groupNumber: true,
         role: true,

@@ -35,13 +35,6 @@ export class CoursesService {
     return course;
   }
 
-  async getCourseTeams(courseId: string) {
-    return await this.prisma.team.findMany({
-      where: { courseId },
-      include: { members: true },
-    });
-  }
-
   async getCourseExchanges(courseId: string) {
     return await this.prisma.exchangeRequest.findMany({
       where: { courseId },
@@ -62,7 +55,7 @@ export class CoursesService {
       throw new NotFoundException(`Course ${courseId} not found.`);
     }
     const existingMembership = await this.prisma.teamMember.findFirst({
-      where: { userId },
+      where: { userId, team: { courseId } },
     });
 
     if (projectId) {
@@ -118,5 +111,32 @@ export class CoursesService {
     } catch {
       throw new NotFoundException(`Course ${id} not found.`);
     }
+  }
+
+  async getStudentTeam(courseId: string, userId: string) {
+    const membership = await this.prisma.teamMember.findFirst({
+      where: { userId, team: { courseId } },
+      include: {
+        team: {
+          include: {
+            leader: true,
+            members: { include: { user: true } },
+            project: true,
+            invitations: { where: { status: 'pending' }, select: { id: true, inviteeId: true } },
+          },
+        },
+      },
+    });
+    return membership?.team ?? null;
+  }
+
+  async getCourseTeams(courseId: string) {
+    return this.prisma.team.findMany({
+      where: { courseId },
+      include: {
+        members: { include: { user: true } },
+        project: true,
+      },
+    });
   }
 }

@@ -47,6 +47,13 @@ export class CoursesController {
 
   @UseGuards(RolesGuard)
   @Roles(['student'])
+  @Get(':id/my-team')
+  getMyTeam(@Param('id') courseId: string, @Req() req) {
+    return this.coursesService.getStudentTeam(courseId, req.user.sub);
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(['student'])
   @Post(':id/teams')
   createTeam(@Param('id') courseId: string, @Req() req, @Body() body: { projectId?: string }) {
     return this.coursesService.createTeam(courseId, req.user.sub, body.projectId);

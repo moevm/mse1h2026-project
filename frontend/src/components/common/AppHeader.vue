@@ -38,10 +38,9 @@ const menuOptions = [
     label: 'Профиль',
     key: 'profile',
   },
-  // ToDo: исправить пуль к командам и проектам когда они будут
   {
-    label: 'Мои команды и проекты',
-    key: 'path',
+    label: 'Мои курсы',
+    key: 'courses',
   },
   {
     label: 'Выйти',
