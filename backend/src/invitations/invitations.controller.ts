@@ -1,4 +1,6 @@
-import { Body, Controller, Get, Param, Put, Req } from '@nestjs/common';
+import { Body, Controller, Get, Param, Put, Req, UseGuards } from '@nestjs/common';
+import { Roles } from '@/common/decorators/roles.decorator';
+import { RolesGuard } from '@/common/guards/roles.guard';
 
 import { UpdateInvitationDto } from './dto/update-invitation.dto';
 import { InvitationsService } from './invitations.service';
@@ -12,6 +14,8 @@ export class InvitationsController {
     return this.invitationsService.getMyInvitations(req.user.sub);
   }
 
+  @UseGuards(RolesGuard)
+  @Roles(['student'])
   @Put(':id')
   updateInvitation(@Param('id') id: string, @Body() updateInvitationDto: UpdateInvitationDto) {
     return this.invitationsService.updateInvitation(id, updateInvitationDto);
