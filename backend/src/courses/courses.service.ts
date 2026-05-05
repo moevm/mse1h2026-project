@@ -35,6 +35,19 @@ export class CoursesService {
     return course;
   }
 
+  async getCourseTeams(courseId: string) {
+    return await this.prisma.team.findMany({
+      where: { courseId },
+      include: { members: true },
+    });
+  }
+
+  async getCourseExchanges(courseId: string) {
+    return await this.prisma.exchangeRequest.findMany({
+      where: { courseId },
+    });
+  }
+
   async createCourse(createCourseDto: CreateCourseDto) {
     return this.prisma.course.create({
       data: createCourseDto,
@@ -105,12 +118,5 @@ export class CoursesService {
     } catch {
       throw new NotFoundException(`Course ${id} not found.`);
     }
-  }
-
-  async getCourseTeams(courseId: string) {
-    return this.prisma.team.findMany({
-      where: { courseId },
-      include: { members: true },
-    });
   }
 }

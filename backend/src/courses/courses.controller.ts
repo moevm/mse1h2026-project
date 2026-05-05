@@ -10,11 +10,15 @@ import { UpdateCourseDto } from './dto/update-course.dto';
 export class CoursesController {
   constructor(private readonly coursesService: CoursesService) {}
 
+  @UseGuards(RolesGuard)
+  @Roles(['student', 'admin'])
   @Get()
   findAll() {
     return this.coursesService.getAllCourses();
   }
 
+  @UseGuards(RolesGuard)
+  @Roles(['student', 'admin'])
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.coursesService.getCourseById(id);
@@ -25,6 +29,13 @@ export class CoursesController {
   @Get(':id/teams')
   findTeams(@Param('id') id: string) {
     return this.coursesService.getCourseTeams(id);
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(['admin'])
+  @Get(':id/exchanges')
+  findExchanges(@Param('id') id: string) {
+    return this.coursesService.getCourseExchanges(id);
   }
 
   @UseGuards(RolesGuard)
