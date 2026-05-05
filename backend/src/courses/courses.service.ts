@@ -116,7 +116,7 @@ export class CoursesService {
             leader: true,
             members: { include: { user: true } },
             project: true,
-            invitations: { where: { status: 'pending' }, select: { inviteeId: true } },
+            invitations: { where: { status: 'pending' }, select: { id: true, inviteeId: true } },
           },
         },
       },

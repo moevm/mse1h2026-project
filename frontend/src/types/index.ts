@@ -79,7 +79,7 @@ export interface Team {
   leader?: TeamUser;
   members: TeamMember[];
   project?: Project;
-  invitations?: { inviteeId: string }[];
+  invitations?: { id: string; inviteeId: string }[];
 }
 
 export interface TeamInvitation {

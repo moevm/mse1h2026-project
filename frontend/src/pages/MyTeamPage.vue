@@ -51,6 +51,20 @@
             </n-list>
           </div>
 
+          <div v-if="isLeader && pendingInvitations.length > 0" class="section">
+            <h3 class="section-title">Активные приглашения ({{ pendingInvitations.length }})</h3>
+            <n-list bordered>
+              <n-list-item v-for="inv in pendingInvitations" :key="inv.id">
+                <div class="member-row">
+                  <span class="member-name">{{ inv.inviteeName }}</span>
+                  <n-button size="small" type="error" @click="handleCancelInvitation(inv.id)">
+                    Отменить
+                  </n-button>
+                </div>
+              </n-list-item>
+            </n-list>
+          </div>
+
           <template #footer>
             <n-space justify="end">
               <n-button v-if="isLeader" type="primary" @click="openInviteModal">
@@ -203,6 +217,21 @@ const studentOptions = computed(() => {
     }));
 });
 
+const studentMap = computed(() => {
+  const map = new Map<string, string>();
+  for (const s of allStudents.value) {
+    map.set(s.id, `${s.firstName} ${(s as unknown as { secondName: string }).secondName ?? ''}`);
+  }
+  return map;
+});
+
+const pendingInvitations = computed(() =>
+  (team.value?.invitations ?? []).map((inv) => ({
+    id: inv.id,
+    inviteeName: studentMap.value.get(inv.inviteeId) ?? inv.inviteeId,
+  })),
+);
+
 const loadData = async () => {
   loading.value = true;
   try {
@@ -273,6 +302,7 @@ const handleInvite = async () => {
       duration: 3000,
     });
     closeInviteModal();
+    await loadData();
   } catch (error) {
     console.error('Ошибка отправки приглашения:', error);
     notification.error({
@@ -312,6 +342,23 @@ const handleDeclineInvitation = async (invitationId: string) => {
     notification.error({
       title: 'Ошибка',
       content: error instanceof Error ? error.message : 'Не удалось отклонить приглашение',
+      duration: 5000,
+    });
+  }
+};
+
+const handleCancelInvitation = async (invitationId: string) => {
+  try {
+    await invitationsApi.updateInvitation(invitationId, 'cancelled');
+    if (team.value?.invitations) {
+      team.value.invitations = team.value.invitations.filter((inv) => inv.id !== invitationId);
+    }
+    notification.success({ title: 'Приглашение отменено', duration: 3000 });
+  } catch (error) {
+    console.error('Ошибка отмены приглашения:', error);
+    notification.error({
+      title: 'Ошибка',
+      content: error instanceof Error ? error.message : 'Не удалось отменить приглашение',
       duration: 5000,
     });
   }

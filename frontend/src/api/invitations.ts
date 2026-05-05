@@ -6,6 +6,6 @@ export const invitationsApi = {
   getMyInvitations: () =>
     axiosInstance.get<TeamInvitation[]>('/invitations/my').then((res) => res.data),
 
-  updateInvitation: (id: string, status: 'accepted' | 'declined') =>
+  updateInvitation: (id: string, status: 'accepted' | 'declined' | 'cancelled') =>
     axiosInstance.put(`/invitations/${id}`, { status }).then((res) => res.data),
 };
