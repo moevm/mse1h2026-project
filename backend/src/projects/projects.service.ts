@@ -28,7 +28,6 @@ export class ProjectService {
     if (!project) {
       throw new NotFoundException(`Project ${id} not found`);
     }
-
     return project;
   }
 

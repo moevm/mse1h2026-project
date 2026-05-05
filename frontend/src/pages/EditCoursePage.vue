@@ -83,7 +83,6 @@ const handleEdit = async (formData: Course): Promise<void> => {
   if (!course.value) return;
 
   try {
-    // Вызов API для редактирования курса
     const editedCourse = await coursesApi.update(course.value.id, formData);
 
     console.log('Курс успешно обновлен:', editedCourse);
@@ -141,15 +140,5 @@ onMounted(() => {
 .title {
   font-size: 1.8rem;
   font-weight: 600;
-}
-
-@media (max-width: 768px) {
-  .create-course-page {
-    padding: 16px;
-  }
-
-  .title {
-    font-size: 1.5rem;
-  }
 }
 </style>
