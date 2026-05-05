@@ -35,6 +35,42 @@ export class CoursesService {
     return course;
   }
 
+  async getCourseAssignments(courseId: string) {
+    return this.prisma.project.findMany({
+      where: { courseId },
+      include: {
+        assignments: true,
+      },
+    });
+  }
+
+  async getCourseTeams(courseId: string) {
+    return this.prisma.team.findMany({
+      where: { courseId },
+      include: {
+        members: { include: { user: true } },
+        project: true,
+      },
+    });
+  }
+
+  async getStudentTeam(courseId: string, userId: string) {
+    const membership = await this.prisma.teamMember.findFirst({
+      where: { userId, team: { courseId } },
+      include: {
+        team: {
+          include: {
+            leader: true,
+            members: { include: { user: true } },
+            project: true,
+            invitations: { where: { status: 'pending' }, select: { id: true, inviteeId: true } },
+          },
+        },
+      },
+    });
+    return membership?.team ?? null;
+  }
+
   async getCourseExchanges(courseId: string) {
     return await this.prisma.exchangeRequest.findMany({
       where: { courseId },
@@ -121,33 +157,6 @@ export class CoursesService {
       await tx.import.deleteMany({ where: { courseId: id } });
       await tx.project.deleteMany({ where: { courseId: id } });
       return tx.course.delete({ where: { id } });
-    });
-  }
-
-  async getStudentTeam(courseId: string, userId: string) {
-    const membership = await this.prisma.teamMember.findFirst({
-      where: { userId, team: { courseId } },
-      include: {
-        team: {
-          include: {
-            leader: true,
-            members: { include: { user: true } },
-            project: true,
-            invitations: { where: { status: 'pending' }, select: { id: true, inviteeId: true } },
-          },
-        },
-      },
-    });
-    return membership?.team ?? null;
-  }
-
-  async getCourseTeams(courseId: string) {
-    return this.prisma.team.findMany({
-      where: { courseId },
-      include: {
-        members: { include: { user: true } },
-        project: true,
-      },
     });
   }
 }

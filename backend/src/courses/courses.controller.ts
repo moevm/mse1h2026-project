@@ -1,5 +1,6 @@
 import { Roles } from '@/common/decorators/roles.decorator';
 import { RolesGuard } from '@/common/guards/roles.guard';
+import { UserPayload } from '@/common/interfaces/user.interface';
 import { Body, Controller, Delete, Get, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
 
 import { CoursesService } from './courses.service';
@@ -25,10 +26,24 @@ export class CoursesController {
   }
 
   @UseGuards(RolesGuard)
+  @Roles(['student', 'admin'])
+  @Get(':id/assignments')
+  findAssignments(id: string) {
+    return this.coursesService.getCourseAssignments(id);
+  }
+
+  @UseGuards(RolesGuard)
   @Roles(['admin'])
   @Get(':id/teams')
   findTeams(@Param('id') id: string) {
     return this.coursesService.getCourseTeams(id);
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(['student'])
+  @Get(':id/my-team')
+  getMyTeam(@Param('id') courseId: string, @Req() req: Request & UserPayload) {
+    return this.coursesService.getStudentTeam(courseId, req.user.sub);
   }
 
   @UseGuards(RolesGuard)
@@ -47,16 +62,27 @@ export class CoursesController {
 
   @UseGuards(RolesGuard)
   @Roles(['student'])
-  @Get(':id/my-team')
-  getMyTeam(@Param('id') courseId: string, @Req() req) {
-    return this.coursesService.getStudentTeam(courseId, req.user.sub);
+  @Post(':id/teams')
+  createTeam(
+    @Param('id') courseId: string,
+    @Req() req: Request & UserPayload,
+    @Body() body: { projectId?: string },
+  ) {
+    return this.coursesService.createTeam(courseId, req.user.sub, body.projectId);
   }
 
   @UseGuards(RolesGuard)
-  @Roles(['student'])
-  @Post(':id/teams')
-  createTeam(@Param('id') courseId: string, @Req() req, @Body() body: { projectId?: string }) {
-    return this.coursesService.createTeam(courseId, req.user.sub, body.projectId);
+  @Roles(['admin'])
+  @Post(':id/assignments/manual')
+  assignTeamManually() {
+    //TODO: manual assignment
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(['admin'])
+  @Post(':id/assignments/auto')
+  assignTeamAutomatically() {
+    //TODO: auto assignment
   }
 
   @UseGuards(RolesGuard)
