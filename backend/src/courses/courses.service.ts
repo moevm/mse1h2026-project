@@ -104,13 +104,24 @@ export class CoursesService {
   }
 
   async deleteCourse(id: string) {
-    try {
-      return await this.prisma.course.delete({
-        where: { id },
-      });
-    } catch {
-      throw new NotFoundException(`Course ${id} not found.`);
-    }
+    const course = await this.prisma.course.findUnique({ where: { id } });
+    if (!course) throw new NotFoundException(`Course ${id} not found.`);
+
+    return this.prisma.$transaction(async (tx) => {
+      const teamIds = (
+        await tx.team.findMany({ where: { courseId: id }, select: { id: true } })
+      ).map((t) => t.id);
+
+      await tx.exchangeConfirmation.deleteMany({ where: { teamId: { in: teamIds } } });
+      await tx.exchangeRequest.deleteMany({ where: { courseId: id } });
+      await tx.assignment.deleteMany({ where: { teamId: { in: teamIds } } });
+      await tx.teamInvitation.deleteMany({ where: { teamId: { in: teamIds } } });
+      await tx.teamMember.deleteMany({ where: { teamId: { in: teamIds } } });
+      await tx.team.deleteMany({ where: { courseId: id } });
+      await tx.import.deleteMany({ where: { courseId: id } });
+      await tx.project.deleteMany({ where: { courseId: id } });
+      return tx.course.delete({ where: { id } });
+    });
   }
 
   async getStudentTeam(courseId: string, userId: string) {
