@@ -63,6 +63,12 @@ jobs:
         if: matrix.target == 'local'
         run: pnpm run build
 
+      - name: Enable BuildKit
+        if: matrix.target == 'docker'
+        run: |
+          echo "DOCKER_BUILDKIT=1" >> $GITHUB_ENV
+          echo "COMPOSE_DOCKER_CLI_BUILD=1" >> $GITHUB_ENV
+
       - name: 'Build Docker images'
         if: matrix.target == 'docker'
         run: docker compose build
