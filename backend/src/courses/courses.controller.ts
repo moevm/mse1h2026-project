@@ -4,6 +4,7 @@ import { UserPayload } from '@/common/interfaces/user.interface';
 import { Body, Controller, Delete, Get, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
 
 import { CoursesService } from './courses.service';
+import { AssignTeamDto } from './dto/assign-team.dto';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
 
@@ -72,10 +73,10 @@ export class CoursesController {
   }
 
   @UseGuards(RolesGuard)
-  @Roles(['admin'])
+  @Roles(['student', 'admin'])
   @Post(':id/assignments/manual')
-  assignTeamManually() {
-    //TODO: manual assignment
+  assignTeamManually(@Body() assignTeamDto: AssignTeamDto, @Req() req: Request & UserPayload) {
+    return this.coursesService.assignTeamManually(assignTeamDto, req.user);
   }
 
   @UseGuards(RolesGuard)

@@ -1,12 +1,23 @@
+import { UserPayload } from '@/common/interfaces/user.interface';
 import { PrismaService } from '@/prisma/prisma.service';
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { UsersService } from '@/users/users.service';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 
+import { AssignTeamDto } from './dto/assign-team.dto';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
 
 @Injectable()
 export class CoursesService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly usersService: UsersService,
+  ) {}
 
   async getAllCourses() {
     return this.prisma.course.findMany({
@@ -125,6 +136,44 @@ export class CoursesService {
         },
       });
       return team;
+    });
+  }
+
+  async assignTeamManually(assignTeamDto: AssignTeamDto, user: UserPayload['user']) {
+    if (user.role === 'student') {
+      this.usersService.checkTeamLeader(user.sub, assignTeamDto.teamId);
+    }
+
+    const project = await this.prisma.project.findUnique({
+      where: { id: assignTeamDto.projectId },
+      include: {
+        assignments: true,
+        teams: true,
+      },
+    });
+
+    if (!project) {
+      throw new NotFoundException(`Project ${assignTeamDto.projectId} not found.`);
+    }
+
+    if (project.courseId !== assignTeamDto.projectId) {
+      throw new BadRequestException('Project does not belong to the course.');
+    }
+
+    if (project.assignments || project.teams) {
+      throw new ConflictException('Assignment or team already exist for given team.');
+    }
+
+    const team = await this.prisma.team.findUnique({
+      where: { id: assignTeamDto.teamId },
+    });
+
+    if (!team) {
+      throw new NotFoundException(`Team ${assignTeamDto.projectId} not found.`);
+    }
+
+    return await this.prisma.assignment.create({
+      data: assignTeamDto,
     });
   }
 
