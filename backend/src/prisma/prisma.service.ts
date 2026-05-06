@@ -1,3 +1,5 @@
+import { randomUUID } from 'crypto';
+
 import { Prisma, PrismaClient } from '@/generated/prisma/client';
 import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -239,18 +241,13 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
     teacherOne: { id: string },
     teacherTwo: { id: string },
   ) {
+    const courseOneId = randomUUID();
+    const courseTwoId = randomUUID();
+
     const [courseOne, courseTwo] = await Promise.all([
-      tx.course.upsert({
-        where: { id: 'course_1' },
-        update: {
-          name: 'Основы промышленной разработки ПО',
-          maxTeamSize: 5,
-          minTeamSize: 3,
-          isActive: true,
-          teacherId: teacherOne.id,
-        },
-        create: {
-          id: 'course_1',
+      tx.course.create({
+        data: {
+          id: courseOneId,
           name: 'Основы промышленной разработки ПО',
           maxTeamSize: 5,
           minTeamSize: 3,
@@ -258,17 +255,9 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
           teacherId: teacherOne.id,
         },
       }),
-      tx.course.upsert({
-        where: { id: 'course_2' },
-        update: {
-          name: 'Введение в нереляционные базы данных',
-          maxTeamSize: 4,
-          minTeamSize: 2,
-          isActive: true,
-          teacherId: teacherTwo.id,
-        },
-        create: {
-          id: 'course_2',
+      tx.course.create({
+        data: {
+          id: courseTwoId,
           name: 'Введение в нереляционные базы данных',
           maxTeamSize: 4,
           minTeamSize: 2,
@@ -289,190 +278,92 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
     teacherOne: { id: string },
     teacherTwo: { id: string },
   ) {
-    await Promise.all([
-      // Основы промышленной разработки ПО
-      tx.project.upsert({
-        where: { id: 'project_1' },
-        update: {
+    await tx.project.createMany({
+      data: [
+        // Основы промышленной разработки ПО
+        {
+          id: randomUUID(),
           title: 'Помощник преподавателя на лабах',
           description:
             "Инструмент для анализа pull-request'ов с кодом на Си/Python и генерации отчeтов о проблемах: плохие практики, неопределeнное поведение, магические константы. Технологии: Python, Docker, OCLint/Pylint.",
           courseId: courses.courseOne.id,
           teacherId: teacherOne.id,
         },
-        create: {
-          id: 'project_1',
-          title: 'Помощник преподавателя на лабах',
-          description:
-            "Инструмент для анализа pull-request'ов с кодом на Си/Python и генерации отчeтов о проблемах: плохие практики, неопределeнное поведение, магические константы. Технологии: Python, Docker, OCLint/Pylint.",
-          courseId: courses.courseOne.id,
-          teacherId: teacherOne.id,
-        },
-      }),
-      tx.project.upsert({
-        where: { id: 'project_2' },
-        update: {
+        {
+          id: randomUUID(),
           title: 'Новые периферийные устройства в RIPES',
           description:
             'Добавление новых IO-устройств в симулятор RIPES для учебных курсов по архитектуре ЭВМ.',
           courseId: courses.courseOne.id,
           teacherId: teacherOne.id,
         },
-        create: {
-          id: 'project_2',
-          title: 'Новые периферийные устройства в RIPES',
-          description:
-            'Добавление новых IO-устройств в симулятор RIPES для учебных курсов по архитектуре ЭВМ.',
-          courseId: courses.courseOne.id,
-          teacherId: teacherOne.id,
-        },
-      }),
-      tx.project.upsert({
-        where: { id: 'project_3' },
-        update: {
+        {
+          id: randomUUID(),
           title: 'Генератор лабораторных по программированию',
           description:
             'Генерация персонализированных заданий для 7 лабораторных работ с воспроизводимыми параметрами на основе ФИО студента. Интеграция в курс на e.moevm.info через CodeRunner и Moodle.',
           courseId: courses.courseOne.id,
           teacherId: teacherOne.id,
         },
-        create: {
-          id: 'project_3',
-          title: 'Генератор лабораторных по программированию',
-          description:
-            'Генерация персонализированных заданий для 7 лабораторных работ с воспроизводимыми параметрами на основе ФИО студента. Интеграция в курс на e.moevm.info через CodeRunner и Moodle.',
-          courseId: courses.courseOne.id,
-          teacherId: teacherOne.id,
-        },
-      }),
-      tx.project.upsert({
-        where: { id: 'project_4' },
-        update: {
+        {
+          id: randomUUID(),
           title: 'Автоматизация деплоя self-hosted таблиц',
           description:
             'Набор скриптов для развeртывания и управления Grist на кафедре: автоматизация деплоя, управления пользователями, резервных копий и мониторинга. Технологии: Python, Docker Compose.',
           courseId: courses.courseOne.id,
           teacherId: teacherOne.id,
         },
-        create: {
-          id: 'project_4',
-          title: 'Автоматизация деплоя self-hosted таблиц',
-          description:
-            'Набор скриптов для развeртывания и управления Grist на кафедре: автоматизация деплоя, управления пользователями, резервных копий и мониторинга. Технологии: Python, Docker Compose.',
-          courseId: courses.courseOne.id,
-          teacherId: teacherOne.id,
-        },
-      }),
-      tx.project.upsert({
-        where: { id: 'project_5' },
-        update: {
+        {
+          id: randomUUID(),
           title: 'Замена coderunner на judge0',
           description:
             'Прототип системы для использования judge0 вместо coderunner в Moodle с автоматизированным развeртыванием контейнеров и портированием задач. Технологии: Python, CodeRunner, Moodle.',
           courseId: courses.courseOne.id,
           teacherId: teacherOne.id,
         },
-        create: {
-          id: 'project_5',
-          title: 'Замена coderunner на judge0',
-          description:
-            'Прототип системы для использования judge0 вместо coderunner в Moodle с автоматизированным развeртыванием контейнеров и портированием задач. Технологии: Python, CodeRunner, Moodle.',
-          courseId: courses.courseOne.id,
-          teacherId: teacherOne.id,
-        },
-      }),
-      // Введение в нереляционные базы данных
-      tx.project.upsert({
-        where: { id: 'project_6' },
-        update: {
+        // Введение в нереляционные базы данных
+        {
+          id: randomUUID(),
           title: 'ИС для театральных декораций',
           description:
             'Веб-приложение для хранения, поиска и редактирования информации о театральных декорациях с учeтом их специфики. MongoDB, синтетические данные.',
           courseId: courses.courseTwo.id,
           teacherId: teacherTwo.id,
         },
-        create: {
-          id: 'project_6',
-          title: 'ИС для театральных декораций',
-          description:
-            'Веб-приложение для хранения, поиска и редактирования информации о театральных декорациях с учeтом их специфики. MongoDB, синтетические данные.',
-          courseId: courses.courseTwo.id,
-          teacherId: teacherTwo.id,
-        },
-      }),
-      tx.project.upsert({
-        where: { id: 'project_7' },
-        update: {
+        {
+          id: randomUUID(),
           title: 'БД актeров',
           description:
             'Каталог профилей актeров с расширенной информацией, полнотекстовым поиском и редактированием. MongoDB, синтетические данные.',
           courseId: courses.courseTwo.id,
           teacherId: teacherTwo.id,
         },
-        create: {
-          id: 'project_7',
-          title: 'БД актeров',
-          description:
-            'Каталог профилей актeров с расширенной информацией, полнотекстовым поиском и редактированием. MongoDB, синтетические данные.',
-          courseId: courses.courseTwo.id,
-          teacherId: teacherTwo.id,
-        },
-      }),
-      tx.project.upsert({
-        where: { id: 'project_8' },
-        update: {
+        {
+          id: randomUUID(),
           title: 'ИС для ателье',
           description:
             'Веб-приложение для ателье с ролями заказчиков, работников и руководства: создание заказов, трекинг выполнения, промежуточные данные, статистика и финансы. MongoDB.',
           courseId: courses.courseTwo.id,
           teacherId: teacherTwo.id,
         },
-        create: {
-          id: 'project_8',
-          title: 'ИС для ателье',
-          description:
-            'Веб-приложение для ателье с ролями заказчиков, работников и руководства: создание заказов, трекинг выполнения, промежуточные данные, статистика и финансы. MongoDB.',
-          courseId: courses.courseTwo.id,
-          teacherId: teacherTwo.id,
-        },
-      }),
-      tx.project.upsert({
-        where: { id: 'project_9' },
-        update: {
+        {
+          id: randomUUID(),
           title: 'Хранилище изображений с CRUD',
           description:
             'REST-приложение для CRUD изображений с поиском по метаданным, датам и содержимому изображения. Хранение всех логов. MongoDB, синтетические данные.',
           courseId: courses.courseTwo.id,
           teacherId: teacherTwo.id,
         },
-        create: {
-          id: 'project_9',
-          title: 'Хранилище изображений с CRUD',
-          description:
-            'REST-приложение для CRUD изображений с поиском по метаданным, датам и содержимому изображения. Хранение всех логов. MongoDB, синтетические данные.',
-          courseId: courses.courseTwo.id,
-          teacherId: teacherTwo.id,
-        },
-      }),
-      tx.project.upsert({
-        where: { id: 'project_10' },
-        update: {
+        {
+          id: randomUUID(),
           title: 'БД биометрии СКУД для университета',
           description:
             'Веб-приложение для хранения биометрических данных (голос, лица, логи, доступы), контроля доступа и логирования событий СКУД университета. MongoDB, синтетические данные.',
           courseId: courses.courseTwo.id,
           teacherId: teacherTwo.id,
         },
-        create: {
-          id: 'project_10',
-          title: 'БД биометрии СКУД для университета',
-          description:
-            'Веб-приложение для хранения биометрических данных (голос, лица, логи, доступы), контроля доступа и логирования событий СКУД университета. MongoDB, синтетические данные.',
-          courseId: courses.courseTwo.id,
-          teacherId: teacherTwo.id,
-        },
-      }),
-    ]);
+      ],
+    });
 
     this.logger.log(
       'Projects prepared: 5 for course "Основы промышленной разработки ПО" and 5 for course "Введение в нереляционные базы данных".',
@@ -486,42 +377,34 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
   ) {
     const [teamOne, teamTwo, teamThree, teamFour] = await Promise.all([
       // Основы промышленной разработки ПО
-      tx.team.upsert({
-        where: { id: 'team_1' },
-        update: { courseId: courses.courseOne.id, leaderId: students[0].id, status: 'forming' },
-        create: {
-          id: 'team_1',
+      tx.team.create({
+        data: {
+          id: randomUUID(),
           courseId: courses.courseOne.id,
           leaderId: students[0].id,
           status: 'forming',
         },
       }),
-      tx.team.upsert({
-        where: { id: 'team_2' },
-        update: { courseId: courses.courseOne.id, leaderId: students[5].id, status: 'forming' },
-        create: {
-          id: 'team_2',
+      tx.team.create({
+        data: {
+          id: randomUUID(),
           courseId: courses.courseOne.id,
           leaderId: students[5].id,
           status: 'forming',
         },
       }),
       // Введение в нереляционные базы данных
-      tx.team.upsert({
-        where: { id: 'team_3' },
-        update: { courseId: courses.courseTwo.id, leaderId: students[2].id, status: 'forming' },
-        create: {
-          id: 'team_3',
+      tx.team.create({
+        data: {
+          id: randomUUID(),
           courseId: courses.courseTwo.id,
           leaderId: students[2].id,
           status: 'forming',
         },
       }),
-      tx.team.upsert({
-        where: { id: 'team_4' },
-        update: { courseId: courses.courseTwo.id, leaderId: students[10].id, status: 'forming' },
-        create: {
-          id: 'team_4',
+      tx.team.create({
+        data: {
+          id: randomUUID(),
           courseId: courses.courseTwo.id,
           leaderId: students[10].id,
           status: 'forming',
@@ -529,76 +412,50 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
       }),
     ]);
 
-    const members = [
-      // Команда 1
-      { id: 'member_1', teamId: teamOne.id, userId: students[0].id },
-      { id: 'member_2', teamId: teamOne.id, userId: students[1].id },
-      { id: 'member_3', teamId: teamOne.id, userId: students[2].id },
-      { id: 'member_4', teamId: teamOne.id, userId: students[3].id },
-      { id: 'member_5', teamId: teamOne.id, userId: students[4].id },
-      // Команда 2
-      { id: 'member_6', teamId: teamTwo.id, userId: students[5].id },
-      { id: 'member_7', teamId: teamTwo.id, userId: students[6].id },
-      { id: 'member_8', teamId: teamTwo.id, userId: students[7].id },
-      { id: 'member_9', teamId: teamTwo.id, userId: students[8].id },
-      { id: 'member_10', teamId: teamTwo.id, userId: students[9].id },
-      // Команда 3
-      { id: 'member_11', teamId: teamThree.id, userId: students[2].id },
-      { id: 'member_12', teamId: teamThree.id, userId: students[4].id },
-      { id: 'member_13', teamId: teamThree.id, userId: students[6].id },
-      { id: 'member_14', teamId: teamThree.id, userId: students[8].id },
-      // Клманда 4
-      { id: 'member_15', teamId: teamFour.id, userId: students[10].id },
-      { id: 'member_16', teamId: teamFour.id, userId: students[11].id },
-      { id: 'member_17', teamId: teamFour.id, userId: students[12].id },
-    ];
+    await tx.teamMember.createMany({
+      data: [
+        // Команда 1
+        { id: randomUUID(), teamId: teamOne.id, userId: students[0].id },
+        { id: randomUUID(), teamId: teamOne.id, userId: students[1].id },
+        { id: randomUUID(), teamId: teamOne.id, userId: students[2].id },
+        { id: randomUUID(), teamId: teamOne.id, userId: students[3].id },
+        { id: randomUUID(), teamId: teamOne.id, userId: students[4].id },
+        // Команда 2
+        { id: randomUUID(), teamId: teamTwo.id, userId: students[5].id },
+        { id: randomUUID(), teamId: teamTwo.id, userId: students[6].id },
+        { id: randomUUID(), teamId: teamTwo.id, userId: students[7].id },
+        { id: randomUUID(), teamId: teamTwo.id, userId: students[8].id },
+        { id: randomUUID(), teamId: teamTwo.id, userId: students[9].id },
+        // Команда 3
+        { id: randomUUID(), teamId: teamThree.id, userId: students[2].id },
+        { id: randomUUID(), teamId: teamThree.id, userId: students[4].id },
+        { id: randomUUID(), teamId: teamThree.id, userId: students[6].id },
+        { id: randomUUID(), teamId: teamThree.id, userId: students[8].id },
+        // Команда 4
+        { id: randomUUID(), teamId: teamFour.id, userId: students[10].id },
+        { id: randomUUID(), teamId: teamFour.id, userId: students[11].id },
+        { id: randomUUID(), teamId: teamFour.id, userId: students[12].id },
+      ],
+    });
 
-    await Promise.all(
-      members.map((m) =>
-        tx.teamMember.upsert({
-          where: { id: m.id },
-          update: { teamId: m.teamId, userId: m.userId },
-          create: { id: m.id, teamId: m.teamId, userId: m.userId },
-        }),
-      ),
-    );
-
-    await Promise.all([
-      tx.teamInvitation.upsert({
-        where: { id: 'team_invitation_1' },
-        update: {
-          teamId: teamOne.id,
-          inviteeId: students[13].id,
-          invitedBy: students[0].id,
-          status: 'pending',
-          respondedAt: null,
-        },
-        create: {
-          id: 'team_invitation_1',
+    await tx.teamInvitation.createMany({
+      data: [
+        {
+          id: randomUUID(),
           teamId: teamOne.id,
           inviteeId: students[13].id,
           invitedBy: students[0].id,
           status: 'pending',
         },
-      }),
-      tx.teamInvitation.upsert({
-        where: { id: 'team_invitation_2' },
-        update: {
-          teamId: teamThree.id,
-          inviteeId: students[14].id,
-          invitedBy: students[2].id,
-          status: 'pending',
-          respondedAt: null,
-        },
-        create: {
-          id: 'team_invitation_2',
+        {
+          id: randomUUID(),
           teamId: teamThree.id,
           inviteeId: students[14].id,
           invitedBy: students[2].id,
           status: 'pending',
         },
-      }),
-    ]);
+      ],
+    });
 
     this.logger.log('Teams prepared.');
   }
