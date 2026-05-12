@@ -29,7 +29,7 @@ export class CoursesController {
   @UseGuards(RolesGuard)
   @Roles(['student', 'admin'])
   @Get(':id/assignments')
-  findAssignments(id: string) {
+  findAssignments(@Param('id') id: string) {
     return this.coursesService.getCourseAssignments(id);
   }
 
@@ -82,8 +82,8 @@ export class CoursesController {
   @UseGuards(RolesGuard)
   @Roles(['admin'])
   @Post(':id/assignments/auto')
-  assignTeamAutomatically() {
-    //TODO: auto assignment
+  assignTeamAutomatically(@Param('id') courseId: string) {
+    return this.coursesService.assignTeamAutomatically(courseId);
   }
 
   @UseGuards(RolesGuard)

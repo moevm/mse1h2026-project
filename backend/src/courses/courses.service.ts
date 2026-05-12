@@ -172,9 +172,54 @@ export class CoursesService {
       throw new NotFoundException(`Team ${assignTeamDto.projectId} not found.`);
     }
 
+    await this.prisma.team.update({
+      where: { id: assignTeamDto.teamId },
+      data: { projectId: assignTeamDto.projectId, status: 'assigned' },
+    });
+
     return await this.prisma.assignment.create({
       data: assignTeamDto,
     });
+  }
+
+  async assignTeamAutomatically(courseId: string) {
+    const teams = await this.prisma.team.findMany({
+      where: { projectId: null, courseId },
+    });
+
+    const projects = await this.prisma.project.findMany({
+      where: {
+        courseId,
+        assignments: { none: {} },
+        teams: { none: {} },
+      },
+    });
+
+    if (teams.length === 0 || projects.length === 0) {
+      throw new BadRequestException('No available teams or projects for assignment.');
+    }
+
+    if (teams.length > projects.length) {
+      throw new BadRequestException('Not enough projects for all teams.');
+    }
+
+    const ids: string[] = [];
+    teams.forEach(async (team, index) => {
+      ids.push(team.id);
+      await this.prisma.team.update({
+        where: { id: team.id },
+        data: { projectId: projects[index].id, status: 'assigned' },
+      });
+      await this.prisma.assignment.create({
+        data: {
+          projectId: projects[index].id,
+          teamId: team.id,
+          status: 'active',
+        },
+      });
+    });
+
+    return { message: 'Teams assigned to projects successfully.', assignedTeamIds: ids };
   }
 
   async updateCourse(id: string, updateCourseDto: UpdateCourseDto) {
