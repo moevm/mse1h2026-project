@@ -15,12 +15,29 @@ export class AssignmentsService {
   }
 
   async deleteAssignment(id: string) {
-    try {
-      return await this.prisma.assignment.delete({
-        where: { id },
-      });
-    } catch {
+    const assignment = await this.prisma.assignment.findUnique({
+      where: { id },
+      include: {
+        team: true,
+      },
+    });
+
+    if (!assignment) {
       throw new NotFoundException(`Assignment ${id} not found.`);
     }
+
+    await this.prisma.$transaction(async (prisma) => {
+      await prisma.team.update({
+        where: { id: assignment.teamId },
+        data: {
+          projectId: null,
+          status: 'forming',
+        },
+      });
+
+      await prisma.assignment.delete({
+        where: { id },
+      });
+    });
   }
 }

@@ -139,13 +139,17 @@ export class CoursesService {
     });
   }
 
-  async assignTeamManually(assignTeamDto: AssignTeamDto, user: UserPayload['user']) {
+  async assignTeamManually(
+    courseId: string,
+    assignTeamDto: AssignTeamDto,
+    user: UserPayload['user'],
+  ) {
     if (user.role === 'student') {
-      this.usersService.checkTeamLeader(user.sub, assignTeamDto.teamId);
+      await this.usersService.checkTeamLeader(user.sub, assignTeamDto.teamId);
     }
 
-    const project = await this.prisma.project.findUnique({
-      where: { id: assignTeamDto.projectId },
+    const project = await this.prisma.project.findFirst({
+      where: { id: assignTeamDto.projectId, courseId },
       include: {
         assignments: true,
         teams: true,
@@ -156,29 +160,31 @@ export class CoursesService {
       throw new NotFoundException(`Project ${assignTeamDto.projectId} not found.`);
     }
 
-    if (project.courseId !== assignTeamDto.projectId) {
-      throw new BadRequestException('Project does not belong to the course.');
-    }
-
-    if (project.assignments || project.teams) {
+    if (project.assignments.length > 0 || project.teams.length > 0) {
       throw new ConflictException('Assignment or team already exist for given team.');
     }
 
-    const team = await this.prisma.team.findUnique({
-      where: { id: assignTeamDto.teamId },
+    const team = await this.prisma.team.findFirst({
+      where: { id: assignTeamDto.teamId, courseId },
     });
 
     if (!team) {
-      throw new NotFoundException(`Team ${assignTeamDto.projectId} not found.`);
+      throw new NotFoundException(`Team ${assignTeamDto.teamId} not found.`);
     }
 
-    await this.prisma.team.update({
-      where: { id: assignTeamDto.teamId },
-      data: { projectId: assignTeamDto.projectId, status: 'assigned' },
-    });
+    if (team.projectId) {
+      throw new ConflictException('Team is already assigned to a project.');
+    }
 
-    return await this.prisma.assignment.create({
-      data: assignTeamDto,
+    return this.prisma.$transaction(async (prisma) => {
+      await prisma.team.update({
+        where: { id: assignTeamDto.teamId },
+        data: { projectId: assignTeamDto.projectId, status: 'assigned' },
+      });
+
+      return prisma.assignment.create({
+        data: assignTeamDto,
+      });
     });
   }
 
@@ -203,21 +209,22 @@ export class CoursesService {
       throw new BadRequestException('Not enough projects for all teams.');
     }
 
-    const ids: string[] = [];
-    teams.forEach(async (team, index) => {
-      ids.push(team.id);
-      await this.prisma.team.update({
-        where: { id: team.id },
-        data: { projectId: projects[index].id, status: 'assigned' },
-      });
-      await this.prisma.assignment.create({
-        data: {
-          projectId: projects[index].id,
-          teamId: team.id,
-          status: 'active',
-        },
-      });
-    });
+    const ids = teams.map((team) => team.id);
+    await this.prisma.$transaction(
+      teams.flatMap((team, index) => [
+        this.prisma.team.update({
+          where: { id: team.id },
+          data: { projectId: projects[index].id, status: 'assigned' },
+        }),
+        this.prisma.assignment.create({
+          data: {
+            projectId: projects[index].id,
+            teamId: team.id,
+            status: 'active',
+          },
+        }),
+      ]),
+    );
 
     return { message: 'Teams assigned to projects successfully.', assignedTeamIds: ids };
   }

@@ -75,8 +75,12 @@ export class CoursesController {
   @UseGuards(RolesGuard)
   @Roles(['student', 'admin'])
   @Post(':id/assignments/manual')
-  assignTeamManually(@Body() assignTeamDto: AssignTeamDto, @Req() req: Request & UserPayload) {
-    return this.coursesService.assignTeamManually(assignTeamDto, req.user);
+  assignTeamManually(
+    @Param('id') courseId: string,
+    @Body() assignTeamDto: AssignTeamDto,
+    @Req() req: Request & UserPayload,
+  ) {
+    return this.coursesService.assignTeamManually(courseId, assignTeamDto, req.user);
   }
 
   @UseGuards(RolesGuard)
