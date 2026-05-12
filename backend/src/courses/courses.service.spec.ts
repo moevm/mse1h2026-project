@@ -1,4 +1,5 @@
 import { PrismaService } from '@/prisma/prisma.service';
+import { UsersService } from '@/users/users.service';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 
@@ -14,6 +15,11 @@ const mockPrismaService = {
   },
   $transaction: jest.fn(),
 };
+
+const mockUsersService = {
+  checkTeamLeader: jest.fn(),
+};
+
 describe('CoursesService', () => {
   let service: CoursesService;
 
@@ -24,6 +30,10 @@ describe('CoursesService', () => {
         {
           provide: PrismaService,
           useValue: mockPrismaService,
+        },
+        {
+          provide: UsersService,
+          useValue: mockUsersService,
         },
       ],
     }).compile();
