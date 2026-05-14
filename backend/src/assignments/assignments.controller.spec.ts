@@ -8,7 +8,7 @@ describe('AssignmentsController', () => {
   let assignmentsService: AssignmentsService;
 
   const mockAssignmentsService = {
-    getAllAssignments: jest.fn(),
+    getCourseAssignments: jest.fn().mockResolvedValue([]),
   };
 
   beforeEach(async () => {
@@ -24,8 +24,6 @@ describe('AssignmentsController', () => {
 
     controller = module.get<AssignmentsController>(AssignmentsController);
     assignmentsService = module.get<AssignmentsService>(AssignmentsService);
-
-    jest.clearAllMocks();
   });
 
   it('should be defined', () => {
@@ -33,12 +31,13 @@ describe('AssignmentsController', () => {
   });
 
   it('returns assignments from service', async () => {
-    const assignments = [{ id: 'assignment-1' }];
-    mockAssignmentsService.getAllAssignments.mockResolvedValue(assignments);
+    const assignments = [{ id: 'project-1', assignments: [] }];
 
-    const result = await controller.findAll();
+    mockAssignmentsService.getCourseAssignments.mockResolvedValue(assignments);
+
+    const result = await controller.findAll('course-1');
 
     expect(result).toEqual(assignments);
-    expect(assignmentsService.getAllAssignments).toHaveBeenCalled();
+    expect(assignmentsService.getCourseAssignments).toHaveBeenCalledWith('course-1');
   });
 });
