@@ -1,23 +1,12 @@
-import { UserPayload } from '@/common/interfaces/user.interface';
 import { PrismaService } from '@/prisma/prisma.service';
-import { UsersService } from '@/users/users.service';
-import {
-  BadRequestException,
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 
-import { AssignTeamDto } from './dto/assign-team.dto';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
 
 @Injectable()
 export class CoursesService {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly usersService: UsersService,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async getAllCourses() {
     return this.prisma.course.findMany({
@@ -44,15 +33,6 @@ export class CoursesService {
     });
     if (!course) throw new NotFoundException(`Course ${id} not found.`);
     return course;
-  }
-
-  async getCourseAssignments(courseId: string) {
-    return this.prisma.project.findMany({
-      where: { courseId },
-      include: {
-        assignments: true,
-      },
-    });
   }
 
   async getCourseTeams(courseId: string) {
@@ -137,96 +117,6 @@ export class CoursesService {
       });
       return team;
     });
-  }
-
-  async assignTeamManually(
-    courseId: string,
-    assignTeamDto: AssignTeamDto,
-    user: UserPayload['user'],
-  ) {
-    if (user.role === 'student') {
-      await this.usersService.checkTeamLeader(user.sub, assignTeamDto.teamId);
-    }
-
-    const project = await this.prisma.project.findFirst({
-      where: { id: assignTeamDto.projectId, courseId },
-      include: {
-        assignments: true,
-        teams: true,
-      },
-    });
-
-    if (!project) {
-      throw new NotFoundException(`Project ${assignTeamDto.projectId} not found.`);
-    }
-
-    if (project.assignments.length > 0 || project.teams.length > 0) {
-      throw new ConflictException('Assignment or team already exist for given team.');
-    }
-
-    const team = await this.prisma.team.findFirst({
-      where: { id: assignTeamDto.teamId, courseId },
-    });
-
-    if (!team) {
-      throw new NotFoundException(`Team ${assignTeamDto.teamId} not found.`);
-    }
-
-    if (team.projectId) {
-      throw new ConflictException('Team is already assigned to a project.');
-    }
-
-    return this.prisma.$transaction(async (prisma) => {
-      await prisma.team.update({
-        where: { id: assignTeamDto.teamId },
-        data: { projectId: assignTeamDto.projectId, status: 'assigned' },
-      });
-
-      return prisma.assignment.create({
-        data: assignTeamDto,
-      });
-    });
-  }
-
-  async assignTeamAutomatically(courseId: string) {
-    const teams = await this.prisma.team.findMany({
-      where: { projectId: null, courseId },
-    });
-
-    const projects = await this.prisma.project.findMany({
-      where: {
-        courseId,
-        assignments: { none: {} },
-        teams: { none: {} },
-      },
-    });
-
-    if (teams.length === 0 || projects.length === 0) {
-      throw new BadRequestException('No available teams or projects for assignment.');
-    }
-
-    if (teams.length > projects.length) {
-      throw new BadRequestException('Not enough projects for all teams.');
-    }
-
-    const ids = teams.map((team) => team.id);
-    await this.prisma.$transaction(
-      teams.flatMap((team, index) => [
-        this.prisma.team.update({
-          where: { id: team.id },
-          data: { projectId: projects[index].id, status: 'assigned' },
-        }),
-        this.prisma.assignment.create({
-          data: {
-            projectId: projects[index].id,
-            teamId: team.id,
-            status: 'active',
-          },
-        }),
-      ]),
-    );
-
-    return { message: 'Teams assigned to projects successfully.', assignedTeamIds: ids };
   }
 
   async updateCourse(id: string, updateCourseDto: UpdateCourseDto) {

@@ -2,7 +2,11 @@ import { AssignmentStatus } from '@/generated/prisma/enums';
 import { Type } from 'class-transformer';
 import { IsDate, IsEnum, IsNotEmpty, IsOptional, IsUUID } from 'class-validator';
 
-export class AssignTeamDto {
+export class ManuallyAssignDto {
+  @IsNotEmpty()
+  @IsUUID()
+  courseId!: string;
+
   @IsNotEmpty()
   @IsUUID()
   projectId!: string;

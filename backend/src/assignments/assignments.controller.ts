@@ -1,8 +1,11 @@
 import { Roles } from '@/common/decorators/roles.decorator';
 import { RolesGuard } from '@/common/guards/roles.guard';
-import { Controller, Delete, Get, Param, UseGuards } from '@nestjs/common';
+import { UserPayload } from '@/common/interfaces/user.interface';
+import { Body, Controller, Delete, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
 
 import { AssignmentsService } from './assignments.service';
+import { AutoAssignDto } from './dto/auto-assign.dto.ts';
+import { ManuallyAssignDto } from './dto/manually-assign.dto';
 
 @Controller('api/assignments')
 export class AssignmentsController {
@@ -11,8 +14,22 @@ export class AssignmentsController {
   @UseGuards(RolesGuard)
   @Roles(['student', 'admin'])
   @Get()
-  findAll() {
-    return this.assignmentsService.getAllAssignments();
+  findAll(@Param() courseId: string) {
+    return this.assignmentsService.getCourseAssignments(courseId);
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(['student', 'admin'])
+  @Post('manual')
+  assignTeamManually(@Body() assignTeamDto: ManuallyAssignDto, @Req() req: Request & UserPayload) {
+    return this.assignmentsService.assignTeamManually(assignTeamDto, req.user);
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(['admin'])
+  @Post('auto')
+  assignTeamAutomatically(@Body() autoAssignDto: AutoAssignDto) {
+    return this.assignmentsService.assignTeamAutomatically(autoAssignDto.courseId);
   }
 
   @UseGuards(RolesGuard)

@@ -4,7 +4,6 @@ import { UserPayload } from '@/common/interfaces/user.interface';
 import { Body, Controller, Delete, Get, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
 
 import { CoursesService } from './courses.service';
-import { AssignTeamDto } from './dto/assign-team.dto';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
 
@@ -24,13 +23,6 @@ export class CoursesController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.coursesService.getCourseById(id);
-  }
-
-  @UseGuards(RolesGuard)
-  @Roles(['student', 'admin'])
-  @Get(':id/assignments')
-  findAssignments(@Param('id') id: string) {
-    return this.coursesService.getCourseAssignments(id);
   }
 
   @UseGuards(RolesGuard)
@@ -70,24 +62,6 @@ export class CoursesController {
     @Body() body: { projectId?: string },
   ) {
     return this.coursesService.createTeam(courseId, req.user.sub, body.projectId);
-  }
-
-  @UseGuards(RolesGuard)
-  @Roles(['student', 'admin'])
-  @Post(':id/assignments/manual')
-  assignTeamManually(
-    @Param('id') courseId: string,
-    @Body() assignTeamDto: AssignTeamDto,
-    @Req() req: Request & UserPayload,
-  ) {
-    return this.coursesService.assignTeamManually(courseId, assignTeamDto, req.user);
-  }
-
-  @UseGuards(RolesGuard)
-  @Roles(['admin'])
-  @Post(':id/assignments/auto')
-  assignTeamAutomatically(@Param('id') courseId: string) {
-    return this.coursesService.assignTeamAutomatically(courseId);
   }
 
   @UseGuards(RolesGuard)
