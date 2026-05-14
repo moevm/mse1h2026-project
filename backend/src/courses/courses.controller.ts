@@ -54,17 +54,6 @@ export class CoursesController {
   }
 
   @UseGuards(RolesGuard)
-  @Roles(['student'])
-  @Post(':id/teams')
-  createTeam(
-    @Param('id') courseId: string,
-    @Req() req: Request & UserPayload,
-    @Body() body: { projectId?: string },
-  ) {
-    return this.coursesService.createTeam(courseId, req.user.sub, body.projectId);
-  }
-
-  @UseGuards(RolesGuard)
   @Roles(['admin'])
   @Put(':id')
   update(@Param('id') id: string, @Body() updateCourseDto: UpdateCourseDto) {

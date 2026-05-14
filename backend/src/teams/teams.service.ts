@@ -8,6 +8,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 
+import { CreateCourseDto } from './dto/create-course.dto';
 import { CreateInvitationDto } from './dto/create-invitation.dto';
 import { UpdateLeaderDto } from './dto/update-leader.dto';
 
@@ -37,6 +38,51 @@ export class TeamsService {
       throw new NotFoundException(`Team ${id} not found.`);
     }
     return team;
+  }
+
+  async createTeam(createCourseDto: CreateCourseDto, userId: string) {
+    const course = await this.prisma.course.findUnique({
+      where: { id: createCourseDto.courseId },
+    });
+    if (!course) {
+      throw new NotFoundException(`Course ${createCourseDto.courseId} not found.`);
+    }
+    const existingMembership = await this.prisma.teamMember.findFirst({
+      where: { userId, team: { courseId: createCourseDto.courseId } },
+    });
+
+    if (createCourseDto.projectId) {
+      const project = await this.prisma.project.findUnique({
+        where: { id: createCourseDto.projectId },
+      });
+      if (!project) {
+        throw new NotFoundException(`Project ${createCourseDto.projectId} not found`);
+      }
+      if (project.courseId !== createCourseDto.courseId) {
+        throw new BadRequestException('Project does not belong to this course');
+      }
+    }
+
+    if (existingMembership) {
+      throw new BadRequestException('Student is already in a team.');
+    }
+    return this.prisma.$transaction(async (prisma) => {
+      const team = await this.prisma.team.create({
+        data: {
+          courseId: createCourseDto.courseId,
+          leaderId: userId,
+          projectId: createCourseDto.projectId ?? null,
+          status: 'forming',
+        },
+      });
+      await prisma.teamMember.create({
+        data: {
+          teamId: team.id,
+          userId: userId,
+        },
+      });
+      return team;
+    });
   }
 
   async createInvitation(teamId: string, createInvitationDto: CreateInvitationDto, userId: string) {

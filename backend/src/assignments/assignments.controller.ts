@@ -1,7 +1,7 @@
 import { Roles } from '@/common/decorators/roles.decorator';
 import { RolesGuard } from '@/common/guards/roles.guard';
 import { UserPayload } from '@/common/interfaces/user.interface';
-import { Body, Controller, Delete, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query, Req, UseGuards } from '@nestjs/common';
 
 import { AssignmentsService } from './assignments.service';
 import { AutoAssignDto } from './dto/auto-assign.dto.ts';
@@ -14,7 +14,7 @@ export class AssignmentsController {
   @UseGuards(RolesGuard)
   @Roles(['student', 'admin'])
   @Get()
-  findAll(@Param() courseId: string) {
+  findAll(@Query('courseId') courseId: string) {
     return this.assignmentsService.getCourseAssignments(courseId);
   }
 

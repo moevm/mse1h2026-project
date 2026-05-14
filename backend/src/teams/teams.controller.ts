@@ -4,6 +4,7 @@ import { UserPayload } from '@/common/interfaces/user.interface';
 import { Body, Controller, Delete, Get, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 
+import { CreateCourseDto } from './dto/create-course.dto';
 import { CreateInvitationDto } from './dto/create-invitation.dto';
 import { UpdateLeaderDto } from './dto/update-leader.dto';
 import { TeamsService } from './teams.service';
@@ -17,6 +18,13 @@ export class TeamsController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.teamsService.getTeamById(id);
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(['student'])
+  @Post()
+  createTeam(@Body() createCourseDto: CreateCourseDto, @Req() req: Request & UserPayload) {
+    return this.teamsService.createTeam(createCourseDto, req.user.sub);
   }
 
   @UseGuards(RolesGuard)
