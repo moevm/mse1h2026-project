@@ -1,6 +1,7 @@
-import type { Team } from '@/types';
+import type { CreateTeamPayload, Team } from '@/types';
 
 import axiosInstance from './axios';
+
 
 export const teamsApi = {
   getMyTeam: (courseId: string) =>
@@ -9,8 +10,8 @@ export const teamsApi = {
   getCourseTeams: (courseId: string) =>
     axiosInstance.get<Team[]>(`/courses/${courseId}/teams`).then((res) => res.data),
 
-  createTeam: (courseId: string, projectId?: string) =>
-    axiosInstance.post<Team>(`/courses/${courseId}/teams`, { projectId }).then((res) => res.data),
+  createTeam: ({ courseId, projectId }: CreateTeamPayload) =>
+    axiosInstance.post<Team>('/teams', { courseId, projectId }).then((res) => res.data),
 
   createInvitation: (teamId: string, inviteeId: string) =>
     axiosInstance.post(`/teams/${teamId}/invitations`, { inviteeId }).then((res) => res.data),

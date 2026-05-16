@@ -275,7 +275,7 @@ const closeInviteModal = () => {
 
 const handleCreateTeam = async () => {
   try {
-    await teamsApi.createTeam(courseId);
+    await teamsApi.createTeam({ courseId });
     notification.success({
       title: 'Команда создана',
       content: 'Вы успешно создали команду',

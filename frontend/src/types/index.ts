@@ -109,3 +109,8 @@ export interface Assignment {
   createdAt?: Date;
   updatedAt?: Date;
 }
+
+export interface CreateTeamPayload {
+  courseId: string;
+  projectId?: string;
+}
