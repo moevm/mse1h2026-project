@@ -2,7 +2,6 @@ import type { CreateTeamPayload, Team } from '@/types';
 
 import axiosInstance from './axios';
 
-
 export const teamsApi = {
   getMyTeam: (courseId: string) =>
     axiosInstance.get<Team | null>(`/courses/${courseId}/my-team`).then((res) => res.data),
