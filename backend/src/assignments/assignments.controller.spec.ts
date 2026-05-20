@@ -1,3 +1,5 @@
+import { UserPayload } from '@/common/interfaces/user.interface';
+import { AssignmentStatus } from '@/generated/prisma/enums';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { AssignmentsController } from './assignments.controller';
@@ -9,6 +11,8 @@ describe('AssignmentsController', () => {
 
   const mockAssignmentsService = {
     getCourseAssignments: jest.fn().mockResolvedValue([]),
+    assignTeamManually: jest.fn(),
+    deleteAssignment: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -39,5 +43,35 @@ describe('AssignmentsController', () => {
 
     expect(result).toEqual(assignments);
     expect(assignmentsService.getCourseAssignments).toHaveBeenCalledWith('course-1');
+  });
+
+  it('creates assignment manually', async () => {
+    const req = {
+      user: { sub: 'user-1', email: 'user-1@example.com', role: 'student' },
+    } as Request & UserPayload;
+    const dto = {
+      courseId: 'course-1',
+      projectId: 'project-1',
+      teamId: 'team-1',
+      status: AssignmentStatus.active,
+    };
+    const assignment = { id: 'project-1', ...dto };
+
+    mockAssignmentsService.assignTeamManually.mockResolvedValue(assignment);
+
+    const result = await controller.assignTeamManually(dto, req);
+
+    expect(result).toEqual(assignment);
+    expect(assignmentsService.assignTeamManually).toHaveBeenCalledWith(dto, req['user']);
+  });
+
+  it('deletes assignment', async () => {
+    const assignment = { id: 'assignment-1' };
+    mockAssignmentsService.deleteAssignment.mockResolvedValue(assignment);
+
+    const result = await controller.delete('assignment-1');
+
+    expect(result).toEqual(assignment);
+    expect(assignmentsService.deleteAssignment).toHaveBeenCalledWith('assignment-1');
   });
 });
