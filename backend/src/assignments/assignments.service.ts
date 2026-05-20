@@ -34,6 +34,7 @@ export class AssignmentsService {
     const project = await this.prisma.project.findFirst({
       where: { id: assignTeamDto.projectId, courseId: assignTeamDto.courseId },
       include: {
+        course: true,
         assignments: true,
         teams: true,
       },
@@ -41,6 +42,10 @@ export class AssignmentsService {
 
     if (!project) {
       throw new NotFoundException(`Project ${assignTeamDto.projectId} not found.`);
+    }
+
+    if (project.course.registrationDeadline && project.course.registrationDeadline < new Date()) {
+      throw new BadRequestException('Course deadline is overdue.');
     }
 
     if (project.assignments.length > 0 || project.teams.length > 0) {
@@ -57,6 +62,10 @@ export class AssignmentsService {
 
     if (team.projectId) {
       throw new ConflictException('Team is already assigned to a project.');
+    }
+
+    if (project.courseId !== team.courseId) {
+      throw new BadRequestException('Project and team courseId does not match.');
     }
 
     return this.prisma.$transaction(async (prisma) => {
@@ -109,7 +118,7 @@ export class AssignmentsService {
       ]),
     );
 
-    return { message: 'Teams assigned to projects successfully.', assignedTeamIds: ids };
+    return ids;
   }
 
   async deleteAssignment(id: string) {

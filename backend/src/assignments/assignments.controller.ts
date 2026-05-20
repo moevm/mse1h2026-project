@@ -29,7 +29,8 @@ export class AssignmentsController {
   @Roles(['admin'])
   @Post('auto')
   assignTeamAutomatically(@Body() autoAssignDto: AutoAssignDto) {
-    return this.assignmentsService.assignTeamAutomatically(autoAssignDto.courseId);
+    const ids = this.assignmentsService.assignTeamAutomatically(autoAssignDto.courseId);
+    return { message: 'Teams assigned to projects successfully.', assignedTeamIds: ids };
   }
 
   @UseGuards(RolesGuard)
