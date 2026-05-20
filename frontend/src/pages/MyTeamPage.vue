@@ -257,7 +257,7 @@ const loadData = async () => {
 
 const loadStudents = async () => {
   try {
-    allStudents.value = await usersApi.getUsers({ role: 'student' });
+    allStudents.value = await usersApi.getUsers('student');
   } catch (error) {
     console.error('Ошибка загрузки студентов:', error);
   }

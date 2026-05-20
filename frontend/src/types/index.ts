@@ -1,3 +1,11 @@
+export type {
+  AutoAssignPayload,
+  CreateCoursePayload,
+  CreateTeamPayload,
+  ManuallyAssignPayload,
+  UpdateCoursePayload,
+} from './payloads';
+
 export interface Course {
   id: string;
   name: string;
@@ -108,9 +116,4 @@ export interface Assignment {
   assignedAt?: Date;
   createdAt?: Date;
   updatedAt?: Date;
-}
-
-export interface CreateTeamPayload {
-  courseId: string;
-  projectId?: string;
 }

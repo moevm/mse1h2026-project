@@ -264,7 +264,7 @@ const rules: FormRules = {
 const loadTeachers = async () => {
   loadingTeachers.value = true;
   try {
-    teachers.value = await usersApi.getUsers({ role: 'admin' });
+    teachers.value = await usersApi.getUsers('admin');
 
     // Преобразуем в формат для n-select
     teacherOptions.value = teachers.value.map((teacher) => ({
