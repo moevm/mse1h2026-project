@@ -15,7 +15,9 @@ export const teamsApi = {
     axiosInstance.post<Team>(baseEndpoint, payload).then((res) => res.data),
 
   createInvitation: (teamId: string, inviteeId: string) =>
-    axiosInstance.post(`${baseEndpoint}/${teamId}/invitations`, { inviteeId }).then((res) => res.data),
+    axiosInstance
+      .post(`${baseEndpoint}/${teamId}/invitations`, { inviteeId })
+      .then((res) => res.data),
 
   leaveTeam: (teamId: string, userId: string) =>
     axiosInstance.delete(`${baseEndpoint}/${teamId}/members/${userId}`).then((res) => res.data),
