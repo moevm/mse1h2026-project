@@ -26,8 +26,8 @@ export class ExchangesController {
   @UseGuards(RolesGuard)
   @Roles(['student', 'admin'])
   @Get()
-  getRequests(@Query('courseId') courseId: string, @Req() req: Request & UserPayload) {
-    return this.exchangesService.getRequests(courseId, req.user);
+  findAll(@Query('courseId') courseId: string, @Req() req: Request & UserPayload) {
+    return this.exchangesService.getAllExchangeRequests(courseId, req.user);
   }
 
   @UseGuards(RolesGuard)

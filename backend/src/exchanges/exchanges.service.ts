@@ -13,7 +13,7 @@ export class ExchangesService {
     private readonly usersService: UsersService,
   ) {}
 
-  async getRequests(courseId: string, user: UserPayload['user']) {
+  async getAllExchangeRequests(courseId: string, user: UserPayload['user']) {
     const include = {
       initiatorTeam: { include: { members: { include: { user: true } }, leader: true } },
       targetTeam: { include: { members: { include: { user: true } }, leader: true } },
@@ -41,6 +41,32 @@ export class ExchangesService {
 
   async createRequest(createRequestDto: CreateRequestDto, userId: string) {
     await this.usersService.checkTeamLeader(userId, createRequestDto.initiatorTeamId);
+
+    const course = await this.prisma.course.findUnique({
+      where: { id: createRequestDto.courseId },
+    });
+    if (!course) {
+      throw new NotFoundException(`Course ${createRequestDto.courseId} not found.`);
+    }
+
+    if (course.registrationDeadline && course.registrationDeadline < new Date()) {
+      throw new BadRequestException('Course deadline is overdue.');
+    }
+
+    const initiatorProject = await this.prisma.project.findUnique({
+      where: { id: createRequestDto.initiatorProjectId },
+      include: {
+        assignments: true,
+      },
+    });
+
+    const targetProject = await this.prisma.project.findUnique({
+      where: { id: createRequestDto.targetProjectId },
+    });
+
+    if (!initiatorProject || !targetProject) {
+      throw new NotFoundException('Initiator or target project is missing.');
+    }
 
     return this.prisma.$transaction(async (tx) => {
       const request = await tx.exchangeRequest.create({
@@ -126,6 +152,9 @@ export class ExchangesService {
   async confirmRequestByTeam(id: string, user: UserPayload['user']) {
     const request = await this.prisma.exchangeRequest.findUnique({
       where: { id },
+      include: {
+        course: true,
+      },
     });
 
     if (!request) {
@@ -141,6 +170,10 @@ export class ExchangesService {
     }
 
     await this.usersService.checkTeamLeader(user.sub, request.targetTeamId);
+
+    if (request.course.registrationDeadline && request.course.registrationDeadline < new Date()) {
+      throw new BadRequestException('Course deadline is overdue.');
+    }
 
     const teamId = request.targetTeamId;
     const existingConfirmation = await this.prisma.exchangeConfirmation.findFirst({
