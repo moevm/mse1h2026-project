@@ -25,7 +25,7 @@ export class CoursesController {
   }
 
   @UseGuards(RolesGuard)
-  @Roles(['admin'])
+  @Roles(['student', 'admin'])
   @Get(':id/teams')
   findTeams(@Param('id') id: string) {
     return this.coursesService.getCourseTeams(id);
