@@ -223,8 +223,8 @@ const route = useRoute();
 const router = useRouter();
 const notification = useNotification();
 
-const courseId = String(route.params.courseId);
 const courseName = ref('');
+const courseId = String(route.params.courseId);
 const team = ref<Team | null>(null);
 const invitations = ref<TeamInvitation[]>([]);
 const loading = ref(true);
