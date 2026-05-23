@@ -154,5 +154,10 @@
 - **email**: student1@example.ru
 - **password**: student123
 
+#### Учителя:
+
+- **email**: teacher1@example.ru
+- **password**: teacher123
+
 ## Дополнительная информация
 Любая информация, которую команда посчитает нужной разместить.
