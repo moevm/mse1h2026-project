@@ -25,6 +25,10 @@ describe('ExchangeService', () => {
       count: jest.fn(),
     },
 
+    teamMember: {
+      findFirst: jest.fn(),
+    },
+
     project: {
       findUnique: jest.fn(),
     },
@@ -68,14 +72,24 @@ describe('ExchangeService', () => {
   });
 
   it('returns all exchange requests', async () => {
+    const req = {
+      user: { sub: 'user-1', email: 'user-1@example.com', role: 'student' },
+    } as Request & UserPayload;
     const requests = [{ id: 'exchanges-1' }];
-    mockPrismaService.exchangeRequest.findMany.mockResolvedValue(requests);
+    const membership = { teamId: 'team-1' };
 
-    const result = await service.getAllExchangeRequests();
+    mockPrismaService.exchangeRequest.findMany.mockResolvedValue(requests);
+    mockPrismaService.teamMember.findFirst.mockResolvedValue(membership);
+
+    const result = await service.getAllExchangeRequests('course-1', req.user);
 
     expect(result).toEqual(requests);
     expect(prisma.exchangeRequest.findMany).toHaveBeenCalledWith({
-      where: {},
+      where: {
+        courseId: 'course-1',
+        OR: [{ initiatorTeamId: 'team-1' }, { targetTeamId: 'team-1' }],
+      },
+      include: expect.any(Object),
     });
   });
 
@@ -141,7 +155,7 @@ describe('ExchangeService', () => {
       status: 'pending_teacher',
     });
 
-    const result = await service.confirmRequest('request-1', req.user);
+    const result = await service.updateRequest('request-1', 'confirm', req.user);
 
     expect(result).toEqual({
       id: 'request-1',
@@ -162,7 +176,9 @@ describe('ExchangeService', () => {
     } as Request & UserPayload;
     mockPrismaService.exchangeRequest.findUnique.mockResolvedValue(null);
 
-    await expect(service.confirmRequest('missing', req.user)).rejects.toThrow(NotFoundException);
+    await expect(service.updateRequest('missing', 'confirm', req.user)).rejects.toThrow(
+      NotFoundException,
+    );
   });
 
   it('deletes exchange request', async () => {
