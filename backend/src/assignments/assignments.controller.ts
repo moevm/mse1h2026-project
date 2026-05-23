@@ -4,7 +4,7 @@ import { UserPayload } from '@/common/interfaces/user.interface';
 import { Body, Controller, Delete, Get, Param, Post, Query, Req, UseGuards } from '@nestjs/common';
 
 import { AssignmentsService } from './assignments.service';
-import { AutoAssignDto } from './dto/auto-assign.dto.ts';
+import { AutoAssignDto } from './dto/auto-assign.dto';
 import { ManuallyAssignDto } from './dto/manually-assign.dto';
 
 @Controller('api/assignments')
