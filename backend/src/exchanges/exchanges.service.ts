@@ -13,6 +13,32 @@ export class ExchangesService {
     private readonly usersService: UsersService,
   ) {}
 
+  async getRequests(courseId: string, user: UserPayload['user']) {
+    const include = {
+      initiatorTeam: { include: { members: { include: { user: true } }, leader: true } },
+      targetTeam: { include: { members: { include: { user: true } }, leader: true } },
+      initiatorProject: true,
+      targetProject: true,
+    };
+
+    if (user.role === 'admin') {
+      return this.prisma.exchangeRequest.findMany({ where: { courseId }, include });
+    }
+
+    const membership = await this.prisma.teamMember.findFirst({
+      where: { userId: user.sub, team: { courseId } },
+    });
+    if (!membership) return [];
+
+    return this.prisma.exchangeRequest.findMany({
+      where: {
+        courseId,
+        OR: [{ initiatorTeamId: membership.teamId }, { targetTeamId: membership.teamId }],
+      },
+      include,
+    });
+  }
+
   async createRequest(createRequestDto: CreateRequestDto, userId: string) {
     await this.usersService.checkTeamLeader(userId, createRequestDto.initiatorTeamId);
 
@@ -162,7 +188,50 @@ export class ExchangesService {
     return this.updateAssignments(id, user.sub);
   }
 
-  async cancelRequest(id: string, user: UserPayload['user']) {
+  private async rejectRequest(id: string, user: UserPayload['user']) {
+    const request = await this.prisma.exchangeRequest.findUnique({
+      where: { id },
+    });
+
+    if (!request) {
+      throw new NotFoundException(`Exchange request ${id} not found.`);
+    }
+
+    if (
+      request.status === 'approved' ||
+      request.status === 'rejected' ||
+      request.status === 'cancelled'
+    ) {
+      throw new BadRequestException(`Exchange request ${id} is already finalized.`);
+    }
+
+    if (user.role === 'student') {
+      await this.usersService.checkTeamLeader(user.sub, request.targetTeamId);
+    }
+
+    return this.prisma.exchangeRequest.update({
+      where: { id },
+      data: { status: 'rejected' },
+    });
+  }
+
+  async updateRequest(id: string, action: 'confirm' | 'reject', user: UserPayload['user']) {
+    if (action === 'reject') {
+      return this.rejectRequest(id, user);
+    }
+
+    if (user.role === 'student') {
+      return this.confirmRequestByTeam(id, user);
+    }
+
+    if (user.role === 'admin') {
+      return this.approveRequestByTeacher(id, user);
+    }
+
+    throw new BadRequestException('Unsupported role.');
+  }
+
+  async deleteRequest(id: string, user: UserPayload['user']) {
     const request = await this.prisma.exchangeRequest.findUnique({
       where: { id },
     });
@@ -185,24 +254,7 @@ export class ExchangesService {
 
     return this.prisma.exchangeRequest.update({
       where: { id },
-      data: {
-        status: 'cancelled',
-      },
+      data: { status: 'cancelled' },
     });
-  }
-
-  async confirmRequest(id: string, user: UserPayload['user']) {
-    if (user.role === 'student') {
-      return this.confirmRequestByTeam(id, user);
-    }
-
-    if (user.role === 'admin') {
-      return this.approveRequestByTeacher(id, user);
-    }
-    throw new BadRequestException('Unsupported role.');
-  }
-
-  async deleteRequest(id: string, user: UserPayload['user']) {
-    return this.cancelRequest(id, user);
   }
 }
