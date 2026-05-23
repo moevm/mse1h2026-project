@@ -11,6 +11,7 @@ import {
   Post,
   Put,
   Req,
+  Res,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -117,5 +118,31 @@ export class CoursesController {
     }
     const csvContent = file.buffer.toString('utf-8');
     return this.coursesService.importProjects(courseId, csvContent);
+  }
+
+  @Get(':courseId/export/students')
+  @UseGuards(CourseTeacherGuard)
+  async exportStudents(@Param('courseId') courseId: string, @Res() res) {
+    const csv = await this.coursesService.exportStudents(courseId);
+
+    res.set({
+      'Content-Type': 'text/csv',
+      'Content-Disposition': `attachment; filename="students_course_${courseId}.csv"`,
+    });
+
+    return res.send(csv);
+  }
+
+  @Get(':courseId/export/projects')
+  @UseGuards(CourseTeacherGuard)
+  async exportProjects(@Param('courseId') courseId: string, @Res() res) {
+    const csv = await this.coursesService.exportProjects(courseId);
+
+    res.set({
+      'Content-Type': 'text/csv',
+      'Content-Disposition': `attachment; filename="projects_course_${courseId}.csv"`,
+    });
+
+    return res.send(csv);
   }
 }

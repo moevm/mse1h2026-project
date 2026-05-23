@@ -286,4 +286,45 @@ export class CoursesService {
     }
     return { success: true, importedRowsCount: successCount, errors };
   }
+
+  async exportStudents(courseId: string) {
+    const teams = await this.prisma.team.findMany({
+      where: { courseId },
+      include: {
+        members: {
+          include: { user: true },
+        },
+      },
+    });
+
+    const header = '\uFEFFfirstName;secondName;email;groupNumber;ldapUid\n';
+
+    const usersMap = new Map();
+    teams.forEach((team) => {
+      team.members.forEach((m) => usersMap.set(m.user.id, m.user));
+    });
+
+    const rows = Array.from(usersMap.values())
+      .map(
+        (user) =>
+          `${user.firstName};${user.lastName || ''};${user.email};${user.groupNumber};${user.ldapUid || ''}`,
+      )
+      .join('\n');
+
+    return header + rows;
+  }
+
+  async exportProjects(courseId: string) {
+    const projects = await this.prisma.project.findMany({
+      where: { courseId },
+      include: { teacher: true },
+    });
+
+    const header = '\uFEFFtitle;description;teacherEmail\n';
+    const rows = projects
+      .map((p) => `${p.title};${p.description || ''};${p.teacher.email}`)
+      .join('\n');
+
+    return header + rows;
+  }
 }
