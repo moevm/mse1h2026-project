@@ -1,5 +1,5 @@
 import { PrismaService } from '@/prisma/prisma.service';
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
@@ -35,6 +35,33 @@ export class CoursesService {
     return course;
   }
 
+  async getCourseTeams(courseId: string) {
+    return this.prisma.team.findMany({
+      where: { courseId },
+      include: {
+        members: { include: { user: true } },
+        project: true,
+      },
+    });
+  }
+
+  async getStudentTeam(courseId: string, userId: string) {
+    const membership = await this.prisma.teamMember.findFirst({
+      where: { userId, team: { courseId } },
+      include: {
+        team: {
+          include: {
+            leader: true,
+            members: { include: { user: true } },
+            project: true,
+            invitations: { where: { status: 'pending' }, select: { id: true, inviteeId: true } },
+          },
+        },
+      },
+    });
+    return membership?.team ?? null;
+  }
+
   async getCourseExchanges(courseId: string) {
     return await this.prisma.exchangeRequest.findMany({
       where: { courseId },
@@ -44,51 +71,6 @@ export class CoursesService {
   async createCourse(createCourseDto: CreateCourseDto) {
     return this.prisma.course.create({
       data: createCourseDto,
-    });
-  }
-
-  async createTeam(courseId: string, userId: string, projectId?: string) {
-    const course = await this.prisma.course.findUnique({
-      where: { id: courseId },
-    });
-    if (!course) {
-      throw new NotFoundException(`Course ${courseId} not found.`);
-    }
-    const existingMembership = await this.prisma.teamMember.findFirst({
-      where: { userId, team: { courseId } },
-    });
-
-    if (projectId) {
-      const project = await this.prisma.project.findUnique({
-        where: { id: projectId },
-      });
-      if (!project) {
-        throw new NotFoundException(`Project ${projectId} not found`);
-      }
-      if (project.courseId !== courseId) {
-        throw new BadRequestException('Project does not belong to this course');
-      }
-    }
-
-    if (existingMembership) {
-      throw new BadRequestException('Student is already in a team.');
-    }
-    return this.prisma.$transaction(async (prisma) => {
-      const team = await this.prisma.team.create({
-        data: {
-          courseId,
-          leaderId: userId,
-          projectId: projectId ?? null,
-          status: 'forming',
-        },
-      });
-      await prisma.teamMember.create({
-        data: {
-          teamId: team.id,
-          userId: userId,
-        },
-      });
-      return team;
     });
   }
 
@@ -121,33 +103,6 @@ export class CoursesService {
       await tx.import.deleteMany({ where: { courseId: id } });
       await tx.project.deleteMany({ where: { courseId: id } });
       return tx.course.delete({ where: { id } });
-    });
-  }
-
-  async getStudentTeam(courseId: string, userId: string) {
-    const membership = await this.prisma.teamMember.findFirst({
-      where: { userId, team: { courseId } },
-      include: {
-        team: {
-          include: {
-            leader: true,
-            members: { include: { user: true } },
-            project: true,
-            invitations: { where: { status: 'pending' }, select: { id: true, inviteeId: true } },
-          },
-        },
-      },
-    });
-    return membership?.team ?? null;
-  }
-
-  async getCourseTeams(courseId: string) {
-    return this.prisma.team.findMany({
-      where: { courseId },
-      include: {
-        members: { include: { user: true } },
-        project: true,
-      },
     });
   }
 }

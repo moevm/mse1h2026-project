@@ -1,3 +1,11 @@
+export type {
+  AutoAssignPayload,
+  CreateCoursePayload,
+  CreateTeamPayload,
+  ManuallyAssignPayload,
+  UpdateCoursePayload,
+} from './payloads';
+
 export interface Course {
   id: string;
   name: string;
@@ -35,7 +43,7 @@ export interface Project {
 export interface User {
   id: string;
   firstName: string;
-  secondName: string;
+  lastName: string;
   role: 'student' | 'admin';
   email: string;
   ldapUid: string;

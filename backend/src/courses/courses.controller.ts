@@ -1,5 +1,6 @@
 import { Roles } from '@/common/decorators/roles.decorator';
 import { RolesGuard } from '@/common/guards/roles.guard';
+import { UserPayload } from '@/common/interfaces/user.interface';
 import { Body, Controller, Delete, Get, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
 
 import { CoursesService } from './courses.service';
@@ -32,6 +33,13 @@ export class CoursesController {
   }
 
   @UseGuards(RolesGuard)
+  @Roles(['student'])
+  @Get(':id/my-team')
+  getMyTeam(@Param('id') courseId: string, @Req() req: Request & UserPayload) {
+    return this.coursesService.getStudentTeam(courseId, req.user.sub);
+  }
+
+  @UseGuards(RolesGuard)
   @Roles(['admin'])
   @Get(':id/exchanges')
   findExchanges(@Param('id') id: string) {
@@ -43,20 +51,6 @@ export class CoursesController {
   @Post()
   create(@Body() createCourseDto: CreateCourseDto) {
     return this.coursesService.createCourse(createCourseDto);
-  }
-
-  @UseGuards(RolesGuard)
-  @Roles(['student'])
-  @Get(':id/my-team')
-  getMyTeam(@Param('id') courseId: string, @Req() req) {
-    return this.coursesService.getStudentTeam(courseId, req.user.sub);
-  }
-
-  @UseGuards(RolesGuard)
-  @Roles(['student'])
-  @Post(':id/teams')
-  createTeam(@Param('id') courseId: string, @Req() req, @Body() body: { projectId?: string }) {
-    return this.coursesService.createTeam(courseId, req.user.sub, body.projectId);
   }
 
   @UseGuards(RolesGuard)
