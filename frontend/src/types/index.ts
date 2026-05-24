@@ -106,7 +106,6 @@ export interface TeamInvitation {
   };
 }
 
-
 type AssignmentStatus = 'active' | 'pending_change' | 'replaced';
 
 export interface Assignment {

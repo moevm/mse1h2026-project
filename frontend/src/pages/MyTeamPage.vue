@@ -82,10 +82,20 @@
               >
                 Отменить выбор проекта
               </n-button>
-              <n-button v-if="isLeader" type="primary" :disabled="!isRegistrationOpen" @click="openInviteModal">
+              <n-button
+                v-if="isLeader"
+                type="primary"
+                :disabled="!isRegistrationOpen"
+                @click="openInviteModal"
+              >
                 Пригласить студента
               </n-button>
-              <n-button v-if="!isLeader" type="error" :disabled="!isRegistrationOpen" @click="showLeaveDialog = true">
+              <n-button
+                v-if="!isLeader"
+                type="error"
+                :disabled="!isRegistrationOpen"
+                @click="showLeaveDialog = true"
+              >
                 Покинуть команду
               </n-button>
             </n-space>
@@ -208,7 +218,7 @@ const router = useRouter();
 const notification = useNotification();
 
 const courseId = String(route.params.courseId);
-const course = ref<Course | null>(null)
+const course = ref<Course | null>(null);
 const team = ref<Team | null>(null);
 const invitations = ref<TeamInvitation[]>([]);
 const loading = ref(true);
@@ -297,7 +307,7 @@ const loadData = async () => {
       teamsApi.getMyTeam(courseId),
       invitationsApi.getMyInvitations(),
     ]);
-    course.value = courseData
+    course.value = courseData;
     team.value = teamData;
     invitations.value = invData.filter((inv) => inv.team.courseId === courseId);
   } catch (error) {
