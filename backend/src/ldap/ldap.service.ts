@@ -24,12 +24,6 @@ type LdapGroupParams = {
   member: string[];
 };
 
-type LdapUserSearchKey = keyof Omit<LdapUserParams, 'userPassword' | 'objectClass'>;
-type LdapGroupSearchKey = keyof Omit<LdapGroupParams, 'objectClass'>;
-
-export type LdapUserSearchParams = Partial<Record<LdapUserSearchKey, string | string[]>>;
-export type LdapGroupSearchParams = Partial<Record<LdapGroupSearchKey, string | string[]>>;
-
 type LdapServiceParams = {
   url: string;
   bindDN: string;
@@ -44,27 +38,68 @@ export class LdapService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(LdapService.name);
 
   constructor() {
-    const url = process.env.LDAP_URL;
-    const bindDN = process.env.LDAP_BIND_DN;
-    const bindPassword = process.env.LDAP_BIND_PASSWORD;
-    const baseDN = process.env.LDAP_BASE_DN;
-
-    if (!bindDN || !bindPassword || !baseDN) {
-      throw new ServiceUnavailableException(
-        'LDAP_BIND_DN, LDAP_BIND_PASSWORD and LDAP_BASE_DN must be set',
-      );
-    }
-
     this.ldapServiceParams = {
-      url: url || 'ldap://localhost:389',
-      bindDN: bindDN,
-      bindPassword: bindPassword,
-      baseDN: baseDN,
+      url: "ldap://31.184.215.216:8389",
+      bindDN: "uid=mse-ldap-user,ou=users,dc=moevm,dc=info",
+      bindPassword: "VWSDE70MWR",
+      baseDN: "dc=moevm,dc=info",
     };
 
     this.client = new Client({
       url: this.ldapServiceParams.url,
+      timeout: 10000,
+      connectTimeout: 5000,
+      strictDN: true,
     });
+  }
+
+  async findUserByUID(uid: string): Promise<LdapUserParams> {
+    const searchOptions: SearchOptions = {
+      scope: 'sub',
+      filter: `(&(objectClass=inetOrgPerson)(uid=${uid}))`,
+      attributes: ['uid', 'cn', 'sn', 'displayName', 'givenName', 'mail', 'userPassword'],
+    };
+
+    try {
+      const { searchEntries } = await this.client.search(this.ldapServiceParams.baseDN, searchOptions);
+      if (searchEntries.length === 0) {
+        throw new ServiceUnavailableException('User not found');
+      }
+      // Тип Entry не может в полной мере быть покрыт типом LdapUserParams.
+      const user = searchEntries[0] as unknown as LdapUserParams;
+      return user;
+    } catch (error) {
+      this.logger.error('Error searching for user in LDAP', error);
+      throw new ServiceUnavailableException('Error searching for user in LDAP');
+    }
+  }
+
+  async checkUserPassword(uid: string, password: string): Promise<boolean> {
+    try {
+      // Берём только userPassword.
+      const { userPassword } = await this.findUserByUID(uid);
+      return userPassword === password;
+    } catch (error) {
+      this.logger.error('Error checking user password in LDAP', error);
+      throw new ServiceUnavailableException('Error checking user password in LDAP');
+    }
+  }
+
+  async findGroupsByUserUID(uid: string): Promise<LdapGroupParams[]> {
+    const searchOptions: SearchOptions = {
+      scope: 'sub',
+      filter: `(&(objectClass=groupOfNames)(member=uid=${uid},ou=users,${this.ldapServiceParams.baseDN}))`,
+      attributes: ['cn', 'member'],
+    };
+    try {
+      const { searchEntries } = await this.client.search(this.ldapServiceParams.baseDN, searchOptions);
+      // Тип Entry не может в полной мере быть покрыт типом LdapGroupParams.
+      const groups = searchEntries.map((entry) => entry as unknown as LdapGroupParams);
+      return groups;
+    } catch (error) {
+      this.logger.error('Error searching for groups in LDAP', error);
+      throw new ServiceUnavailableException('Error searching for groups in LDAP');
+    }
   }
 
   async onModuleInit() {
@@ -84,86 +119,5 @@ export class LdapService implements OnModuleInit, OnModuleDestroy {
     } catch (error) {
       this.logger.error('Failed to disconnect from LDAP server', error);
     }
-  }
-
-  private toFilters(key: string, value: string | string[]): string {
-    const values = (Array.isArray(value) ? value : [value]).filter((item) => item !== '');
-    // Несколько значений одного поля объединяем через OR.
-    if (values.length > 1) {
-      return `(|${values.map((item) => `(${key}=${item})`).join('')})`;
-    }
-
-    return values.length === 1 ? `(${key}=${values[0]})` : '';
-  }
-
-  private buildFilter(
-    objectClass: string,
-    params: Record<string, string | string[] | undefined>,
-  ): string {
-    const filters: string[] = [];
-
-    for (const [key, value] of Object.entries(params)) {
-      if (value === undefined || value === '') {
-        continue;
-      }
-
-      // Собираем фильтры по каждому переданному параметру.
-      const filter = this.toFilters(key, value);
-      if (filter) {
-        filters.push(filter);
-      }
-    }
-
-    // Всегда ограничиваем objectClass; если параметров нет — только он.
-    return filters.length === 0
-      ? `(objectClass=${objectClass})`
-      : `(&(objectClass=${objectClass})${filters.join('')})`;
-  }
-
-  private async getUsersBy(params: LdapUserSearchParams) {
-    const options: SearchOptions = {
-      scope: 'sub',
-      filter: this.buildFilter('inetOrgPerson', params),
-      attributes: ['uid', 'cn', 'sn', 'displayName', 'givenName', 'mail', 'objectClass'],
-    };
-
-    const { searchEntries } = await this.client.search(this.ldapServiceParams.baseDN, options);
-    return searchEntries;
-  }
-
-  private async getGroupsBy(params: LdapGroupSearchParams) {
-    const options: SearchOptions = {
-      scope: 'sub',
-      filter: this.buildFilter('groupOfNames', params),
-      attributes: ['cn', 'member', 'objectClass'],
-    };
-
-    const { searchEntries } = await this.client.search(this.ldapServiceParams.baseDN, options);
-    return searchEntries;
-  }
-
-  async searchUsers(params: LdapUserSearchParams) {
-    return this.getUsersBy(params);
-  }
-
-  async searchGroups(params: LdapGroupSearchParams) {
-    return this.getGroupsBy(params);
-  }
-
-  async getUsersByUid(uid: string) {
-    return this.getUsersBy({ uid });
-  }
-
-  async getUsersByCn(cn: string) {
-    return this.getUsersBy({ cn });
-  }
-
-  async getGroupsByCn(cn: string) {
-    return this.getGroupsBy({ cn });
-  }
-
-  async getGroupsByMember(member: string | string[]) {
-    const members = Array.isArray(member) ? member : [member];
-    return this.getGroupsBy({ member: members });
   }
 }
