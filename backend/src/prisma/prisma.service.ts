@@ -314,7 +314,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
           id: randomUUID(),
           title: 'Автоматизация деплоя self-hosted таблиц',
           description:
-            'Набор скриптов для развeртывания и управления Grist на кафедре: автоматизация деплоя, управления пользователями, резервных копий и мониторинга. Технологии: Python, Docker Compose.',
+            'Набор скриптов для развeртывания и управления self-hosted электронными таблицами на кафедре: автоматизация деплоя, управления пользователями, связи таблиц и форм, резервных копий и мониторинга расхода ресурсов. Технологии: Python, Docker Compose.',
           courseId: courses.courseOne.id,
           teacherId: teacherOne.id,
         },
@@ -322,9 +322,79 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
       tx.project.create({
         data: {
           id: randomUUID(),
-          title: 'Замена coderunner на judge0',
+          title: 'Интерфейсы для замены coderunner на judge0',
           description:
-            'Прототип системы для использования judge0 вместо coderunner в Moodle с автоматизированным развeртыванием контейнеров и портированием задач. Технологии: Python, CodeRunner, Moodle.',
+            'Прототип системы для развeртывания и использования judge0 вместо coderunner в Moodle: внедрение judge0 как ядра проверки, портирование задач из coderunner, автоматизация развeртывания контейнеров. Технологии: Python, CodeRunner, Moodle.',
+          courseId: courses.courseOne.id,
+          teacherId: teacherOne.id,
+        },
+      }),
+      tx.project.create({
+        data: {
+          id: randomUUID(),
+          title: 'Интерфейсы LTI для judge0',
+          description:
+            'LTI-интеграция для IDE judge0: автоматизация деплоя, модуль взаимодействия с Moodle по LTI, модуль задач с параметрами (язык, время на попытку), замеры ресурсов на пользователя и запуск программы. Технологии: JS, LTI, Python, Docker.',
+          courseId: courses.courseOne.id,
+          teacherId: teacherOne.id,
+        },
+      }),
+      tx.project.create({
+        data: {
+          id: randomUUID(),
+          title: 'Бот для Rocket.Chat — новые фичи',
+          description:
+            'Разработка и внедрение новой функциональности в бот для Rocket.Chat. Репозиторий: github.com/moevm/rocket-bot.',
+          courseId: courses.courseOne.id,
+          teacherId: teacherOne.id,
+        },
+      }),
+      tx.project.create({
+        data: {
+          id: randomUUID(),
+          title: 'Прокторинг — инфраструктурные фиксы',
+          description:
+            'Инфраструктурные улучшения кодовой базы системы прокторинга: CI с линтерами для кода и Docker, поиск мертвого кода, лёгкий рефакторинг, гибкие фильтры событий (вебкамера, скринкаст, логи Moodle), внедрение модуля кластеризации. Технологии: JS, Docker Compose.',
+          courseId: courses.courseOne.id,
+          teacherId: teacherOne.id,
+        },
+      }),
+      tx.project.create({
+        data: {
+          id: randomUUID(),
+          title: 'Система управления пространствами Rocket.Chat',
+          description:
+            'Расширение функциональности rocket-administration-app: редактирование сущностей (команды, комнаты, пользователи), улучшение массовых операций, архивация каналов, улучшение UI и фильтров. Технологии: TypeScript, Python, Docker, Rocket API.',
+          courseId: courses.courseOne.id,
+          teacherId: teacherOne.id,
+        },
+      }),
+      tx.project.create({
+        data: {
+          id: randomUUID(),
+          title: 'Система кафедральных опросов — новые фичи',
+          description:
+            'Улучшение системы survey.moevm.info: сохранение и редактирование конфигурации опросов в runtime через UI, модуль анализа и визуализации данных, улучшение UI страниц, фиксы. Технологии: Python, JS, HTML, Docker.',
+          courseId: courses.courseOne.id,
+          teacherId: teacherOne.id,
+        },
+      }),
+      tx.project.create({
+        data: {
+          id: randomUUID(),
+          title: 'Веб-приложение для записи на проекты',
+          description:
+            'Веб-приложение для объединения студентов в группы и распределения по проектам: курсы как отдельные сущности, авторизация, импорт студентов и проектов, настройка параметров, визуализация результатов, автоматическое распределение, обмен проектами между командами. Технологии: JS, Docker Compose, MySQL.',
+          courseId: courses.courseOne.id,
+          teacherId: teacherOne.id,
+        },
+      }),
+      tx.project.create({
+        data: {
+          id: randomUUID(),
+          title: 'Тесты для GitHub-бота',
+          description:
+            'Покрытие кодовой базы GitHub-бота тестами: юзкейсы с mock-объектами для внешних зависимостей, рефакторинг для снижения связности компонентов, добавление юнит-тестов. Целевое покрытие ≥ 70%, время выполнения ≤ 5 мин. Технологии: Python, pytest, pytest-cov, unittest.',
           courseId: courses.courseOne.id,
           teacherId: teacherOne.id,
         },
@@ -382,10 +452,110 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
           teacherId: teacherTwo.id,
         },
       }),
+      tx.project.create({
+        data: {
+          id: randomUUID(),
+          title: 'Система записи на самостоятельную работу в комп. классе',
+          description:
+            'Приложение для записи студентов на самостоятельную работу в один из N компьютерных классов. ArangoDB, синтетические данные.',
+          courseId: courses.courseTwo.id,
+          teacherId: teacherTwo.id,
+        },
+      }),
+      tx.project.create({
+        data: {
+          id: randomUUID(),
+          title: 'БД для наблюдений за животными',
+          description:
+            'Веб-приложение для публикации наблюдений за животными: фото, видео, отметки на карте, лайки, комментарии. Neo4j, синтетические данные.',
+          courseId: courses.courseTwo.id,
+          teacherId: teacherTwo.id,
+        },
+      }),
+      tx.project.create({
+        data: {
+          id: randomUUID(),
+          title: 'ИС анализа диссертаций в открытом доступе',
+          description:
+            'Приложение для приёма текстов диссертаций и авторефератов с метаданными (vak.gisnauka.ru): парсинг структуры (введение, список литературы, главы), поиск и статистический анализ. ArangoDB.',
+          courseId: courses.courseTwo.id,
+          teacherId: teacherTwo.id,
+        },
+      }),
+      tx.project.create({
+        data: {
+          id: randomUUID(),
+          title: 'Система для распределения студентов по практикам',
+          description:
+            'ЛК-партнёра 2.0 с умными рекомендациями: навыки студентов с подтверждением, структурированные вакансии/практики, аналитика и поиск. Neo4j, данные из ЛК партнёра.',
+          courseId: courses.courseTwo.id,
+          teacherId: teacherTwo.id,
+        },
+      }),
+      tx.project.create({
+        data: {
+          id: randomUUID(),
+          title: 'Бэкенд для GPS MMORPG',
+          description:
+            'Бэкенд и база данных для GPS MMORPG в стиле Mystery Hike: геолокация, игровые объекты, маршруты, статистика. Neo4j, данные MH.',
+          courseId: courses.courseTwo.id,
+          teacherId: teacherTwo.id,
+        },
+      }),
+      tx.project.create({
+        data: {
+          id: randomUUID(),
+          title: 'ИС для бесконечных крестиков-ноликов',
+          description:
+            'Платформа для запуска пользовательских программ-ботов на бесконечном поле крестиков-ноликов: хранение решений, логов запусков, состояния поля и статистики. MongoDB, синтетические данные.',
+          courseId: courses.courseTwo.id,
+          teacherId: teacherTwo.id,
+        },
+      }),
+      tx.project.create({
+        data: {
+          id: randomUUID(),
+          title: 'Веб-приложение для дыхательных упражнений',
+          description:
+            'Каталог дыхательных упражнений с визуализацией фаз, режим выполнения упражнения, профили пользователей, комментарии, отзывы и статистика. ArangoDB.',
+          courseId: courses.courseTwo.id,
+          teacherId: teacherTwo.id,
+        },
+      }),
+      tx.project.create({
+        data: {
+          id: randomUUID(),
+          title: 'Каталог персонажей вселенной Властелина колец',
+          description:
+            'Граф-база данных по всем персонажам, предметам, эпохам и локациям вселенной ВК: поиск, аналитика, агрегация данных. Neo4j.',
+          courseId: courses.courseTwo.id,
+          teacherId: teacherTwo.id,
+        },
+      }),
+      tx.project.create({
+        data: {
+          id: randomUUID(),
+          title: 'Построитель маршрутов для раскраски карты города',
+          description:
+            'Веб-приложение на базе данных OSM и растровой карты закраски: построение оптимальных маршрутов для закраски максимальной площади минимальным числом шагов (в стиле GPS MMORPG). Neo4j.',
+          courseId: courses.courseTwo.id,
+          teacherId: teacherTwo.id,
+        },
+      }),
+      tx.project.create({
+        data: {
+          id: randomUUID(),
+          title: 'ИС для симуляции уборки снега',
+          description:
+            'Приложение с картой OSM Санкт-Петербурга: задание стоянок техники, снегоплавильных полигонов и СТО, расчёт оптимальных маршрутов с учётом пробок и ресурса техники, хранение результатов моделирования. Neo4j.',
+          courseId: courses.courseTwo.id,
+          teacherId: teacherTwo.id,
+        },
+      }),
     ]);
 
     this.logger.log(
-      'Projects prepared: 5 for course "Основы промышленной разработки ПО" and 5 for course "Введение в нереляционные базы данных".',
+      'Projects prepared: 12 for course "Основы промышленной разработки ПО" and 15 for course "Введение в нереляционные базы данных".',
     );
 
     return { courseOneProjects, courseTwoProjects };
@@ -400,44 +570,70 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
       courseTwoProjects: { id: string }[];
     },
   ) {
-    const [teamOne, teamTwo, teamThree, teamFour] = await Promise.all([
-      tx.team.create({
-        data: {
-          id: randomUUID(),
-          courseId: courses.courseOne.id,
-          leaderId: students[0].id,
-          projectId: projects.courseOneProjects[0].id,
-          status: 'assigned',
-        },
-      }),
-      tx.team.create({
-        data: {
-          id: randomUUID(),
-          courseId: courses.courseOne.id,
-          leaderId: students[5].id,
-          projectId: projects.courseOneProjects[1].id,
-          status: 'assigned',
-        },
-      }),
-      tx.team.create({
-        data: {
-          id: randomUUID(),
-          courseId: courses.courseTwo.id,
-          leaderId: students[2].id,
-          projectId: projects.courseTwoProjects[0].id,
-          status: 'assigned',
-        },
-      }),
-      tx.team.create({
-        data: {
-          id: randomUUID(),
-          courseId: courses.courseTwo.id,
-          leaderId: students[10].id,
-          projectId: projects.courseTwoProjects[1].id,
-          status: 'assigned',
-        },
-      }),
-    ]);
+    const [teamOne, teamTwo, teamThree, teamFour, teamFive, teamSix, teamSeven] = await Promise.all(
+      [
+        tx.team.create({
+          data: {
+            id: randomUUID(),
+            courseId: courses.courseOne.id,
+            leaderId: students[0].id,
+            projectId: projects.courseOneProjects[0].id,
+            status: 'assigned',
+          },
+        }),
+        tx.team.create({
+          data: {
+            id: randomUUID(),
+            courseId: courses.courseOne.id,
+            leaderId: students[5].id,
+            projectId: projects.courseOneProjects[1].id,
+            status: 'assigned',
+          },
+        }),
+        tx.team.create({
+          data: {
+            id: randomUUID(),
+            courseId: courses.courseTwo.id,
+            leaderId: students[2].id,
+            projectId: projects.courseTwoProjects[0].id,
+            status: 'assigned',
+          },
+        }),
+        tx.team.create({
+          data: {
+            id: randomUUID(),
+            courseId: courses.courseTwo.id,
+            leaderId: students[10].id,
+            projectId: projects.courseTwoProjects[1].id,
+            status: 'assigned',
+          },
+        }),
+        tx.team.create({
+          data: {
+            id: randomUUID(),
+            courseId: courses.courseOne.id,
+            leaderId: students[10].id,
+            status: 'forming',
+          },
+        }),
+        tx.team.create({
+          data: {
+            id: randomUUID(),
+            courseId: courses.courseTwo.id,
+            leaderId: students[1].id,
+            status: 'forming',
+          },
+        }),
+        tx.team.create({
+          data: {
+            id: randomUUID(),
+            courseId: courses.courseTwo.id,
+            leaderId: students[7].id,
+            status: 'forming',
+          },
+        }),
+      ],
+    );
 
     await tx.teamMember.createMany({
       data: [
@@ -462,18 +658,22 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
         { id: randomUUID(), teamId: teamFour.id, userId: students[10].id },
         { id: randomUUID(), teamId: teamFour.id, userId: students[11].id },
         { id: randomUUID(), teamId: teamFour.id, userId: students[12].id },
+        // Команда 5
+        { id: randomUUID(), teamId: teamFive.id, userId: students[10].id },
+        { id: randomUUID(), teamId: teamFive.id, userId: students[11].id },
+        { id: randomUUID(), teamId: teamFive.id, userId: students[12].id },
+        { id: randomUUID(), teamId: teamFive.id, userId: students[13].id },
+        // Команда 6
+        { id: randomUUID(), teamId: teamSix.id, userId: students[1].id },
+        { id: randomUUID(), teamId: teamSix.id, userId: students[3].id },
+        { id: randomUUID(), teamId: teamSix.id, userId: students[5].id },
+        // Команда 7
+        { id: randomUUID(), teamId: teamSeven.id, userId: students[7].id },
       ],
     });
 
     await tx.teamInvitation.createMany({
       data: [
-        {
-          id: randomUUID(),
-          teamId: teamOne.id,
-          inviteeId: students[13].id,
-          invitedBy: students[0].id,
-          status: 'pending',
-        },
         {
           id: randomUUID(),
           teamId: teamThree.id,
