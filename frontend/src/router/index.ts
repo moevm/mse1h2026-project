@@ -72,6 +72,12 @@ const routes: RouterOptions['routes'] = [
         name: 'project-edit',
         meta: { requiresAuthentication: true, requiresAdmin: true },
       },
+      {
+        path: 'profile',
+        name: 'profile',
+        component: () => import('@/pages/ProfilePage.vue'),
+        meta: { requiresAuthentication: true },
+      },
     ],
   },
 ];
