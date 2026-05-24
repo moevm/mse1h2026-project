@@ -5,9 +5,10 @@ import {
   OnModuleInit,
   ServiceUnavailableException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Client, SearchOptions } from 'ldapts';
 
-type LdapUserParams = {
+interface LdapUserParams {
   objectClass: 'inetOrgPerson';
   uid: string;
   cn: string;
@@ -16,20 +17,21 @@ type LdapUserParams = {
   givenName: string;
   mail: string;
   userPassword: string;
-};
+}
 
-type LdapGroupParams = {
+interface LdapGroupParams {
   objectClass: 'groupOfNames';
   cn: string;
   member: string[];
-};
+}
 
-type LdapServiceParams = {
+interface LdapServiceParams {
   url: string;
   bindDN: string;
   bindPassword: string;
-  baseDN: string;
-};
+  userBaseDN: string;
+  groupBaseDN: string;
+}
 
 @Injectable()
 export class LdapService implements OnModuleInit, OnModuleDestroy {
@@ -37,17 +39,23 @@ export class LdapService implements OnModuleInit, OnModuleDestroy {
   private readonly ldapServiceParams: LdapServiceParams;
   private readonly logger = new Logger(LdapService.name);
 
-  constructor() {
-    const url = process.env.LDAP_URL || 'ldap://localhost:389';
-    const bindDN = process.env.LDAP_BIND_DN || 'ou=users';
-    const bindPassword = process.env.LDAP_BIND_PASSWORD || 'mse-ldap-password';
-    const baseDN = process.env.LDAP_BASE_DN || 'dc=moevm,dc=info';
+  constructor(private readonly configService: ConfigService) {
+    const url = configService.get<string>('LDAP_URL') || 'ldap://localhost:389';
+    const bindDN = configService.get<string>('LDAP_BIND_DN') || 'ou=users';
+    const bindPassword = configService.get<string>('LDAP_BIND_PASSWORD') || 'mse-ldap-password';
+    const userBaseDN =
+      configService.get<string>('LDAP_USER_BASE_DN') ||
+      'ou=user-accounts,ou=test-zone,dc=moevm,dc=info';
+    const groupBaseDN =
+      configService.get<string>('LDAP_GROUP_BASE_DN') ||
+      'ou=user-groups,ou=test-zone,dc=moevm,dc=info';
 
     this.ldapServiceParams = {
       url: url,
       bindDN: bindDN,
       bindPassword: bindPassword,
-      baseDN: baseDN,
+      userBaseDN: userBaseDN,
+      groupBaseDN: groupBaseDN,
     };
 
     this.client = new Client({
@@ -58,34 +66,49 @@ export class LdapService implements OnModuleInit, OnModuleDestroy {
     });
   }
 
-  async findUserByUID(uid: string): Promise<LdapUserParams> {
+  /**
+   * Находит пользователя в LDAP по заданному полю и его значению.
+   * @param field Поле, по которому нужно искать пользователя (нап
+   * @throws ServiceUnavailableException Если пользователь не найден или произошла ошибка при поиске в LDAP.
+   * @param value Значение, которое нужно искать в указанном поле.
+   * @returns Список пользователей, соответствующих заданному полю и его значению.
+   */
+  async findUserBy<T extends keyof Omit<LdapUserParams, 'userPassword' | 'objectClass'>>(
+    field: T,
+    value: string,
+  ): Promise<LdapUserParams[]> {
     const searchOptions: SearchOptions = {
       scope: 'sub',
-      filter: `(&(objectClass=inetOrgPerson)(uid=${uid}))`,
+      filter: `(&(objectClass=inetOrgPerson)(${field}=${value}))`,
       attributes: ['uid', 'cn', 'sn', 'displayName', 'givenName', 'mail', 'userPassword'],
     };
 
     try {
       const { searchEntries } = await this.client.search(
-        this.ldapServiceParams.baseDN,
+        this.ldapServiceParams.userBaseDN,
         searchOptions,
       );
       if (searchEntries.length === 0) {
         throw new ServiceUnavailableException('User not found');
       }
       // Тип Entry не может в полной мере быть покрыт типом LdapUserParams.
-      const user = searchEntries[0] as unknown as LdapUserParams;
+      const user = searchEntries as unknown as LdapUserParams[];
       return user;
     } catch (error) {
-      this.logger.error('Error searching for user in LDAP', error);
-      throw new ServiceUnavailableException('Error searching for user in LDAP');
+      this.logger.error(`Error searching for user by ${field} in LDAP`, error);
+      throw new ServiceUnavailableException(`Error searching for user by ${field} in LDAP`);
     }
   }
 
-  async checkUserPassword(uid: string, password: string): Promise<boolean> {
+  /**
+   * Проверяет, соответствует ли пароль пользователя, найденного по email, переданному паролю.
+   * @param email Email пользователя, для которого нужно проверить пароль.
+   * @param password Пароль, который нужно проверить.
+   */
+  async checkUserPassword(email: string, password: string): Promise<boolean> {
     try {
-      // Берём только userPassword.
-      const { userPassword } = await this.findUserByUID(uid);
+      // Предполагается, что email уникален, поэтому берем первого пользователя из массива.
+      const { userPassword } = await this.findUserBy('mail', email)[0];
       return userPassword === password;
     } catch (error) {
       this.logger.error('Error checking user password in LDAP', error);
@@ -93,24 +116,43 @@ export class LdapService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  async findGroupsByUserUID(uid: string): Promise<LdapGroupParams[]> {
+  /**
+   * Находит группу в LDAP по заданному полю и его значению.
+   * @param field Поле, по которому нужно искать группу (например, 'cn').
+   * @param value Значение, которое нужно искать в указанном поле.
+   * @returns Список групп, соответствующих заданному полю и его значению.
+   */
+  async findGroupBy<T extends keyof Omit<LdapGroupParams, 'objectClass'>>(
+    field: T,
+    value: string,
+  ): Promise<LdapGroupParams[]> {
     const searchOptions: SearchOptions = {
       scope: 'sub',
-      filter: `(&(objectClass=groupOfNames)(member=uid=${uid},ou=users,${this.ldapServiceParams.baseDN}))`,
+      filter: `(&(objectClass=groupOfNames)(${field}=${value}))`,
       attributes: ['cn', 'member'],
     };
     try {
       const { searchEntries } = await this.client.search(
-        this.ldapServiceParams.baseDN,
+        this.ldapServiceParams.groupBaseDN,
         searchOptions,
       );
       // Тип Entry не может в полной мере быть покрыт типом LdapGroupParams.
-      const groups = searchEntries.map((entry) => entry as unknown as LdapGroupParams);
+      const groups = searchEntries as unknown as LdapGroupParams[];
       return groups;
     } catch (error) {
-      this.logger.error('Error searching for groups in LDAP', error);
-      throw new ServiceUnavailableException('Error searching for groups in LDAP');
+      this.logger.error(`Error searching for group by ${field} in LDAP`, error);
+      throw new ServiceUnavailableException(`Error searching for group by ${field} in LDAP`);
     }
+  }
+
+  /**
+   * Находит группы (института), в которых состоит пользователь, по его UID.
+   * @param uid UID пользователя, для которого нужно найти группы.
+   * @returns Список групп, в которых состоит пользователь.
+   */
+  async findGroupsByUserUID(uid: string): Promise<LdapGroupParams[]> {
+    const groups = await this.findGroupBy('member', `uid=${uid}`);
+    return groups;
   }
 
   async onModuleInit() {
