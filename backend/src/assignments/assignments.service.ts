@@ -75,7 +75,13 @@ export class AssignmentsService {
       });
 
       return prisma.assignment.create({
-        data: assignTeamDto,
+        data: {
+          projectId: assignTeamDto.projectId,
+          teamId: assignTeamDto.teamId,
+          status: assignTeamDto.status,
+          approvedBy: assignTeamDto.approvedBy,
+          approvedAt: assignTeamDto.approvedAt,
+        },
       });
     });
   }

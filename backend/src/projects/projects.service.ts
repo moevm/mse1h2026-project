@@ -5,10 +5,11 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 export class ProjectService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getAllProjects(courseId?: string) {
+  async getAllProjects(courseId?: string, onlyFree?: boolean) {
     return this.prisma.project.findMany({
       where: {
         ...(courseId ? { courseId } : {}),
+        ...(onlyFree ? { teams: { none: {} } } : {}),
       },
       include: {
         teacher: true,

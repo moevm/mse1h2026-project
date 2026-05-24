@@ -1,6 +1,17 @@
 import { Roles } from '@/common/decorators/roles.decorator';
 import { RolesGuard } from '@/common/guards/roles.guard';
-import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseBoolPipe,
+  Post,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
@@ -13,8 +24,11 @@ export class ProjectController {
   @UseGuards(RolesGuard)
   @Roles(['student', 'admin'])
   @Get()
-  findAll(@Query('courseId') courseId?: string) {
-    return this.projectsService.getAllProjects(courseId);
+  findAll(
+    @Query('courseId') courseId?: string,
+    @Query('onlyFree', new ParseBoolPipe({ optional: true })) onlyFree?: boolean,
+  ) {
+    return this.projectsService.getAllProjects(courseId, onlyFree);
   }
 
   @UseGuards(RolesGuard)
