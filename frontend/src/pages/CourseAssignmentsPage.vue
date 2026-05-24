@@ -102,11 +102,31 @@
 
             <n-list v-else bordered class="students-list">
               <n-list-item v-for="student in studentsWithoutTeam" :key="student.id">
-                <div class="member-row">
-                  <span>{{ student.firstName }} {{ student.lastName }}</span>
-                  <span v-if="student.groupNumber" class="member-group">
-                    Группа {{ student.groupNumber }}
-                  </span>
+                <div class="student-item">
+                  <div class="member-row">
+                    <span>{{ student.firstName }} {{ student.lastName }}</span>
+                    <span v-if="student.groupNumber" class="member-group">
+                      Группа {{ student.groupNumber }}
+                    </span>
+                  </div>
+                  <div class="assign-row">
+                    <n-select
+                      v-model:value="selectedTeamIds[student.id]"
+                      :options="teamOptions"
+                      filterable
+                      placeholder="Выберите команду..."
+                      class="assign-select"
+                    />
+                    <n-button
+                      type="primary"
+                      size="small"
+                      :disabled="!selectedTeamIds[student.id]"
+                      :loading="addingStudentId === student.id"
+                      @click="handleAddMember(student.id)"
+                    >
+                      Добавить
+                    </n-button>
+                  </div>
                 </div>
               </n-list-item>
             </n-list>
@@ -202,6 +222,8 @@ const loading = ref(true);
 const autoAssigning = ref(false);
 const selectedProjectIds = ref<Record<string, string | null>>({});
 const assigningTeamId = ref<string | null>(null);
+const selectedTeamIds = ref<Record<string, string | null>>({});
+const addingStudentId = ref<string | null>(null);
 
 const unassignedTeams = computed(() => teams.value.filter((t) => !t.projectId));
 const assignedTeams = computed(() => teams.value.filter((t) => !!t.projectId));
@@ -213,6 +235,15 @@ const studentsWithoutTeam = computed(() => {
 
 const availableProjectOptions = computed(() =>
   projects.value.map((p) => ({ label: p.title, value: p.id })),
+);
+
+const teamOptions = computed(() =>
+  teams.value.map((t, index) => ({
+    label: t.leader
+      ? `Команда ${index + 1} (${t.leader.firstName} ${t.leader.lastName})`
+      : `Команда ${index + 1}`,
+    value: t.id,
+  })),
 );
 
 const teamLabel = (team: Team): string => {
@@ -261,6 +292,8 @@ const translateServerError = (raw: string): string => {
     'Assignment or team already exist for given team.': 'Команда или проект уже назначены.',
     'Team is already assigned to a project.': 'Команда уже назначена на проект.',
     'Project and team courseId does not match.': 'Проект и команда принадлежат разным курсам.',
+    'Team is already full.': 'Команда уже укомплектована.',
+    'Student is already in a team.': 'Студент уже состоит в команде.',
   };
   return map[raw] ?? raw;
 };
@@ -355,6 +388,34 @@ const handleManualAssign = async (teamId: string) => {
   }
 };
 
+const handleAddMember = async (studentId: string) => {
+  const teamId = selectedTeamIds.value[studentId];
+  if (!teamId) return;
+  addingStudentId.value = studentId;
+  try {
+    await teamsApi.addMember(teamId, studentId);
+    notification.success({
+      title: 'Студент добавлен',
+      content: 'Студент успешно добавлен в команду',
+      duration: 3000,
+      keepAliveOnHover: true,
+    });
+    selectedTeamIds.value[studentId] = null;
+    await loadData();
+  } catch (error) {
+    console.error('Ошибка добавления студента в команду:', error);
+    notification.error({
+      title: 'Ошибка',
+      content: translateServerError(
+        getServerError(error, 'Не удалось добавить студента в команду'),
+      ),
+      duration: 5000,
+    });
+  } finally {
+    addingStudentId.value = null;
+  }
+};
+
 onMounted(loadData);
 </script>
 
@@ -436,11 +497,17 @@ onMounted(loadData);
   font-size: 0.85rem;
 }
 
+.student-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
 .assign-row {
   display: flex;
   gap: 8px;
   align-items: center;
-  margin-top: 12px;
 }
 
 .assign-select {
