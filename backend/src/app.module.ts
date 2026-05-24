@@ -11,6 +11,7 @@ import { ExchangesModule } from './exchanges/exchanges.module';
 import { HealthModule } from './health/health.module';
 import { HelloWorldModule } from './hello-world/hello-world.module';
 import { InvitationsModule } from './invitations/invitations.module';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { LdapModule } from './ldap/ldap.module';
 import { ProjectsModule } from './projects/projects.module';
 import { TeamsModule } from './teams/teams.module';
@@ -34,7 +35,7 @@ import { UsersModule } from './users/users.module';
     InvitationsModule,
     HealthModule,
     ExchangesModule,
-    LdapModule,
+    //LdapModule,
   ],
 })
 export class AppModule {}
