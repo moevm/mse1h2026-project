@@ -50,12 +50,50 @@
       </n-descriptions>
 
       <!-- Кнопки действий -->
-      <template v-if="userStore.isAdmin" #footer>
+      <template #footer>
         <n-space justify="end" :size="16">
-          <n-button type="error" @click="handleDeleteCourse"> Удалить </n-button>
-          <n-button type="primary" @click="handleEditCourse"> Редактировать </n-button>
+          <template v-if="userStore.isAdmin">
+            <n-button type="error" @click="handleDeleteCourse"> Удалить </n-button>
+            <n-button type="primary" @click="handleEditCourse"> Редактировать </n-button>
+          </template>
+          <n-button v-if="userStore.isAdmin" @click="handleCourseTeams"> Команды курса </n-button>
+          <n-button v-if="userStore.isStudent" @click="handleMyTeam"> Моя команда </n-button>
         </n-space>
       </template>
+    </n-card>
+
+    <!-- Карточка со списком проектов -->
+    <n-card v-if="course" class="projects-card" :bordered="true">
+      <div class="projects-container">
+        <div class="projects-list_header">
+          <h2 class="projects-list_title">Список проектов</h2>
+          <n-button v-if="userStore.isAdmin && course?.id" type="primary" @click="handleAddProject">
+            <template #icon>
+              <n-icon>
+                <AddRound />
+              </n-icon>
+            </template>
+            Добавить проект
+          </n-button>
+        </div>
+
+        <LoadingSpinner v-if="projectsLoading" text="Загрузка проектов..." />
+
+        <div v-else-if="!projects.length" class="center-wrapper">
+          <n-empty :description="emptyStateMessage" class="empty">
+            <template #icon>
+              <n-icon>
+                <SentimentDissatisfiedRound />
+              </n-icon>
+            </template>
+          </n-empty>
+        </div>
+
+        <!-- Список проектов -->
+        <div v-else class="projects-list">
+          <ProjectCard v-for="project in projects" :key="project.id" :project="project" />
+        </div>
+      </div>
     </n-card>
 
     <!-- Ошибка загрузки -->
@@ -71,6 +109,7 @@
         </n-button>
       </template>
     </n-result>
+
     <ConfirmDialog
       :show="showDialog"
       title="Подтверждение действия"
@@ -83,11 +122,13 @@
 </template>
 
 <script setup lang="ts">
-import { coursesApi, usersApi } from '@/api';
+import { coursesApi, projectsApi, usersApi } from '@/api';
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue';
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue';
+import ProjectCard from '@/components/projects/ProjectCard.vue';
 import { useUserStore } from '@/stores/userStore';
-import type { Course, User } from '@/types';
+import type { Course, Project, User } from '@/types';
+import { AddRound, SentimentDissatisfiedRound } from '@vicons/material';
 import {
   NBreadcrumb,
   NBreadcrumbItem,
@@ -95,12 +136,14 @@ import {
   NCard,
   NDescriptions,
   NDescriptionsItem,
+  NEmpty,
+  NIcon,
   NResult,
   NSpace,
   NTag,
   useNotification,
 } from 'naive-ui';
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 const userStore = useUserStore();
@@ -113,6 +156,10 @@ const loading = ref(true);
 const showDialog = ref(false);
 const teacher = ref<User | null>(null);
 
+// Состояние для проектов
+const projects = ref<Project[]>([]);
+const projectsLoading = ref(false);
+
 // Форматирование даты
 const formatDate = (date: Date): string => {
   return new Date(date).toLocaleString('ru-RU', {
@@ -122,6 +169,36 @@ const formatDate = (date: Date): string => {
     hour: '2-digit',
     minute: '2-digit',
   });
+};
+
+// Сообщение для пустого состояния
+const emptyStateMessage = computed(() => {
+  if (userStore.isAdmin) {
+    return course.value?.id
+      ? 'Нет доступных проектов для управления в этом курсе'
+      : 'Выберите курс, чтобы управлять проектами';
+  } else {
+    return 'Нет доступных активных проектов';
+  }
+});
+
+// Загрузка проектов курса
+const loadProjects = async () => {
+  if (!course.value) return;
+
+  try {
+    projectsLoading.value = true;
+    projects.value = await projectsApi.getByCourseId(course.value.id);
+  } catch (error) {
+    console.error('Ошибка загрузки проектов:', error);
+    notification.error({
+      title: 'Ошибка',
+      content: 'Не удалось загрузить проекты курса',
+      duration: 3000,
+    });
+  } finally {
+    projectsLoading.value = false;
+  }
 };
 
 // Загрузка данных курса
@@ -136,9 +213,12 @@ const loadCourse = async () => {
   try {
     loading.value = true;
     course.value = await coursesApi.getById(courseId);
-    if (course.value?.adminId) {
-      teacher.value = await usersApi.getById(course.value.adminId);
+    if (course.value?.teacherId) {
+      teacher.value = await usersApi.getById(course.value.teacherId);
     }
+
+    // Загружаем проекты после загрузки курса
+    await loadProjects();
   } catch (error) {
     console.error('Ошибка загрузки курса:', error);
     notification.error({
@@ -156,6 +236,16 @@ const handleEditCourse = () => {
   router.push(`/courses/${course.value.id}/edit`);
 };
 
+const handleMyTeam = () => {
+  if (!course.value) return;
+  router.push(`/courses/${course.value.id}/my-team`);
+};
+
+const handleCourseTeams = () => {
+  if (!course.value) return;
+  router.push(`/courses/${course.value.id}/teams`);
+};
+
 const handleDeleteCourse = () => {
   if (!course.value) return;
   showDialog.value = true;
@@ -170,7 +260,6 @@ const handleConfirmDelete = async () => {
   try {
     await coursesApi.delete(course.value.id);
 
-    // Уведомление об успехе
     notification.success({
       title: 'Курс удален',
       content: 'Курс успешно удален',
@@ -191,6 +280,11 @@ const handleConfirmDelete = async () => {
   }
 };
 
+const handleAddProject = () => {
+  if (!course.value) return;
+  router.push(`/courses/${course.value.id}/projects/create`);
+};
+
 // Загружаем данные при монтировании
 onMounted(() => {
   loadCourse();
@@ -209,7 +303,7 @@ onMounted(() => {
 }
 
 .course-card {
-  margin-top: 24px;
+  margin-block: 24px;
   box-shadow: var(--shadow);
 }
 
@@ -236,5 +330,47 @@ onMounted(() => {
   padding: 8px 0;
 }
 
-/* ToDo: Адаптивность */
+.projects-card {
+  box-shadow: var(--shadow);
+}
+
+.projects-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  font-size: 1.5rem;
+}
+
+.projects-list_header {
+  grid-row: 1;
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.projects-list_title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.center-wrapper {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 500px;
+  width: 100%;
+}
+
+.empty {
+  --n-font-size: 1.2rem !important;
+}
+
+.projects-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
 </style>

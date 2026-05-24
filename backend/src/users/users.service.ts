@@ -1,47 +1,95 @@
-import { User } from '@/common/interfaces/user.interface';
-import { mockUsers } from '@/mocks/users.mock';
-import { Injectable } from '@nestjs/common';
+import { PrismaService } from '@/prisma/prisma.service';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 
-export type UserRole = 'admin' | 'user';
+export type UserRole = 'admin' | 'student';
 
 export type UserAuth = {
-  userId: number;
+  id: string;
   email: string;
   password: string;
   role: UserRole;
 };
 
-// Переделать в данные БД
 @Injectable()
 export class UsersService {
-  private readonly users: UserAuth[] = [
-    {
-      userId: 1,
-      email: 'ivan@mail.com',
-      password: 'ivan',
-      role: 'admin',
-    },
-    {
-      userId: 2,
-      email: 'maria@mail.com',
-      password: 'maria',
-      role: 'user',
-    },
-  ];
+  constructor(private readonly prisma: PrismaService) {}
 
   async findOne(email: string): Promise<UserAuth | undefined> {
-    return this.users.find((user) => user.email === email);
+    const user = await this.prisma.user.findFirst({
+      where: { email },
+      select: {
+        id: true,
+        email: true,
+        password: true,
+        role: true,
+      },
+    });
+
+    if (!user?.password) {
+      return undefined;
+    }
+
+    return {
+      id: user.id,
+      email: user.email,
+      password: user.password,
+      role: user.role,
+    };
   }
 
-  getUserById(id: number): User | undefined {
-    return mockUsers.find((user) => user.uid === id);
+  async getAllUsers() {
+    return this.prisma.user.findMany({
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        groupNumber: true,
+        role: true,
+        ldapUid: true,
+      },
+    });
   }
 
-  getAllUsers(): User[] {
-    return mockUsers;
+  async getUserById(id: string) {
+    return this.prisma.user.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        groupNumber: true,
+        role: true,
+        ldapUid: true,
+      },
+    });
   }
 
-  getUsersByRole(role: string): User[] {
-    return mockUsers.filter((user) => user.role === role);
+  async getUsersByRole(role: UserRole) {
+    return this.prisma.user.findMany({
+      where: { role },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        groupNumber: true,
+        role: true,
+        ldapUid: true,
+      },
+    });
+  }
+
+  async checkTeamLeader(userId: string, teamId: string) {
+    const team = await this.prisma.team.findUnique({
+      where: { id: teamId },
+    });
+    if (!team) {
+      throw new NotFoundException(`Team ${teamId} not found.`);
+    }
+    if (team.leaderId !== userId) {
+      throw new ForbiddenException('You have no rights for this team.');
+    }
   }
 }

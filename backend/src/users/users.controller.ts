@@ -1,4 +1,4 @@
-import { Controller, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
+import { BadRequestException, Controller, Get, Param, ParseUUIDPipe, Query } from '@nestjs/common';
 
 import { UsersService } from './users.service';
 
@@ -8,14 +8,19 @@ export class UsersController {
 
   @Get()
   findAll(@Query('role') role?: string) {
-    if (role && (role === 'user' || role === 'admin')) {
-      return this.usersService.getUsersByRole(role);
+    if (!role) {
+      return this.usersService.getAllUsers();
     }
-    return this.usersService.getAllUsers();
+
+    if (role !== 'student' && role !== 'admin') {
+      throw new BadRequestException('Role must be one of: student, admin');
+    }
+
+    return this.usersService.getUsersByRole(role);
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
+  findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.usersService.getUserById(id);
   }
 }

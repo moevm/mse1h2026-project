@@ -3,6 +3,7 @@ import {
   IsBoolean,
   IsDate,
   IsInt,
+  IsNotEmpty,
   IsOptional,
   IsString,
   IsUUID,
@@ -11,17 +12,20 @@ import {
 } from 'class-validator';
 
 export class CreateCourseDto {
+  @IsNotEmpty()
   @IsString()
   @MaxLength(255)
-  name: string;
+  name!: string;
 
   @IsInt()
+  @IsNotEmpty()
   @Min(1)
-  maxTeamSize: number;
+  maxTeamSize!: number;
 
   @IsInt()
+  @IsNotEmpty()
   @Min(1)
-  minTeamSize: number;
+  minTeamSize!: number;
 
   @IsBoolean()
   @IsOptional()
@@ -34,5 +38,5 @@ export class CreateCourseDto {
 
   @IsOptional()
   @IsUUID()
-  teacherId: string;
+  teacherId?: string;
 }

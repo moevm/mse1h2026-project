@@ -1,7 +1,7 @@
 model User {
   id          String   @id @default(uuid())
   firstName   String   @map("first_name") @db.VarChar(255)
-  secondName  String   @map("second_name") @db.VarChar(255)
+  lastName  String   @map("second_name") @db.VarChar(255)
   ldapUid     String?  @unique @map("ldap_uid") @db.VarChar(255)
   email       String   @db.VarChar(255)
   groupNumber Int      @map("group_number")

@@ -1,4 +1,5 @@
 import { PrismaService } from '@/prisma/prisma.service';
+import { UsersService } from '@/users/users.service';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 
@@ -12,7 +13,13 @@ const mockPrismaService = {
     update: jest.fn(),
     delete: jest.fn(),
   },
+  $transaction: jest.fn(),
 };
+
+const mockUsersService = {
+  checkTeamLeader: jest.fn(),
+};
+
 describe('CoursesService', () => {
   let service: CoursesService;
 
@@ -23,6 +30,10 @@ describe('CoursesService', () => {
         {
           provide: PrismaService,
           useValue: mockPrismaService,
+        },
+        {
+          provide: UsersService,
+          useValue: mockUsersService,
         },
       ],
     }).compile();
@@ -105,13 +116,13 @@ describe('CoursesService', () => {
 
   it('should delete course', async () => {
     const course = { id: '1', name: 'Deleted Course' };
-    mockPrismaService.course.delete.mockResolvedValue(course);
+    mockPrismaService.course.findUnique.mockResolvedValue(course);
+    mockPrismaService.$transaction.mockResolvedValue(course);
 
     const result = await service.deleteCourse('1');
     expect(result).toEqual(course);
-    expect(mockPrismaService.course.delete).toHaveBeenCalledWith({
-      where: { id: course.id },
-    });
+    expect(mockPrismaService.course.findUnique).toHaveBeenCalledWith({ where: { id: '1' } });
+    expect(mockPrismaService.$transaction).toHaveBeenCalled();
   });
 
   afterEach(() => {

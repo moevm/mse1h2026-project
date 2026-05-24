@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        task: [format:check, lint, typecheck]
+        task: [format:check, lint, typecheck, test]
 
     steps:
       - name: 'Checkout Code'
@@ -30,11 +30,17 @@ jobs:
         uses: ./.github/actions/setup
 
       - name: 'Run Checks'
-        run: pnpm --filter "...[origin/main]" --filter "!mse1h2026-project" -r ${{ matrix.task }}
+        run: pnpm --filter "...[origin/main]" --filter "!mse1h2026-project" -r --if-present ${{ matrix.task }}
 
-  build:
+  deploy:
+    name: deploy (${{ matrix.target }})
     needs: [check]
     runs-on: ubuntu-24.04
+
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [local, docker]
 
     steps:
       - name: 'Checkout Code'
@@ -46,23 +52,19 @@ jobs:
         run: git fetch origin main --depth=1
 
       - name: 'Setup Project'
+        if: matrix.target == 'local'
         uses: ./.github/actions/setup
 
       - name: 'Build Project'
+        if: matrix.target == 'local'
         run: pnpm run build
 
-  docker:
-    needs: [build]
-    runs-on: ubuntu-24.04
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
       - name: Enable BuildKit
+        if: matrix.target == 'docker'
         run: |
           echo "DOCKER_BUILDKIT=1" >> $GITHUB_ENV
           echo "COMPOSE_DOCKER_CLI_BUILD=1" >> $GITHUB_ENV
 
-      - name: Build Docker images
+      - name: 'Build Docker images'
+        if: matrix.target == 'docker'
         run: docker compose build

@@ -1,9 +1,7 @@
-export interface User {
-  uid: number;
-  firstName: string;
-  lastName: string;
-  email: string;
-  role: 'student' | 'admin';
-  group?: number;
-  ldapUid: number;
+export interface UserPayload {
+  user: {
+    sub: string;
+    email: string;
+    role: string;
+  };
 }

@@ -17,6 +17,7 @@ enum RequestStatus {
   pending_teacher
   approved
   rejected
+  cancelled
 }
 
 enum InvitationStatus {

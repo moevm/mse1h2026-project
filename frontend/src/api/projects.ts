@@ -2,16 +2,22 @@ import type { Project } from '@/types';
 
 import axiosInstance from './axios';
 
-export const projectsApi = {
-  getAll: () => axiosInstance.get<Project[]>('/projects').then((res) => res.data),
+const baseEndpoint = '/projects';
 
-  getById: (id: string) => axiosInstance.get<Project>(`/projects/${id}`).then((res) => res.data),
+export const projectsApi = {
+  getAll: () => axiosInstance.get<Project[]>(baseEndpoint).then((res) => res.data),
+
+  getByCourseId: (courseId: string) =>
+    axiosInstance.get<Project[]>(`${baseEndpoint}?courseId=${courseId}`).then((res) => res.data),
+
+  getById: (id: string) =>
+    axiosInstance.get<Project>(`${baseEndpoint}/${id}`).then((res) => res.data),
 
   create: (data: Partial<Project>) =>
-    axiosInstance.post<Project>('/projects', data).then((res) => res.data),
+    axiosInstance.post<Project>(baseEndpoint, data).then((res) => res.data),
 
-  update: (id: string, data: Project) =>
-    axiosInstance.put<Project>(`/projects/${id}`, data).then((res) => res.data),
+  update: (id: string, data: Partial<Project>) =>
+    axiosInstance.put<Project>(`${baseEndpoint}/${id}`, data).then((res) => res.data),
 
-  delete: (id: string) => axiosInstance.delete(`/projects/${id}`).then((res) => res.data),
+  delete: (id: string) => axiosInstance.delete(`${baseEndpoint}/${id}`).then((res) => res.data),
 };
