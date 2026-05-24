@@ -145,15 +145,17 @@ export class LdapService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
+  /**
+   * Получает профиль пользователя вместе с названиями групп, в которых он состоит, по его email.
+   * @param email Email пользователя, для которого нужно получить профиль и группы.
+   * @returns Профиль пользователя с добавленным полем groups, содержащим массив названий групп, в которых состоит пользователь.
+   */
   async getUserProfileWithGroups(email: string) {
     try {
-      // 1. Ищем пользователя
       const [user] = await this.findUserBy('mail', email);
 
-      // 2. Ищем его группы
       const groups = await this.findGroupsByUserUID(user.uid);
 
-      // 3. Собираем удобный объект (отдаем только названия групп, без лишних DN)
       const groupNames = groups.map((group) => group.cn);
 
       return {
