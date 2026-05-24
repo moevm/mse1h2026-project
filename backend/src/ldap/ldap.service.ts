@@ -172,7 +172,10 @@ export class LdapService implements OnModuleInit, OnModuleDestroy {
    * @returns Список групп, в которых состоит пользователь.
    */
   async findGroupsByUserUID(uid: string): Promise<LdapGroupParams[]> {
-    const groups = await this.findGroupBy('member', `uid=${uid},${this.ldapServiceParams.userBaseDN}`);
+    const groups = await this.findGroupBy(
+      'member',
+      `uid=${uid},${this.ldapServiceParams.userBaseDN}`,
+    );
     return groups;
   }
 
@@ -218,7 +221,9 @@ export class LdapService implements OnModuleInit, OnModuleDestroy {
               users.push(user);
             }
           } catch {
-            this.logger.warn(`Member ${memberDn} found in group ${groupCn}, but user account is missing.`);
+            this.logger.warn(
+              `Member ${memberDn} found in group ${groupCn}, but user account is missing.`,
+            );
           }
         }
       }
