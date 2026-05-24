@@ -22,7 +22,7 @@ interface LdapUserParams {
 interface LdapGroupParams {
   objectClass: 'groupOfNames';
   cn: string;
-  member: string[];
+  member: string | string[];
 }
 
 interface LdapServiceParams {
@@ -108,8 +108,8 @@ export class LdapService implements OnModuleInit, OnModuleDestroy {
   async checkUserPassword(email: string, password: string): Promise<boolean> {
     try {
       // Предполагается, что email уникален, поэтому берем первого пользователя из массива.
-      const { userPassword } = await this.findUserBy('mail', email)[0];
-      return userPassword === password;
+      const [user] = await this.findUserBy('mail', email);
+      return password == user.userPassword;
     } catch (error) {
       this.logger.error('Error checking user password in LDAP', error);
       throw new ServiceUnavailableException('Error checking user password in LDAP');
@@ -145,14 +145,89 @@ export class LdapService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
+  async getUserProfileWithGroups(email: string) {
+    try {
+      // 1. Ищем пользователя
+      const [user] = await this.findUserBy('mail', email);
+
+      // 2. Ищем его группы
+      const groups = await this.findGroupsByUserUID(user.uid);
+
+      // 3. Собираем удобный объект (отдаем только названия групп, без лишних DN)
+      const groupNames = groups.map((group) => group.cn);
+
+      return {
+        ...user,
+        groups: groupNames,
+      };
+    } catch (error) {
+      this.logger.error(`Error fetching profile for ${email}`, error);
+      throw new ServiceUnavailableException('Failed to fetch user profile with groups');
+    }
+  }
+
   /**
    * Находит группы (института), в которых состоит пользователь, по его UID.
    * @param uid UID пользователя, для которого нужно найти группы.
    * @returns Список групп, в которых состоит пользователь.
    */
   async findGroupsByUserUID(uid: string): Promise<LdapGroupParams[]> {
-    const groups = await this.findGroupBy('member', `uid=${uid}`);
+    const groups = await this.findGroupBy('member', `uid=${uid},${this.ldapServiceParams.userBaseDN}`);
     return groups;
+  }
+
+  /**
+   * Проверяет, состоит ли пользователь в указанной группе.
+   * @param uid UID пользователя
+   * @param targetGroupCn Название группы для проверки
+   */
+  async isUserInGroup(uid: string, targetGroupCn: string): Promise<boolean> {
+    try {
+      const groups = await this.findGroupsByUserUID(uid);
+      return groups.some((group) => group.cn === targetGroupCn);
+    } catch (error) {
+      this.logger.error(`Error checking if user ${uid} is in group ${targetGroupCn}`, error);
+      return false; // В случае ошибки безопаснее вернуть false
+    }
+  }
+
+  /**
+   * Возвращает список всех пользователей (с их данными), состоящих в определенной группе.
+   * @param groupCn Название группы (например, 'group-3341')
+   */
+  async getUsersByGroup(groupCn: string): Promise<LdapUserParams[]> {
+    try {
+      const [group] = await this.findGroupBy('cn', groupCn);
+      if (!group || !group.member) {
+        return [];
+      }
+
+      // Проверяем, является ли member массивом или строкой, и приводим к массиву.
+      const members = Array.isArray(group.member) ? group.member : [group.member];
+
+      const users: LdapUserParams[] = [];
+
+      for (const memberDn of members) {
+        // Вытаскиваем uid из строки вида 'uid=student1,ou=user-accounts,...'
+        const uidMatch = memberDn.match(/uid=([^,]+)/);
+
+        if (uidMatch && uidMatch[1]) {
+          try {
+            const [user] = await this.findUserBy('uid', uidMatch[1]);
+            if (user) {
+              users.push(user);
+            }
+          } catch {
+            this.logger.warn(`Member ${memberDn} found in group ${groupCn}, but user account is missing.`);
+          }
+        }
+      }
+
+      return users;
+    } catch (error) {
+      this.logger.error(`Error fetching users for group ${groupCn}`, error);
+      throw new ServiceUnavailableException(`Error fetching users for group ${groupCn}`);
+    }
   }
 
   async onModuleInit() {
