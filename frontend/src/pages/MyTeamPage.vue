@@ -67,6 +67,20 @@
 
           <template #footer>
             <n-space justify="end">
+              <n-button
+                v-if="isLeader && canSelectProject"
+                type="success"
+                @click="openProjectModal"
+              >
+                Выбрать проект
+              </n-button>
+              <n-button 
+                v-if="isLeader && team?.projectId" 
+                type="warning" 
+                @click="handleUnselectProject"
+              >
+                Отменить выбор проекта
+              </n-button>
               <n-button v-if="isLeader" type="primary" @click="openInviteModal">
                 Пригласить студента
               </n-button>
@@ -141,15 +155,34 @@
       @confirm="handleLeaveTeam"
       @cancel="showLeaveDialog = false"
     />
+    <div v-if="showProjectModal" class="dialog-overlay" @click="closeProjectModal">
+      <div class="dialog dialog-project" @click.stop>
+        <h3>Выбрать проект</h3>
+        <n-select
+          v-model:value="selectedProjectId"
+          :options="projectOptions"
+          filterable
+          placeholder="Выберите проект..."
+          class="invite-select"
+          :loading="loadingProjects"
+        />
+        <div class="dialog-actions">
+          <n-button @click="closeProjectModal">Отмена</n-button>
+          <n-button type="primary" :disabled="!selectedProjectId" @click="handleSelectProject">
+            Выбрать
+          </n-button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { coursesApi, invitationsApi, teamsApi, usersApi } from '@/api';
+import { assignmentsApi, coursesApi, invitationsApi, projectsApi, teamsApi, usersApi } from '@/api';
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue';
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue';
 import { useUserStore } from '@/stores/userStore';
-import type { Team, TeamInvitation, User } from '@/types';
+import type { Project, Team, TeamInvitation, User } from '@/types';
 import {
   NBreadcrumb,
   NBreadcrumbItem,
@@ -175,6 +208,7 @@ const notification = useNotification();
 
 const courseId = String(route.params.courseId);
 const courseName = ref('');
+const courseMinTeamSize = ref<number | null>(null);
 const team = ref<Team | null>(null);
 const invitations = ref<TeamInvitation[]>([]);
 const loading = ref(true);
@@ -182,6 +216,10 @@ const showInviteModal = ref(false);
 const showLeaveDialog = ref(false);
 const selectedStudentId = ref<string | null>(null);
 const allStudents = ref<User[]>([]);
+const showProjectModal = ref(false);
+const selectedProjectId = ref<string | null>(null);
+const availableProjects = ref<Project[]>([]);
+const loadingProjects = ref(false);
 
 const myUserId = computed(() => (userStore.user as unknown as { id: string })?.id ?? '');
 const isLeader = computed(() => !!team.value && team.value.leaderId === myUserId.value);
@@ -232,6 +270,19 @@ const pendingInvitations = computed(() =>
   })),
 );
 
+const canSelectProject = computed(() => {
+  if (!team.value || courseMinTeamSize.value === null) return false;
+  if (team.value.projectId || team.value.project) return false;
+  return team.value.members.length >= courseMinTeamSize.value;
+});
+
+const projectOptions = computed(() => {
+  return availableProjects.value.map((p) => ({
+    label: p.title,
+    value: p.id,
+  }));
+});
+
 const loadData = async () => {
   loading.value = true;
   try {
@@ -240,6 +291,7 @@ const loadData = async () => {
       teamsApi.getMyTeam(courseId),
       invitationsApi.getMyInvitations(),
     ]);
+    courseMinTeamSize.value = courseData.minTeamSize;
     courseName.value = courseData.name;
     team.value = teamData;
     invitations.value = invData.filter((inv) => inv.team.courseId === courseId);
@@ -380,6 +432,85 @@ const handleLeaveTeam = async () => {
     });
   } finally {
     showLeaveDialog.value = false;
+  }
+};
+
+const openProjectModal = async () => {
+  selectedProjectId.value = null;
+  loadingProjects.value = true;
+  showProjectModal.value = true;
+
+  try {
+    availableProjects.value = await projectsApi.getFreeByCourseId(courseId);
+  } catch (error) {
+    console.error('Ошибка загрузки проектов:', error);
+    notification.error({
+      title: 'Ошибка',
+      content: 'Не удалось загрузить список проектов',
+      duration: 5000,
+    });
+    showProjectModal.value = false;
+  } finally {
+    loadingProjects.value = false;
+  }
+};
+
+const closeProjectModal = () => {
+  showProjectModal.value = false;
+  selectedProjectId.value = null;
+  availableProjects.value = [];
+};
+
+const handleSelectProject = async () => {
+  if (!team.value || !selectedProjectId.value) return;
+
+  try {
+    await assignmentsApi.assignTeamManually({
+      courseId: courseId,
+      projectId: selectedProjectId.value,
+      teamId: team.value.id,
+      status: 'active',
+    });
+    notification.success({
+      title: 'Проект выбран',
+      content: 'Проект успешно назначен команде',
+      duration: 3000,
+    });
+    closeProjectModal();
+    await loadData();
+  } catch (error) {
+    console.error('Ошибка выбора проекта:', error);
+    notification.error({
+      title: 'Ошибка',
+      content: error instanceof Error ? error.message : 'Не удалось выбрать проект',
+      duration: 5000,
+    });
+  }
+};
+
+const handleUnselectProject = async () => {
+  const activeAssignment = team.value?.assignments?.find(a => a.status === 'active');
+  
+  if (!activeAssignment?.id) {
+    notification.error({ title: 'Ошибка', content: 'Активный проект не выбран' });
+    return;
+  }
+  
+  try {
+    await assignmentsApi.delete(activeAssignment.id);
+    notification.success({
+      title: 'Проект отменён',
+      content: 'Выбранный проект успешно отвязан от команды',
+      duration: 3000,
+    });
+    await loadData();
+  } catch (error) {
+    console.error('Ошибка отмены проекта:', error);
+    notification.error({
+      title: 'Ошибка',
+      content: error instanceof Error ? error.message : 'Не удалось отменить проект',
+      duration: 5000,
+    });
   }
 };
 

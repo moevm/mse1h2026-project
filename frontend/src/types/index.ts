@@ -87,6 +87,7 @@ export interface Team {
   members: TeamMember[];
   project?: Project;
   invitations?: { id: string; inviteeId: string }[];
+  assignments: Assignment[];
 }
 
 export interface TeamInvitation {
@@ -105,15 +106,15 @@ export interface TeamInvitation {
   };
 }
 
+
+type AssignmentStatus = 'active' | 'pending_change' | 'replaced';
+
 export interface Assignment {
-  studentId: string;
-  studentFirstName: string;
-  studentLastName: string;
+  id: string;
   projectId: string;
-  projectName: string;
-  courseId: string;
-  courseName: string;
-  assignedAt?: Date;
-  createdAt?: Date;
-  updatedAt?: Date;
+  teamId: string;
+  assignedAt: Date;
+  status: AssignmentStatus;
+  approvedBy?: string | null;
+  approvedAt?: Date | null;
 }

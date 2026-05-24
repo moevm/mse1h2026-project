@@ -10,6 +10,11 @@ export const projectsApi = {
   getByCourseId: (courseId: string) =>
     axiosInstance.get<Project[]>(`${baseEndpoint}?courseId=${courseId}`).then((res) => res.data),
 
+  getFreeByCourseId: (courseId: string) =>
+    axiosInstance
+      .get<Project[]>(`${baseEndpoint}?courseId=${courseId}&onlyFree=true`)
+      .then((res) => res.data),
+
   getById: (id: string) =>
     axiosInstance.get<Project>(`${baseEndpoint}/${id}`).then((res) => res.data),
 
