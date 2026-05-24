@@ -38,11 +38,16 @@ export class LdapService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(LdapService.name);
 
   constructor() {
+    const url = process.env.LDAP_URL || 'ldap://localhost:389';
+    const bindDN = process.env.LDAP_BIND_DN || 'ou=users';
+    const bindPassword = process.env.LDAP_BIND_PASSWORD || 'mse-ldap-password';
+    const baseDN = process.env.LDAP_BASE_DN || 'dc=moevm,dc=info';
+
     this.ldapServiceParams = {
-      url: "ldap://31.184.215.216:8389",
-      bindDN: "uid=mse-ldap-user,ou=users,dc=moevm,dc=info",
-      bindPassword: "VWSDE70MWR",
-      baseDN: "dc=moevm,dc=info",
+      url: url,
+      bindDN: bindDN,
+      bindPassword: bindPassword,
+      baseDN: baseDN,
     };
 
     this.client = new Client({
@@ -61,7 +66,10 @@ export class LdapService implements OnModuleInit, OnModuleDestroy {
     };
 
     try {
-      const { searchEntries } = await this.client.search(this.ldapServiceParams.baseDN, searchOptions);
+      const { searchEntries } = await this.client.search(
+        this.ldapServiceParams.baseDN,
+        searchOptions,
+      );
       if (searchEntries.length === 0) {
         throw new ServiceUnavailableException('User not found');
       }
@@ -92,7 +100,10 @@ export class LdapService implements OnModuleInit, OnModuleDestroy {
       attributes: ['cn', 'member'],
     };
     try {
-      const { searchEntries } = await this.client.search(this.ldapServiceParams.baseDN, searchOptions);
+      const { searchEntries } = await this.client.search(
+        this.ldapServiceParams.baseDN,
+        searchOptions,
+      );
       // Тип Entry не может в полной мере быть покрыт типом LdapGroupParams.
       const groups = searchEntries.map((entry) => entry as unknown as LdapGroupParams);
       return groups;
