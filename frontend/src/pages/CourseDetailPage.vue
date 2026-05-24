@@ -257,7 +257,7 @@ const handleAssignments = () => {
   if (!course.value) return;
   router.push(`/courses/${course.value.id}/assignments`);
 };
-  
+
 const handleExchanges = () => {
   if (!course.value) return;
   router.push(`/courses/${course.value.id}/exchanges`);
