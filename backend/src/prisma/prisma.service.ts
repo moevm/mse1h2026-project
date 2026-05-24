@@ -54,8 +54,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
       async (tx) => {
         const users = await this.seedUsers(tx);
         const courses = await this.seedCourses(tx, users.teacherOne, users.teacherTwo);
-        const projects = await this.seedProjects(tx, courses, users.teacherOne, users.teacherTwo);
-        await this.seedTeams(tx, users.students, courses, projects);
+        await this.seedTeams(tx, users.students, courses);
       },
       { timeout: 30000 },
     );
@@ -395,10 +394,6 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
     tx: Prisma.TransactionClient,
     students: { id: string }[],
     courses: { courseOne: { id: string }; courseTwo: { id: string } },
-    projects: {
-      courseOneProjects: { id: string }[];
-      courseTwoProjects: { id: string }[];
-    },
   ) {
     const [teamOne, teamTwo, teamThree, teamFour] = await Promise.all([
       tx.team.create({
@@ -406,7 +401,6 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
           id: randomUUID(),
           courseId: courses.courseOne.id,
           leaderId: students[0].id,
-          projectId: projects.courseOneProjects[0].id,
           status: 'assigned',
         },
       }),
@@ -415,7 +409,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
           id: randomUUID(),
           courseId: courses.courseOne.id,
           leaderId: students[5].id,
-          projectId: projects.courseOneProjects[1].id,
+          // projectId удалён
           status: 'assigned',
         },
       }),
@@ -424,7 +418,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
           id: randomUUID(),
           courseId: courses.courseTwo.id,
           leaderId: students[2].id,
-          projectId: projects.courseTwoProjects[0].id,
+          // projectId удалён
           status: 'assigned',
         },
       }),
@@ -433,7 +427,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
           id: randomUUID(),
           courseId: courses.courseTwo.id,
           leaderId: students[10].id,
-          projectId: projects.courseTwoProjects[1].id,
+          // projectId удалён
           status: 'assigned',
         },
       }),
@@ -480,35 +474,6 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
           inviteeId: students[14].id,
           invitedBy: students[2].id,
           status: 'pending',
-        },
-      ],
-    });
-
-    await tx.assignment.createMany({
-      data: [
-        {
-          id: randomUUID(),
-          teamId: teamOne.id,
-          projectId: projects.courseOneProjects[0].id,
-          status: 'active',
-        },
-        {
-          id: randomUUID(),
-          teamId: teamTwo.id,
-          projectId: projects.courseOneProjects[1].id,
-          status: 'active',
-        },
-        {
-          id: randomUUID(),
-          teamId: teamThree.id,
-          projectId: projects.courseTwoProjects[0].id,
-          status: 'active',
-        },
-        {
-          id: randomUUID(),
-          teamId: teamFour.id,
-          projectId: projects.courseTwoProjects[1].id,
-          status: 'active',
         },
       ],
     });

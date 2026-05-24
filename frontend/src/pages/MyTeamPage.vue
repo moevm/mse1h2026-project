@@ -3,7 +3,7 @@
     <n-breadcrumb>
       <n-breadcrumb-item @click="router.push('/courses')">Курсы</n-breadcrumb-item>
       <n-breadcrumb-item @click="router.push(`/courses/${courseId}`)">
-        {{ courseName || 'Курс' }}
+        {{ course?.name || 'Курс' }}
       </n-breadcrumb-item>
       <n-breadcrumb-item>Моя команда</n-breadcrumb-item>
     </n-breadcrumb>
@@ -74,17 +74,18 @@
               >
                 Выбрать проект
               </n-button>
-              <n-button 
-                v-if="isLeader && team?.projectId" 
-                type="warning" 
+              <n-button
+                v-if="isLeader && team?.projectId"
+                type="warning"
+                :disabled="!isRegistrationOpen"
                 @click="handleUnselectProject"
               >
                 Отменить выбор проекта
               </n-button>
-              <n-button v-if="isLeader" type="primary" @click="openInviteModal">
+              <n-button v-if="isLeader" type="primary" :disabled="!isRegistrationOpen" @click="openInviteModal">
                 Пригласить студента
               </n-button>
-              <n-button v-if="!isLeader" type="error" @click="showLeaveDialog = true">
+              <n-button v-if="!isLeader" type="error" :disabled="!isRegistrationOpen" @click="showLeaveDialog = true">
                 Покинуть команду
               </n-button>
             </n-space>
@@ -182,7 +183,7 @@ import { assignmentsApi, coursesApi, invitationsApi, projectsApi, teamsApi, user
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue';
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue';
 import { useUserStore } from '@/stores/userStore';
-import type { Project, Team, TeamInvitation, User } from '@/types';
+import type { Course, Project, Team, TeamInvitation, User } from '@/types';
 import {
   NBreadcrumb,
   NBreadcrumbItem,
@@ -207,8 +208,7 @@ const router = useRouter();
 const notification = useNotification();
 
 const courseId = String(route.params.courseId);
-const courseName = ref('');
-const courseMinTeamSize = ref<number | null>(null);
+const course = ref<Course | null>(null)
 const team = ref<Team | null>(null);
 const invitations = ref<TeamInvitation[]>([]);
 const loading = ref(true);
@@ -271,9 +271,10 @@ const pendingInvitations = computed(() =>
 );
 
 const canSelectProject = computed(() => {
-  if (!team.value || courseMinTeamSize.value === null) return false;
+  if (!team.value || !course.value) return false;
   if (team.value.projectId || team.value.project) return false;
-  return team.value.members.length >= courseMinTeamSize.value;
+  if (!isRegistrationOpen.value) return false;
+  return team.value.members.length >= (course.value.minTeamSize ?? 0);
 });
 
 const projectOptions = computed(() => {
@@ -281,6 +282,11 @@ const projectOptions = computed(() => {
     label: p.title,
     value: p.id,
   }));
+});
+
+const isRegistrationOpen = computed(() => {
+  if (!course.value?.registrationDeadline) return true;
+  return new Date() < new Date(course.value.registrationDeadline);
 });
 
 const loadData = async () => {
@@ -291,8 +297,7 @@ const loadData = async () => {
       teamsApi.getMyTeam(courseId),
       invitationsApi.getMyInvitations(),
     ]);
-    courseMinTeamSize.value = courseData.minTeamSize;
-    courseName.value = courseData.name;
+    course.value = courseData
     team.value = teamData;
     invitations.value = invData.filter((inv) => inv.team.courseId === courseId);
   } catch (error) {
@@ -489,13 +494,13 @@ const handleSelectProject = async () => {
 };
 
 const handleUnselectProject = async () => {
-  const activeAssignment = team.value?.assignments?.find(a => a.status === 'active');
-  
+  const activeAssignment = team.value?.assignments?.find((a) => a.status === 'active');
+
   if (!activeAssignment?.id) {
     notification.error({ title: 'Ошибка', content: 'Активный проект не выбран' });
     return;
   }
-  
+
   try {
     await assignmentsApi.delete(activeAssignment.id);
     notification.success({
