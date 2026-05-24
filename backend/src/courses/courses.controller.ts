@@ -1,6 +1,7 @@
 import { Roles } from '@/common/decorators/roles.decorator';
 import { CourseTeacherGuard } from '@/common/guards/course-teacher.guard';
 import { RolesGuard } from '@/common/guards/roles.guard';
+import { UserPayload } from '@/common/interfaces/user.interface';
 import {
   BadRequestException,
   Body,
@@ -50,10 +51,17 @@ export class CoursesController {
   }
 
   @UseGuards(RolesGuard)
-  @Roles(['admin'])
+  @Roles(['student', 'admin'])
   @Get(':id/teams')
   findTeams(@Param('id') id: string) {
     return this.coursesService.getCourseTeams(id);
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(['student'])
+  @Get(':id/my-team')
+  getMyTeam(@Param('id') courseId: string, @Req() req: Request & UserPayload) {
+    return this.coursesService.getStudentTeam(courseId, req.user.sub);
   }
 
   @UseGuards(RolesGuard)
@@ -68,20 +76,6 @@ export class CoursesController {
   @Post()
   create(@Body() createCourseDto: CreateCourseDto) {
     return this.coursesService.createCourse(createCourseDto);
-  }
-
-  @UseGuards(RolesGuard)
-  @Roles(['student'])
-  @Get(':id/my-team')
-  getMyTeam(@Param('id') courseId: string, @Req() req) {
-    return this.coursesService.getStudentTeam(courseId, req.user.sub);
-  }
-
-  @UseGuards(RolesGuard)
-  @Roles(['student'])
-  @Post(':id/teams')
-  createTeam(@Param('id') courseId: string, @Req() req, @Body() body: { projectId?: string }) {
-    return this.coursesService.createTeam(courseId, req.user.sub, body.projectId);
   }
 
   @UseGuards(RolesGuard)

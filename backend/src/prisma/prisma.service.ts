@@ -54,8 +54,8 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
       async (tx) => {
         const users = await this.seedUsers(tx);
         const courses = await this.seedCourses(tx, users.teacherOne, users.teacherTwo);
-        await this.seedProjects(tx, courses, users.teacherOne, users.teacherTwo);
-        await this.seedTeams(tx, users.students, courses);
+        const projects = await this.seedProjects(tx, courses, users.teacherOne, users.teacherTwo);
+        await this.seedTeams(tx, users.students, courses, projects);
       },
       { timeout: 30000 },
     );
@@ -278,10 +278,9 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
     teacherOne: { id: string },
     teacherTwo: { id: string },
   ) {
-    await tx.project.createMany({
-      data: [
-        // Основы промышленной разработки ПО
-        {
+    const courseOneProjects = await Promise.all([
+      tx.project.create({
+        data: {
           id: randomUUID(),
           title: 'Помощник преподавателя на лабах',
           description:
@@ -289,7 +288,9 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
           courseId: courses.courseOne.id,
           teacherId: teacherOne.id,
         },
-        {
+      }),
+      tx.project.create({
+        data: {
           id: randomUUID(),
           title: 'Новые периферийные устройства в RIPES',
           description:
@@ -297,7 +298,9 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
           courseId: courses.courseOne.id,
           teacherId: teacherOne.id,
         },
-        {
+      }),
+      tx.project.create({
+        data: {
           id: randomUUID(),
           title: 'Генератор лабораторных по программированию',
           description:
@@ -305,7 +308,9 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
           courseId: courses.courseOne.id,
           teacherId: teacherOne.id,
         },
-        {
+      }),
+      tx.project.create({
+        data: {
           id: randomUUID(),
           title: 'Автоматизация деплоя self-hosted таблиц',
           description:
@@ -313,7 +318,9 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
           courseId: courses.courseOne.id,
           teacherId: teacherOne.id,
         },
-        {
+      }),
+      tx.project.create({
+        data: {
           id: randomUUID(),
           title: 'Замена coderunner на judge0',
           description:
@@ -321,8 +328,12 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
           courseId: courses.courseOne.id,
           teacherId: teacherOne.id,
         },
-        // Введение в нереляционные базы данных
-        {
+      }),
+    ]);
+
+    const courseTwoProjects = await Promise.all([
+      tx.project.create({
+        data: {
           id: randomUUID(),
           title: 'ИС для театральных декораций',
           description:
@@ -330,7 +341,9 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
           courseId: courses.courseTwo.id,
           teacherId: teacherTwo.id,
         },
-        {
+      }),
+      tx.project.create({
+        data: {
           id: randomUUID(),
           title: 'БД актeров',
           description:
@@ -338,7 +351,9 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
           courseId: courses.courseTwo.id,
           teacherId: teacherTwo.id,
         },
-        {
+      }),
+      tx.project.create({
+        data: {
           id: randomUUID(),
           title: 'ИС для ателье',
           description:
@@ -346,7 +361,9 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
           courseId: courses.courseTwo.id,
           teacherId: teacherTwo.id,
         },
-        {
+      }),
+      tx.project.create({
+        data: {
           id: randomUUID(),
           title: 'Хранилище изображений с CRUD',
           description:
@@ -354,7 +371,9 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
           courseId: courses.courseTwo.id,
           teacherId: teacherTwo.id,
         },
-        {
+      }),
+      tx.project.create({
+        data: {
           id: randomUUID(),
           title: 'БД биометрии СКУД для университета',
           description:
@@ -362,27 +381,33 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
           courseId: courses.courseTwo.id,
           teacherId: teacherTwo.id,
         },
-      ],
-    });
+      }),
+    ]);
 
     this.logger.log(
       'Projects prepared: 5 for course "Основы промышленной разработки ПО" and 5 for course "Введение в нереляционные базы данных".',
     );
+
+    return { courseOneProjects, courseTwoProjects };
   }
 
   private async seedTeams(
     tx: Prisma.TransactionClient,
     students: { id: string }[],
     courses: { courseOne: { id: string }; courseTwo: { id: string } },
+    projects: {
+      courseOneProjects: { id: string }[];
+      courseTwoProjects: { id: string }[];
+    },
   ) {
     const [teamOne, teamTwo, teamThree, teamFour] = await Promise.all([
-      // Основы промышленной разработки ПО
       tx.team.create({
         data: {
           id: randomUUID(),
           courseId: courses.courseOne.id,
           leaderId: students[0].id,
-          status: 'forming',
+          projectId: projects.courseOneProjects[0].id,
+          status: 'assigned',
         },
       }),
       tx.team.create({
@@ -390,16 +415,17 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
           id: randomUUID(),
           courseId: courses.courseOne.id,
           leaderId: students[5].id,
-          status: 'forming',
+          projectId: projects.courseOneProjects[1].id,
+          status: 'assigned',
         },
       }),
-      // Введение в нереляционные базы данных
       tx.team.create({
         data: {
           id: randomUUID(),
           courseId: courses.courseTwo.id,
           leaderId: students[2].id,
-          status: 'forming',
+          projectId: projects.courseTwoProjects[0].id,
+          status: 'assigned',
         },
       }),
       tx.team.create({
@@ -407,7 +433,8 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
           id: randomUUID(),
           courseId: courses.courseTwo.id,
           leaderId: students[10].id,
-          status: 'forming',
+          projectId: projects.courseTwoProjects[1].id,
+          status: 'assigned',
         },
       }),
     ]);
@@ -453,6 +480,35 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
           inviteeId: students[14].id,
           invitedBy: students[2].id,
           status: 'pending',
+        },
+      ],
+    });
+
+    await tx.assignment.createMany({
+      data: [
+        {
+          id: randomUUID(),
+          teamId: teamOne.id,
+          projectId: projects.courseOneProjects[0].id,
+          status: 'active',
+        },
+        {
+          id: randomUUID(),
+          teamId: teamTwo.id,
+          projectId: projects.courseOneProjects[1].id,
+          status: 'active',
+        },
+        {
+          id: randomUUID(),
+          teamId: teamThree.id,
+          projectId: projects.courseTwoProjects[0].id,
+          status: 'active',
+        },
+        {
+          id: randomUUID(),
+          teamId: teamFour.id,
+          projectId: projects.courseTwoProjects[1].id,
+          status: 'active',
         },
       ],
     });

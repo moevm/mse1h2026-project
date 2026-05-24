@@ -24,7 +24,7 @@
       <n-descriptions label-placement="left" bordered :column="1" class="project-info">
         <n-descriptions-item label="Преподаватель">
           <div class="info-item">
-            <span>{{ project.teacher.firstName }} {{ project.teacher.secondName }}</span>
+            <span>{{ project.teacher.firstName }} {{ project.teacher.lastName }}</span>
           </div>
         </n-descriptions-item>
 

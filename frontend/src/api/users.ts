@@ -3,33 +3,27 @@ import type { User } from '@/types';
 
 import axiosInstance from './axios';
 
-export interface GetUsersParams {
-  role?: 'student' | 'admin';
-}
+const baseEndpoint = '/users';
 
 export const usersApi = {
   // Получить всех пользователей или отфильтровать по роли
-  getUsers: async (params?: GetUsersParams): Promise<User[]> => {
-    let url = '/users';
-
-    if (params?.role) {
-      url += `?role=${params.role}`;
-    }
-
-    const response = await axiosInstance.get<User[]>(url);
+  getUsers: async (role?: 'student' | 'admin'): Promise<User[]> => {
+    const response = await axiosInstance.get<User[]>(baseEndpoint, {
+      params: role ? { role } : undefined,
+    });
     return response.data;
   },
 
   getAdmins: async (): Promise<User[]> => {
-    return usersApi.getUsers({ role: 'admin' });
+    return usersApi.getUsers('admin');
   },
 
   getStudents: async (): Promise<User[]> => {
-    return usersApi.getUsers({ role: 'student' });
+    return usersApi.getUsers('student');
   },
 
   getById: async (id: string): Promise<User> => {
-    const response = await axiosInstance.get<User>(`/users/${id}`);
+    const response = await axiosInstance.get<User>(`${baseEndpoint}/${id}`);
     return response.data;
   },
 };
