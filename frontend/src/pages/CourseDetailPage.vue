@@ -60,6 +60,7 @@
           <n-button v-if="userStore.isAdmin" @click="handleAssignments">
             Распределение проектов
           </n-button>
+          <n-button @click="handleExchanges"> Запросы на обмен </n-button>
           <n-button v-if="userStore.isStudent" @click="handleMyTeam"> Моя команда </n-button>
           <n-button v-if="userStore.isStudent" @click="handleAssignments">
             Распределение проектов
@@ -255,6 +256,11 @@ const handleCourseTeams = () => {
 const handleAssignments = () => {
   if (!course.value) return;
   router.push(`/courses/${course.value.id}/assignments`);
+};
+  
+const handleExchanges = () => {
+  if (!course.value) return;
+  router.push(`/courses/${course.value.id}/exchanges`);
 };
 
 const handleDeleteCourse = () => {

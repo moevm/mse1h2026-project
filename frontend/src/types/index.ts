@@ -105,6 +105,31 @@ export interface TeamInvitation {
   };
 }
 
+export type ExchangeRequestStatus =
+  | 'confirmed_initiator'
+  | 'confirmed_target'
+  | 'pending_teacher'
+  | 'approved'
+  | 'rejected'
+  | 'cancelled';
+
+export interface ExchangeRequest {
+  id: string;
+  courseId: string;
+  initiatorTeamId: string;
+  targetTeamId: string;
+  initiatorProjectId: string;
+  targetProjectId: string;
+  status: ExchangeRequestStatus;
+  approvedBy?: string;
+  approvedAt?: Date;
+  createdAt: Date;
+  initiatorTeam?: Team;
+  targetTeam?: Team;
+  initiatorProject?: Project;
+  targetProject?: Project;
+}
+
 export interface Assignment {
   studentId: string;
   studentFirstName: string;
