@@ -54,6 +54,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
       async (tx) => {
         const users = await this.seedUsers(tx);
         const courses = await this.seedCourses(tx, users.teacherOne, users.teacherTwo);
+        await this.seedProjects(tx, courses, users.teacherOne, users.teacherTwo);
         await this.seedTeams(tx, users.students, courses);
       },
       { timeout: 30000 },
