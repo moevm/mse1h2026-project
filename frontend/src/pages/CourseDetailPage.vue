@@ -57,7 +57,13 @@
             <n-button type="primary" @click="handleEditCourse"> Редактировать </n-button>
           </template>
           <n-button v-if="userStore.isAdmin" @click="handleCourseTeams"> Команды курса </n-button>
+          <n-button v-if="userStore.isAdmin" @click="handleAssignments">
+            Распределение проектов
+          </n-button>
           <n-button v-if="userStore.isStudent" @click="handleMyTeam"> Моя команда </n-button>
+          <n-button v-if="userStore.isStudent" @click="handleAssignments">
+            Распределение проектов
+          </n-button>
         </n-space>
       </template>
     </n-card>
@@ -244,6 +250,11 @@ const handleMyTeam = () => {
 const handleCourseTeams = () => {
   if (!course.value) return;
   router.push(`/courses/${course.value.id}/teams`);
+};
+
+const handleAssignments = () => {
+  if (!course.value) return;
+  router.push(`/courses/${course.value.id}/assignments`);
 };
 
 const handleDeleteCourse = () => {
