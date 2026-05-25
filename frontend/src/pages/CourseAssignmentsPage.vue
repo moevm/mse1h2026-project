@@ -321,8 +321,14 @@ const studentsWithoutTeam = computed(() => {
   return allStudents.value.filter((s) => !memberIds.has(s.id));
 });
 
+const assignedProjectIds = computed(
+  () => new Set(teams.value.map((t) => t.projectId).filter(Boolean)),
+);
+
 const availableProjectOptions = computed(() =>
-  projects.value.map((p) => ({ label: p.title, value: p.id })),
+  projects.value
+    .filter((p) => !assignedProjectIds.value.has(p.id))
+    .map((p) => ({ label: p.title, value: p.id })),
 );
 
 const teamOptions = computed(() =>
