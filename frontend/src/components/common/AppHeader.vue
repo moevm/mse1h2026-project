@@ -5,11 +5,6 @@
     </nav>
 
     <div v-if="userStore.isAuthenticated" class="user-menu">
-      <router-link to="/notifications" class="icon-link">
-        <n-icon size="42" color="white" class="hover-scale">
-          <NotificationsFilled />
-        </n-icon>
-      </router-link>
       <n-dropdown
         trigger="click"
         :options="menuOptions"
@@ -26,7 +21,7 @@
 
 <script setup lang="ts">
 import { useUserStore } from '@/stores/userStore';
-import { AccountCircleOutlined, NotificationsFilled } from '@vicons/material';
+import { AccountCircleOutlined } from '@vicons/material';
 import { NDropdown, NIcon } from 'naive-ui';
 import { useRouter } from 'vue-router';
 
@@ -37,10 +32,6 @@ const menuOptions = [
   {
     label: 'Профиль',
     key: 'profile',
-  },
-  {
-    label: 'Мои курсы',
-    key: 'courses',
   },
   {
     label: 'Выйти',

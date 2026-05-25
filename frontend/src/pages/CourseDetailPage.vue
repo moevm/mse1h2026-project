@@ -49,22 +49,29 @@
         </n-descriptions-item>
       </n-descriptions>
 
-      <!-- Кнопки действий -->
       <template #footer>
         <n-space justify="end" :size="16">
           <template v-if="userStore.isAdmin">
-            <n-button type="error" @click="handleDeleteCourse"> Удалить </n-button>
-            <n-button type="primary" @click="handleEditCourse"> Редактировать </n-button>
+            <n-button @click="handleCourseTeams">Команды курса</n-button>
+            <n-button @click="handleExchanges">Запросы на обмен</n-button>
+            <n-button @click="handleAssignments">Распределение проектов</n-button>
+
+            <n-dropdown trigger="click" :options="adminActionOptions" @select="handleAdminAction">
+              <n-button type="primary">
+                Действия
+                <template #icon>
+                  <n-icon>
+                    <ArrowDropDownOutlined />
+                  </n-icon>
+                </template>
+              </n-button>
+            </n-dropdown>
           </template>
-          <n-button v-if="userStore.isAdmin" @click="handleCourseTeams"> Команды курса </n-button>
-          <n-button v-if="userStore.isAdmin" @click="handleAssignments">
-            Распределение проектов
-          </n-button>
-          <n-button @click="handleExchanges"> Запросы на обмен </n-button>
-          <n-button v-if="userStore.isStudent" @click="handleMyTeam"> Моя команда </n-button>
-          <n-button v-if="userStore.isStudent" @click="handleAssignments">
-            Распределение проектов
-          </n-button>
+
+          <template v-else-if="userStore.isStudent">
+            <n-button @click="handleMyTeam">Моя команда</n-button>
+            <n-button @click="handleExchanges">Запросы на обмен</n-button>
+          </template>
         </n-space>
       </template>
     </n-card>
@@ -126,6 +133,34 @@
       @cancel="closeDialog"
     />
   </div>
+  <n-modal
+    v-model:show="showImportStudentsModal"
+    preset="card"
+    title="Импорт студентов"
+    class="import-modal"
+    style="width: 500px"
+  >
+    <n-upload :custom-request="handleImportStudents" accept=".csv" :max="1">
+      <n-button>Загрузить CSV файл</n-button>
+    </n-upload>
+    <template #action>
+      <n-button @click="showImportStudentsModal = false">Закрыть</n-button>
+    </template>
+  </n-modal>
+
+  <n-modal
+    v-model:show="showImportProjectsModal"
+    preset="card"
+    title="Импорт проектов"
+    style="width: 500px"
+  >
+    <n-upload :custom-request="handleImportProjects" accept=".csv" :max="1">
+      <n-button>Загрузить CSV файл</n-button>
+    </n-upload>
+    <template #action>
+      <n-button @click="showImportProjectsModal = false">Закрыть</n-button>
+    </template>
+  </n-modal>
 </template>
 
 <script setup lang="ts">
@@ -135,7 +170,7 @@ import LoadingSpinner from '@/components/common/LoadingSpinner.vue';
 import ProjectCard from '@/components/projects/ProjectCard.vue';
 import { useUserStore } from '@/stores/userStore';
 import type { Course, Project, User } from '@/types';
-import { AddRound, SentimentDissatisfiedRound } from '@vicons/material';
+import { AddRound, ArrowDropDownOutlined, SentimentDissatisfiedRound } from '@vicons/material';
 import {
   NBreadcrumb,
   NBreadcrumbItem,
@@ -143,13 +178,17 @@ import {
   NCard,
   NDescriptions,
   NDescriptionsItem,
+  NDropdown,
   NEmpty,
   NIcon,
+  NModal,
   NResult,
   NSpace,
   NTag,
+  NUpload,
   useNotification,
 } from 'naive-ui';
+import type { UploadCustomRequestOptions } from 'naive-ui';
 import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
@@ -163,9 +202,65 @@ const loading = ref(true);
 const showDialog = ref(false);
 const teacher = ref<User | null>(null);
 
-// Состояние для проектов
 const projects = ref<Project[]>([]);
 const projectsLoading = ref(false);
+
+const showImportStudentsModal = ref(false);
+const showImportProjectsModal = ref(false);
+
+const adminActionOptions = [
+  {
+    label: 'Редактировать курс',
+    key: 'edit',
+  },
+  {
+    label: 'Импорт студентов',
+    key: 'import-students',
+  },
+  {
+    label: 'Импорт проектов',
+    key: 'import-projects',
+  },
+  {
+    label: 'Экспорт студентов',
+    key: 'export-students',
+  },
+  {
+    label: 'Экспорт проектов',
+    key: 'export-projects',
+  },
+  {
+    label: 'Удалить курс',
+    key: 'delete',
+    props: {
+      style: { color: 'red' },
+    },
+  },
+];
+
+// Обработчик выбора действия
+const handleAdminAction = async (key: string) => {
+  switch (key) {
+    case 'edit':
+      handleEditCourse();
+      break;
+    case 'import-students':
+      showImportStudentsModal.value = true;
+      break;
+    case 'import-projects':
+      showImportProjectsModal.value = true;
+      break;
+    case 'export-students':
+      await handleExportStudents();
+      break;
+    case 'export-projects':
+      await handleExportProjects();
+      break;
+    case 'delete':
+      handleDeleteCourse();
+      break;
+  }
+};
 
 // Форматирование даты
 const formatDate = (date: Date): string => {
@@ -294,6 +389,126 @@ const handleConfirmDelete = async () => {
     });
   } finally {
     closeDialog();
+  }
+};
+
+const handleExportStudents = async () => {
+  if (!course.value) return;
+
+  try {
+    const blob = await coursesApi.exportStudents(course.value.id);
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `students_course_${course.value.id}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    notification.success({
+      title: 'Успешно',
+      content: 'Экспорт студентов прошел успешно',
+      duration: 3000,
+    });
+  } catch (error) {
+    console.error('Ошибка экспорта студентов:', error);
+    notification.error({
+      title: 'Ошибка',
+      content: 'Не удалось экспортировать студентов',
+      duration: 5000,
+    });
+  }
+};
+
+// Экспорт проектов
+const handleExportProjects = async () => {
+  if (!course.value) return;
+
+  try {
+    const blob = await coursesApi.exportProjects(course.value.id);
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `projects_course_${course.value.id}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    notification.success({
+      title: 'Успешно',
+      content: 'Экспорт проектов прошел успешно',
+      duration: 3000,
+    });
+  } catch (error) {
+    console.error('Ошибка экспорта проектов:', error);
+    notification.error({
+      title: 'Ошибка',
+      content: 'Не удалось экспортировать проекты',
+      duration: 5000,
+    });
+  }
+};
+
+// Импорт студентов
+const handleImportStudents = async (options: UploadCustomRequestOptions) => {
+  const uploadFile = options.file;
+  let file: File;
+
+  if (uploadFile.file instanceof File) {
+    file = uploadFile.file;
+  } else {
+    file = uploadFile as unknown as File;
+  }
+  if (!course.value) return;
+
+  try {
+    await coursesApi.importStudents(course.value.id, file);
+    notification.success({
+      title: 'Успешно',
+      content: 'Студенты успешно импортированы',
+      duration: 3000,
+    });
+    showImportStudentsModal.value = false;
+  } catch (error) {
+    console.error('Ошибка импорта студентов:', error);
+    notification.error({
+      title: 'Ошибка',
+      content: 'Не удалось импортировать студентов',
+      duration: 5000,
+    });
+  }
+};
+
+// Импорт проектов
+const handleImportProjects = async (options: UploadCustomRequestOptions) => {
+  const uploadFile = options.file;
+  let file: File;
+
+  if (uploadFile.file instanceof File) {
+    file = uploadFile.file;
+  } else {
+    file = uploadFile as unknown as File;
+  }
+  if (!course.value) return;
+
+  try {
+    await coursesApi.importProjects(course.value.id, file);
+    notification.success({
+      title: 'Успешно',
+      content: 'Проекты успешно импортированы',
+      duration: 3000,
+    });
+    showImportProjectsModal.value = false;
+    await loadProjects();
+  } catch (error) {
+    console.error('Ошибка импорта проектов:', error);
+    notification.error({
+      title: 'Ошибка',
+      content: 'Не удалось импортировать проекты',
+      duration: 5000,
+    });
   }
 };
 
