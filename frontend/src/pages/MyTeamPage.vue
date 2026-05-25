@@ -238,7 +238,15 @@
 </template>
 
 <script setup lang="ts">
-import { assignmentsApi, exchangesApi, coursesApi, invitationsApi, projectsApi, teamsApi, usersApi } from '@/api';
+import {
+  assignmentsApi,
+  coursesApi,
+  exchangesApi,
+  invitationsApi,
+  projectsApi,
+  teamsApi,
+  usersApi,
+} from '@/api';
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue';
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue';
 import { useUserStore } from '@/stores/userStore';
@@ -583,7 +591,7 @@ const handleUnselectProject = async () => {
       duration: 5000,
     });
   }
-}
+};
 
 const getTeamLeaderName = (t: Team) => {
   const leader = t.members.find((m) => m.userId === t.leaderId);
