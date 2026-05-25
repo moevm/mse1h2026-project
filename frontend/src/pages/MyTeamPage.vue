@@ -88,6 +88,13 @@
                 :disabled="!isRegistrationOpen"
                 @click="openInviteModal"
               >
+              <n-button @click="router.push(`/courses/${courseId}/exchanges`)">
+                Запросы на обмен
+              </n-button>
+              <n-button v-if="isLeader && team.project" type="warning" @click="openExchangeModal">
+                Предложить обмен
+              </n-button>
+              <n-button v-if="isLeader" type="primary" @click="openInviteModal">
                 Пригласить студента
               </n-button>
               <n-button
@@ -158,6 +165,49 @@
       </div>
     </div>
 
+    <div v-if="showExchangeModal" class="dialog-overlay" @click="closeExchangeModal">
+      <div class="dialog exchange-dialog" @click.stop>
+        <h3>Предложить обмен проектами</h3>
+        <p v-if="team?.project" class="exchange-own-project">
+          Ваш проект: <strong>{{ team.project.title }}</strong>
+        </p>
+        <div v-if="exchangeLoadingTeams" class="exchange-loading">Загрузка команд...</div>
+        <div v-else-if="teamsWithProjects.length === 0" class="exchange-empty">
+          Нет других команд с назначенным проектом
+        </div>
+        <n-list v-else bordered class="exchange-team-list">
+          <n-list-item
+            v-for="t in teamsWithProjects"
+            :key="t.id"
+            class="exchange-team-item"
+            :class="{ selected: selectedExchangeTeamId === t.id }"
+            @click="selectedExchangeTeamId = t.id"
+          >
+            <div class="exchange-team-row">
+              <div>
+                <div class="exchange-team-leader">
+                  {{ getTeamLeaderName(t) }}
+                </div>
+                <div class="exchange-team-project">{{ t.project!.title }}</div>
+              </div>
+              <n-radio :checked="selectedExchangeTeamId === t.id" />
+            </div>
+          </n-list-item>
+        </n-list>
+        <div class="dialog-actions">
+          <n-button @click="closeExchangeModal">Отмена</n-button>
+          <n-button
+            type="primary"
+            :disabled="!selectedExchangeTeamId"
+            :loading="exchangeSubmitting"
+            @click="handleProposeExchange"
+          >
+            Отправить запрос
+          </n-button>
+        </div>
+      </div>
+    </div>
+
     <ConfirmDialog
       :show="showLeaveDialog"
       title="Покинуть команду"
@@ -189,7 +239,7 @@
 </template>
 
 <script setup lang="ts">
-import { assignmentsApi, coursesApi, invitationsApi, projectsApi, teamsApi, usersApi } from '@/api';
+import { assignmentsApi, exchangesApi, coursesApi, invitationsApi, projectsApi, teamsApi, usersApi } from '@/api';
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue';
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue';
 import { useUserStore } from '@/stores/userStore';
@@ -204,6 +254,7 @@ import {
   NEmpty,
   NList,
   NListItem,
+  NRadio,
   NSelect,
   NSpace,
   NTag,
@@ -230,6 +281,12 @@ const showProjectModal = ref(false);
 const selectedProjectId = ref<string | null>(null);
 const availableProjects = ref<Project[]>([]);
 const loadingProjects = ref(false);
+
+const showExchangeModal = ref(false);
+const exchangeLoadingTeams = ref(false);
+const exchangeSubmitting = ref(false);
+const selectedExchangeTeamId = ref<string | null>(null);
+const teamsWithProjects = ref<Team[]>([]);
 
 const myUserId = computed(() => (userStore.user as unknown as { id: string })?.id ?? '');
 const isLeader = computed(() => !!team.value && team.value.leaderId === myUserId.value);
@@ -526,6 +583,63 @@ const handleUnselectProject = async () => {
       content: error instanceof Error ? error.message : 'Не удалось отменить проект',
       duration: 5000,
     });
+const getTeamLeaderName = (t: Team) => {
+  const leader = t.members.find((m) => m.userId === t.leaderId);
+  if (leader) return `${leader.user.firstName} ${leader.user.lastName}`;
+  return 'Лидер не назначен';
+};
+
+const openExchangeModal = async () => {
+  selectedExchangeTeamId.value = null;
+  showExchangeModal.value = true;
+  exchangeLoadingTeams.value = true;
+  try {
+    const all = await teamsApi.getCourseTeams(courseId);
+    teamsWithProjects.value = all.filter((t) => t.project && t.id !== team.value?.id);
+  } catch {
+    notification.error({
+      title: 'Ошибка',
+      content: 'Не удалось загрузить команды',
+      duration: 4000,
+    });
+  } finally {
+    exchangeLoadingTeams.value = false;
+  }
+};
+
+const closeExchangeModal = () => {
+  showExchangeModal.value = false;
+  selectedExchangeTeamId.value = null;
+};
+
+const handleProposeExchange = async () => {
+  if (!team.value?.project || !selectedExchangeTeamId.value) return;
+  const targetTeam = teamsWithProjects.value.find((t) => t.id === selectedExchangeTeamId.value);
+  if (!targetTeam?.project) return;
+
+  exchangeSubmitting.value = true;
+  try {
+    await exchangesApi.createRequest({
+      courseId,
+      initiatorTeamId: team.value.id,
+      targetTeamId: targetTeam.id,
+      initiatorProjectId: team.value.project.id,
+      targetProjectId: targetTeam.project.id,
+    });
+    notification.success({
+      title: 'Запрос отправлен',
+      content: 'Запрос на обмен создан',
+      duration: 3000,
+    });
+    closeExchangeModal();
+  } catch (error) {
+    notification.error({
+      title: 'Ошибка',
+      content: error instanceof Error ? error.message : 'Не удалось отправить запрос',
+      duration: 5000,
+    });
+  } finally {
+    exchangeSubmitting.value = false;
   }
 };
 
@@ -655,5 +769,52 @@ onMounted(async () => {
   justify-content: flex-end;
   gap: 12px;
   margin-top: 20px;
+}
+
+.exchange-dialog {
+  min-width: 480px;
+  max-width: 600px;
+}
+
+.exchange-own-project {
+  margin: 8px 0 16px;
+}
+
+.exchange-loading,
+.exchange-empty {
+  padding: 16px 0;
+  text-align: center;
+}
+
+.exchange-team-list {
+  margin-top: 12px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.exchange-team-item {
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.exchange-team-item.selected {
+  background: var(--secondary-color);
+}
+
+.exchange-team-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  gap: 12px;
+}
+
+.exchange-team-leader {
+  font-weight: 500;
+}
+
+.exchange-team-project {
+  font-size: 0.85rem;
+  margin-top: 2px;
 }
 </style>
