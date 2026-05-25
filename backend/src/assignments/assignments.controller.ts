@@ -28,8 +28,8 @@ export class AssignmentsController {
   @UseGuards(RolesGuard)
   @Roles(['admin'])
   @Post('auto')
-  assignTeamAutomatically(@Body() autoAssignDto: AutoAssignDto) {
-    const ids = this.assignmentsService.assignTeamAutomatically(autoAssignDto.courseId);
+  async assignTeamAutomatically(@Body() autoAssignDto: AutoAssignDto) {
+    const ids = await this.assignmentsService.assignTeamAutomatically(autoAssignDto.courseId);
     return { message: 'Teams assigned to projects successfully.', assignedTeamIds: ids };
   }
 

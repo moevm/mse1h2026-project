@@ -4,6 +4,7 @@ import { UserPayload } from '@/common/interfaces/user.interface';
 import { Body, Controller, Delete, Get, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 
+import { AddMemberDto } from './dto/add-member.dto';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { CreateInvitationDto } from './dto/create-invitation.dto';
 import { UpdateLeaderDto } from './dto/update-leader.dto';
@@ -57,7 +58,14 @@ export class TeamsController {
   }
 
   @UseGuards(RolesGuard)
-  @Roles(['student'])
+  @Roles(['admin'])
+  @Post(':id/members')
+  addMember(@Param('id') teamId: string, @Body() addMemberDto: AddMemberDto) {
+    return this.teamsService.addMember(teamId, addMemberDto.userId);
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(['student', 'admin'])
   @Delete(':teamId/members/:userId')
   deleteMember(
     @Param('teamId') teamId: string,

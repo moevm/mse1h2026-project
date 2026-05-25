@@ -155,7 +155,9 @@ export class TeamsService {
     if (!team) {
       throw new NotFoundException(`Team ${teamId} not found.`);
     }
-    await this.usersService.checkTeamLeader(user.sub, teamId);
+    if (user.role !== 'admin') {
+      await this.usersService.checkTeamLeader(user.sub, teamId);
+    }
     const newLeaderId = updateLeaderDto.leaderId;
 
     const isMember = team.members.some((member) => member.userId === newLeaderId);
@@ -223,6 +225,28 @@ export class TeamsService {
       return prisma.team.delete({
         where: { id: teamId },
       });
+    });
+  }
+
+  async addMember(teamId: string, userId: string) {
+    const team = await this.prisma.team.findUnique({
+      where: { id: teamId },
+      include: { course: true, members: true },
+    });
+    if (!team) {
+      throw new NotFoundException(`Team ${teamId} not found.`);
+    }
+    if (team.members.length >= team.course.maxTeamSize) {
+      throw new BadRequestException('Team is already full.');
+    }
+    const existingMembership = await this.prisma.teamMember.findFirst({
+      where: { userId, team: { courseId: team.courseId } },
+    });
+    if (existingMembership) {
+      throw new BadRequestException('Student is already in a team.');
+    }
+    return this.prisma.teamMember.create({
+      data: { teamId, userId },
     });
   }
 

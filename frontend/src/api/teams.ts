@@ -21,4 +21,10 @@ export const teamsApi = {
 
   leaveTeam: (teamId: string, userId: string) =>
     axiosInstance.delete(`${baseEndpoint}/${teamId}/members/${userId}`).then((res) => res.data),
+
+  addMember: (teamId: string, userId: string) =>
+    axiosInstance.post(`${baseEndpoint}/${teamId}/members`, { userId }).then((res) => res.data),
+
+  updateLeader: (teamId: string, leaderId: string) =>
+    axiosInstance.put(`${baseEndpoint}/${teamId}`, { leaderId }).then((res) => res.data),
 };
