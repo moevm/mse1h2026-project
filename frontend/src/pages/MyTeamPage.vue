@@ -76,7 +76,7 @@
               </n-button>
               <n-button
                 v-if="isLeader && team?.projectId"
-                type="warning"
+                type="error"
                 :disabled="!isRegistrationOpen"
                 @click="handleUnselectProject"
               >
@@ -88,14 +88,13 @@
                 :disabled="!isRegistrationOpen"
                 @click="openInviteModal"
               >
+                Пригласить студента
+              </n-button>
               <n-button @click="router.push(`/courses/${courseId}/exchanges`)">
                 Запросы на обмен
               </n-button>
               <n-button v-if="isLeader && team.project" type="warning" @click="openExchangeModal">
                 Предложить обмен
-              </n-button>
-              <n-button v-if="isLeader" type="primary" @click="openInviteModal">
-                Пригласить студента
               </n-button>
               <n-button
                 v-if="!isLeader"
@@ -583,6 +582,9 @@ const handleUnselectProject = async () => {
       content: error instanceof Error ? error.message : 'Не удалось отменить проект',
       duration: 5000,
     });
+  }
+}
+
 const getTeamLeaderName = (t: Team) => {
   const leader = t.members.find((m) => m.userId === t.leaderId);
   if (leader) return `${leader.user.firstName} ${leader.user.lastName}`;
