@@ -43,7 +43,7 @@ describe('ProjectController', () => {
     const result = await controller.findAll();
 
     expect(result).toEqual(projects);
-    expect(service.getAllProjects).toHaveBeenCalledWith(undefined);
+    expect(service.getAllProjects).toHaveBeenCalledWith(undefined, undefined);
   });
 
   it('returns all projects for a course', async () => {
@@ -53,7 +53,7 @@ describe('ProjectController', () => {
     const result = await controller.findAll('course-1');
 
     expect(result).toEqual(projects);
-    expect(service.getAllProjects).toHaveBeenCalledWith('course-1');
+    expect(service.getAllProjects).toHaveBeenCalledWith('course-1', undefined);
   });
 
   it('returns project by id', async () => {

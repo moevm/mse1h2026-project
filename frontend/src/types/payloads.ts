@@ -3,7 +3,7 @@ export interface CreateTeamPayload {
   projectId?: string;
 }
 
-type AssignmentStatus = 'active' | 'pending_change' | 'replaced';
+export type AssignmentStatus = 'active' | 'pending_change' | 'replaced';
 
 export interface CreateCoursePayload {
   name: string;

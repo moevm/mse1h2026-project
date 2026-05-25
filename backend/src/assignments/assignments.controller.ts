@@ -34,7 +34,7 @@ export class AssignmentsController {
   }
 
   @UseGuards(RolesGuard)
-  @Roles(['admin'])
+  @Roles(['student', 'admin'])
   @Delete(':id')
   delete(@Param('id') id: string) {
     return this.assignmentsService.deleteAssignment(id);
