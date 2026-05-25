@@ -55,13 +55,9 @@
           <template v-if="userStore.isAdmin">
             <n-button @click="handleCourseTeams"> Команды курса </n-button>
             <n-button @click="handleExchanges"> Запросы на обмен </n-button>
-            
+
             <!-- Выпадающий список действий -->
-            <n-dropdown
-              trigger="click"
-              :options="adminActionOptions"
-              @select="handleAdminAction"
-            >
+            <n-dropdown trigger="click" :options="adminActionOptions" @select="handleAdminAction">
               <n-button type="primary">
                 Действия
                 <template #icon>
@@ -78,7 +74,6 @@
           </template>
         </n-space>
       </template>
-
     </n-card>
 
     <!-- Карточка со списком проектов -->
@@ -139,11 +134,7 @@
     />
   </div>
   <n-modal v-model:show="showImportStudentsModal" preset="card" title="Импорт студентов">
-    <n-upload
-      :custom-request="handleImportStudents"
-      accept=".csv"
-      :max="1"
-    >
+    <n-upload :custom-request="handleImportStudents" accept=".csv" :max="1">
       <n-button>Загрузить CSV файл</n-button>
     </n-upload>
     <template #action>
@@ -152,11 +143,7 @@
   </n-modal>
 
   <n-modal v-model:show="showImportProjectsModal" preset="card" title="Импорт проектов">
-    <n-upload
-      :custom-request="handleImportProjects"
-      accept=".csv"
-      :max="1"
-    >
+    <n-upload :custom-request="handleImportProjects" accept=".csv" :max="1">
       <n-button>Загрузить CSV файл</n-button>
     </n-upload>
     <template #action>
@@ -172,7 +159,7 @@ import LoadingSpinner from '@/components/common/LoadingSpinner.vue';
 import ProjectCard from '@/components/projects/ProjectCard.vue';
 import { useUserStore } from '@/stores/userStore';
 import type { Course, Project, User } from '@/types';
-import { AddRound, SentimentDissatisfiedRound, ArrowDropDownOutlined } from '@vicons/material';
+import { AddRound, ArrowDropDownOutlined, SentimentDissatisfiedRound } from '@vicons/material';
 import {
   NBreadcrumb,
   NBreadcrumbItem,
@@ -180,14 +167,14 @@ import {
   NCard,
   NDescriptions,
   NDescriptionsItem,
+  NDropdown,
   NEmpty,
   NIcon,
   NResult,
   NSpace,
   NTag,
-  useNotification,
-  NDropdown,
   NUpload,
+  useNotification,
 } from 'naive-ui';
 import type { UploadCustomRequestOptions } from 'naive-ui';
 import { computed, onMounted, ref } from 'vue';
@@ -390,7 +377,7 @@ const handleConfirmDelete = async () => {
 
 const handleExportStudents = async () => {
   if (!course.value) return;
-  
+
   try {
     const blob = await coursesApi.exportStudents(course.value.id);
     const url = URL.createObjectURL(blob);
@@ -401,7 +388,7 @@ const handleExportStudents = async () => {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
-    
+
     notification.success({
       title: 'Успешно',
       content: 'Экспорт студентов начат',
@@ -420,7 +407,7 @@ const handleExportStudents = async () => {
 // Экспорт проектов
 const handleExportProjects = async () => {
   if (!course.value) return;
-  
+
   try {
     const blob = await coursesApi.exportProjects(course.value.id);
     const url = URL.createObjectURL(blob);
@@ -431,7 +418,7 @@ const handleExportProjects = async () => {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
-    
+
     notification.success({
       title: 'Успешно',
       content: 'Экспорт проектов начат',
@@ -451,14 +438,14 @@ const handleExportProjects = async () => {
 const handleImportStudents = async (options: UploadCustomRequestOptions) => {
   const uploadFile = options.file;
   let file: File;
-  
+
   if (uploadFile.file instanceof File) {
     file = uploadFile.file;
   } else {
     file = uploadFile as unknown as File;
   }
   if (!course.value) return;
-  
+
   try {
     await coursesApi.importStudents(course.value.id, file);
     notification.success({
@@ -481,14 +468,14 @@ const handleImportStudents = async (options: UploadCustomRequestOptions) => {
 const handleImportProjects = async (options: UploadCustomRequestOptions) => {
   const uploadFile = options.file;
   let file: File;
-  
+
   if (uploadFile.file instanceof File) {
     file = uploadFile.file;
   } else {
     file = uploadFile as unknown as File;
   }
   if (!course.value) return;
-  
+
   try {
     await coursesApi.importProjects(course.value.id, file);
     notification.success({
@@ -507,7 +494,6 @@ const handleImportProjects = async (options: UploadCustomRequestOptions) => {
     });
   }
 };
-
 
 const handleAddProject = () => {
   if (!course.value) return;
@@ -621,5 +607,4 @@ onMounted(() => {
   gap: 12px;
   margin-top: 24px;
 }
-
 </style>

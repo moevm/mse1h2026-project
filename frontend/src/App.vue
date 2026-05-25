@@ -2,9 +2,9 @@
 import {
   type GlobalThemeOverrides,
   NConfigProvider,
+  NDialogProvider,
   NGlobalStyle,
   NNotificationProvider,
-  NDialogProvider,
   dateRuRU,
   ruRU,
 } from 'naive-ui';

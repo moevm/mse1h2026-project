@@ -30,17 +30,21 @@ export const coursesApi = {
   importStudents: (courseId: string, file: File) => {
     const formData = new FormData();
     formData.append('file', file);
-    return axiosInstance.post(`${baseEndpoint}/${courseId}/import/students`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    }).then((res) => res.data);
+    return axiosInstance
+      .post(`${baseEndpoint}/${courseId}/import/students`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      })
+      .then((res) => res.data);
   },
 
   importProjects: (courseId: string, file: File) => {
     const formData = new FormData();
     formData.append('file', file);
-    return axiosInstance.post(`${baseEndpoint}/${courseId}/import/projects`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    }).then((res) => res.data);
+    return axiosInstance
+      .post(`${baseEndpoint}/${courseId}/import/projects`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      })
+      .then((res) => res.data);
   },
 
   exportStudents: async (courseId: string): Promise<Blob> => {
