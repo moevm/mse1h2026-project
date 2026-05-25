@@ -2,6 +2,7 @@
 import {
   type GlobalThemeOverrides,
   NConfigProvider,
+  NDialogProvider,
   NGlobalStyle,
   NNotificationProvider,
   dateRuRU,
@@ -26,8 +27,10 @@ const themeOverrides: GlobalThemeOverrides = {
   <n-config-provider :locale="ruRU" :date-locale="dateRuRU" :theme-overrides="themeOverrides">
     <!-- Провайдер уведомлений -->
     <n-notification-provider>
-      <router-view />
-      <n-global-style />
+      <n-dialog-provider>
+        <router-view />
+        <n-global-style />
+      </n-dialog-provider>
     </n-notification-provider>
   </n-config-provider>
 </template>

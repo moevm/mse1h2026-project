@@ -24,4 +24,7 @@ export const teamsApi = {
 
   addMember: (teamId: string, userId: string) =>
     axiosInstance.post(`${baseEndpoint}/${teamId}/members`, { userId }).then((res) => res.data),
+
+  updateLeader: (teamId: string, leaderId: string) =>
+    axiosInstance.put(`${baseEndpoint}/${teamId}`, { leaderId }).then((res) => res.data),
 };

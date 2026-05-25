@@ -56,9 +56,51 @@
                   <n-list-item v-for="member in team.members" :key="member.id">
                     <div class="member-row">
                       <span>{{ member.user.firstName }} {{ member.user.lastName }}</span>
-                      <n-tag v-if="member.userId === team.leaderId" size="small" type="info">
-                        Лидер
-                      </n-tag>
+                      <div class="member-actions">
+                        <n-tag v-if="member.userId === team.leaderId" size="small" type="info">
+                          Лидер
+                        </n-tag>
+                        <n-tooltip v-if="userStore.isAdmin && member.userId !== team.leaderId">
+                          <template #trigger>
+                            <n-button
+                              size="tiny"
+                              type="warning"
+                              secondary
+                              :loading="promotingMemberId === member.userId"
+                              @click="
+                                handleUpdateLeader(
+                                  team.id,
+                                  member.userId,
+                                  `${member.user.firstName} ${member.user.lastName}`,
+                                )
+                              "
+                            >
+                              <template #icon>
+                                <n-icon><StarRound /></n-icon>
+                              </template>
+                            </n-button>
+                          </template>
+                          Назначить лидером
+                        </n-tooltip>
+                        <n-button
+                          v-if="userStore.isAdmin"
+                          size="tiny"
+                          type="error"
+                          secondary
+                          :loading="removingMemberId === member.userId"
+                          @click="
+                            handleRemoveMember(
+                              team.id,
+                              member.userId,
+                              `${member.user.firstName} ${member.user.lastName}`,
+                            )
+                          "
+                        >
+                          <template #icon>
+                            <n-icon><PersonRemoveAlt1Round /></n-icon>
+                          </template>
+                        </n-button>
+                      </div>
                     </div>
                   </n-list-item>
                 </n-list>
@@ -170,6 +212,47 @@
                     <n-tag v-if="member.userId === team.leaderId" size="small" type="info">
                       Лидер
                     </n-tag>
+                    <div v-if="userStore.isAdmin" class="member-actions">
+                      <n-tooltip v-if="member.userId !== team.leaderId">
+                        <template #trigger>
+                          <n-button
+                            size="tiny"
+                            type="warning"
+                            secondary
+                            :loading="promotingMemberId === member.userId"
+                            @click="
+                              handleUpdateLeader(
+                                team.id,
+                                member.userId,
+                                `${member.user.firstName} ${member.user.lastName}`,
+                              )
+                            "
+                          >
+                            <template #icon>
+                              <n-icon><StarRound /></n-icon>
+                            </template>
+                          </n-button>
+                        </template>
+                        Назначить лидером
+                      </n-tooltip>
+                      <n-button
+                        size="tiny"
+                        type="error"
+                        secondary
+                        :loading="removingMemberId === member.userId"
+                        @click="
+                          handleRemoveMember(
+                            team.id,
+                            member.userId,
+                            `${member.user.firstName} ${member.user.lastName}`,
+                          )
+                        "
+                      >
+                        <template #icon>
+                          <n-icon><PersonRemoveAlt1Round /></n-icon>
+                        </template>
+                      </n-button>
+                    </div>
                   </div>
                 </div>
               </td>
@@ -187,7 +270,7 @@ import { assignmentsApi, coursesApi, projectsApi, teamsApi, usersApi } from '@/a
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue';
 import { useUserStore } from '@/stores/userStore';
 import type { Project, Team, TeamStatus, User } from '@/types';
-import { AutorenewRound } from '@vicons/material';
+import { AutorenewRound, PersonRemoveAlt1Round, StarRound } from '@vicons/material';
 import {
   NBadge,
   NBreadcrumb,
@@ -203,6 +286,8 @@ import {
   NSelect,
   NTable,
   NTag,
+  NTooltip,
+  useDialog,
   useNotification,
 } from 'naive-ui';
 import { computed, onMounted, ref } from 'vue';
@@ -212,6 +297,7 @@ const userStore = useUserStore();
 const route = useRoute();
 const router = useRouter();
 const notification = useNotification();
+const dialog = useDialog();
 
 const courseId = String(route.params.courseId);
 const courseName = ref('');
@@ -224,6 +310,8 @@ const selectedProjectIds = ref<Record<string, string | null>>({});
 const assigningTeamId = ref<string | null>(null);
 const selectedTeamIds = ref<Record<string, string | null>>({});
 const addingStudentId = ref<string | null>(null);
+const removingMemberId = ref<string | null>(null);
+const promotingMemberId = ref<string | null>(null);
 
 const unassignedTeams = computed(() => teams.value.filter((t) => !t.projectId));
 const assignedTeams = computed(() => teams.value.filter((t) => !!t.projectId));
@@ -294,6 +382,8 @@ const translateServerError = (raw: string): string => {
     'Project and team courseId does not match.': 'Проект и команда принадлежат разным курсам.',
     'Team is already full.': 'Команда уже укомплектована.',
     'Student is already in a team.': 'Студент уже состоит в команде.',
+    'Leader cannot be removed from team.':
+      'Нельзя удалить лидера из команды. Переназначьте другого участника лидером, чтобы удалить этого.',
   };
   return map[raw] ?? raw;
 };
@@ -414,6 +504,70 @@ const handleAddMember = async (studentId: string) => {
   } finally {
     addingStudentId.value = null;
   }
+};
+
+const handleUpdateLeader = (teamId: string, userId: string, memberName: string) => {
+  dialog.warning({
+    title: 'Сменить лидера',
+    content: `Назначить «${memberName}» лидером команды?`,
+    positiveText: 'Назначить',
+    negativeText: 'Отмена',
+    onPositiveClick: async () => {
+      promotingMemberId.value = userId;
+      try {
+        await teamsApi.updateLeader(teamId, userId);
+        notification.success({
+          title: 'Лидер изменён',
+          content: `${memberName} назначен лидером команды`,
+          duration: 3000,
+          keepAliveOnHover: true,
+        });
+        await loadData();
+      } catch (error) {
+        console.error('Ошибка смены лидера:', error);
+        notification.error({
+          title: 'Ошибка',
+          content: translateServerError(getServerError(error, 'Не удалось сменить лидера')),
+          duration: 5000,
+        });
+      } finally {
+        promotingMemberId.value = null;
+      }
+    },
+  });
+};
+
+const handleRemoveMember = (teamId: string, userId: string, memberName: string) => {
+  dialog.warning({
+    title: 'Удалить участника',
+    content: `Вы уверены, что хотите удалить «${memberName}» из команды?`,
+    positiveText: 'Удалить',
+    negativeText: 'Отмена',
+    onPositiveClick: async () => {
+      removingMemberId.value = userId;
+      try {
+        await teamsApi.leaveTeam(teamId, userId);
+        notification.success({
+          title: 'Участник удалён',
+          content: `${memberName} успешно удалён из команды`,
+          duration: 3000,
+          keepAliveOnHover: true,
+        });
+        await loadData();
+      } catch (error) {
+        console.error('Ошибка удаления участника:', error);
+        notification.error({
+          title: 'Ошибка',
+          content: translateServerError(
+            getServerError(error, 'Не удалось удалить участника из команды'),
+          ),
+          duration: 5000,
+        });
+      } finally {
+        removingMemberId.value = null;
+      }
+    },
+  });
 };
 
 onMounted(loadData);
@@ -543,6 +697,13 @@ onMounted(loadData);
   align-items: center;
   gap: 6px;
   font-size: 0.9rem;
+}
+
+.member-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
 }
 
 .project-cell {
