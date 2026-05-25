@@ -11,6 +11,9 @@
     - [Переменные окружения](#переменные-окружения)
   - [Проверка работоспособности](#проверка-работоспособности)
     - [Отладочные роли](#отладочные-роли)
+      - [Администратор:](#администратор)
+      - [Студенты:](#студенты)
+      - [Учителя:](#учителя)
   - [Дополнительная информация](#дополнительная-информация)
 
 ## Установка и запуск
@@ -45,6 +48,8 @@
   cp .env.example .env
   ```
 
+- [Пока игнорируйте всё, что с ним связано] Параметры для LDAP подключения необходимо попросить у Иванова Дмитрия Владимировича, так как нельзя публиковать эти данные в открытом доступе.
+
 ### Запуск Docker Compose (production)
 
 - Введите в `.env` значения для инициализации и запуска `MySQL` контейнера:
@@ -56,6 +61,14 @@
   MYSQL_PASSWORD=<your_mysql_user_password>
   MYSQL_HOST=db
   MYSQL_PORT=3306
+
+  LDAP_URL=ldap://<mse_ldap_url>
+  LDAP_BIND_DN=<mse_ldap_bind_dn>
+  LDAP_BIND_PASSWORD=<mse_ldap_bind_password>
+  LDAP_USER_BASE_DN=<mse_ldap_user_base_dn>
+
+  LDAP_USER_BASE_DN=ou=user-accounts,ou=test-zone,dc=moevm,dc=info
+  LDAP_GROUP_BASE_DN=ou=user-groups,ou=test-zone,dc=moevm,dc=info
 
   JWT_SECRET=<your_jwt_secret>
   ```
@@ -98,15 +111,23 @@
   MYSQL_HOST=localhost
   MYSQL_PORT=3306
 
+  LDAP_URL=ldap://<mse_ldap_url>
+  LDAP_BIND_DN=<mse_ldap_bind_dn>
+  LDAP_BIND_PASSWORD=<mse_ldap_bind_password>
+  LDAP_USER_BASE_DN=<mse_ldap_user_base_dn>
+
+  LDAP_USER_BASE_DN=ou=user-accounts,ou=test-zone,dc=moevm,dc=info
+  LDAP_GROUP_BASE_DN=ou=user-groups,ou=test-zone,dc=moevm,dc=info
+
   JWT_SECRET=<your_jwt_secret>
   ```
 
 - Запустите проект вместе с БД (Docker):
 
-    ```bash
-    docker compose up --build -d db
-    pnpm dev
-    ```
+  ```bash
+  docker compose up --build -d db
+  pnpm dev
+  ```
   
 - Смотри раздел **[Проверка работоспособности](#проверка-работоспособности)**
 - Если у вас локальная БД, то необходимо настроить пользователя или использовать данные пользователя root.
@@ -126,6 +147,14 @@
 
   - `DATABASE_URL` - URL для подключения к базе данных в формате `mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DATABASE}`. Нужна исключительно для генерации миграций.
   - `JWT_SECRET` - секрет для генерации JWT токенов (может быть любым строковым значением, но рекомендуется использовать сложную строку для безопасности).
+
+- ldap:
+
+  - `LDAP_URL` - URL для подключения к LDAP серверу
+  - `LDAP_BIND_DN` - DN для привязки к LDAP серверу
+  - `LDAP_BIND_PASSWORD` - пароль для привязки к LDAP серверу
+  - `LDAP_USER_BASE_DN` - базовый DN для поиска пользователей в LDAP
+  - `LDAP_GROUP_BASE_DN` - базовый DN для поиска групп в LDAP
 
 - frontend:
   - `VITE_API_BASE_URL` - базовый URL для API запросов с фронтенда (например, `http://127.0.0.1:3000/api`)
