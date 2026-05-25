@@ -133,7 +133,7 @@
       @cancel="closeDialog"
     />
   </div>
-  <n-modal v-model:show="showImportStudentsModal" preset="card" title="Импорт студентов">
+  <n-modal v-model:show="showImportStudentsModal" preset="card" title="Импорт студентов" class="import-modal" style="width: 500px;">
     <n-upload :custom-request="handleImportStudents" accept=".csv" :max="1">
       <n-button>Загрузить CSV файл</n-button>
     </n-upload>
@@ -142,7 +142,7 @@
     </template>
   </n-modal>
 
-  <n-modal v-model:show="showImportProjectsModal" preset="card" title="Импорт проектов">
+  <n-modal v-model:show="showImportProjectsModal" preset="card" title="Импорт проектов" style="width: 500px;" >
     <n-upload :custom-request="handleImportProjects" accept=".csv" :max="1">
       <n-button>Загрузить CSV файл</n-button>
     </n-upload>
@@ -175,6 +175,7 @@ import {
   NTag,
   NUpload,
   useNotification,
+  NModal
 } from 'naive-ui';
 import type { UploadCustomRequestOptions } from 'naive-ui';
 import { computed, onMounted, ref } from 'vue';
@@ -589,22 +590,6 @@ onMounted(() => {
   gap: 15px;
 }
 
-.import-modal-content {
-  padding: 16px 0;
-}
 
-.selected-file {
-  margin-top: 12px;
-  padding: 8px;
-  background-color: #f5f5f5;
-  border-radius: 4px;
-  font-size: 14px;
-}
 
-.dialog-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  margin-top: 24px;
-}
 </style>
