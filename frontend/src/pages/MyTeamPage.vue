@@ -251,6 +251,7 @@ import ConfirmDialog from '@/components/common/ConfirmDialog.vue';
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue';
 import { useUserStore } from '@/stores/userStore';
 import type { Course, Project, Team, TeamInvitation, User } from '@/types';
+import axios from 'axios';
 import {
   NBreadcrumb,
   NBreadcrumbItem,
@@ -436,11 +437,18 @@ const handleInvite = async () => {
     await loadData();
   } catch (error) {
     console.error('Ошибка отправки приглашения:', error);
-    notification.error({
-      title: 'Ошибка',
-      content: error instanceof Error ? error.message : 'Не удалось отправить приглашение',
-      duration: 5000,
-    });
+    const status = axios.isAxiosError(error) ? error.response?.status : undefined;
+    let content = axios.isAxiosError(error)
+      ? (error.response?.data?.message ?? 'Не удалось отправить приглашение')
+      : error instanceof Error
+        ? error.message
+        : 'Не удалось отправить приглашение';
+    if (status === 409) {
+      content = 'Приглашение этому студенту уже отправлено';
+    } else if (status === 400) {
+      content = 'Команда уже заполнена — нельзя отправить приглашение';
+    }
+    notification.error({ title: 'Ошибка', content, duration: 5000 });
   }
 };
 
@@ -455,11 +463,17 @@ const handleAcceptInvitation = async (invitationId: string) => {
     await loadData();
   } catch (error) {
     console.error('Ошибка принятия приглашения:', error);
-    notification.error({
-      title: 'Ошибка',
-      content: error instanceof Error ? error.message : 'Не удалось принять приглашение',
-      duration: 5000,
-    });
+    const status = axios.isAxiosError(error) ? error.response?.status : undefined;
+    let content = axios.isAxiosError(error)
+      ? (error.response?.data?.message ?? 'Не удалось принять приглашение')
+      : error instanceof Error
+        ? error.message
+        : 'Не удалось принять приглашение';
+    if (status === 400) {
+      content = 'Команда уже заполнена — вступление невозможно';
+    }
+    notification.error({ title: 'Ошибка', content, duration: 5000 });
+    await loadData();
   }
 };
 
@@ -643,11 +657,16 @@ const handleProposeExchange = async () => {
     });
     closeExchangeModal();
   } catch (error) {
-    notification.error({
-      title: 'Ошибка',
-      content: error instanceof Error ? error.message : 'Не удалось отправить запрос',
-      duration: 5000,
-    });
+    const status = axios.isAxiosError(error) ? error.response?.status : undefined;
+    let content = axios.isAxiosError(error)
+      ? (error.response?.data?.message ?? 'Не удалось отправить запрос')
+      : error instanceof Error
+        ? error.message
+        : 'Не удалось отправить запрос';
+    if (status === 409) {
+      content = 'Запрос на обмен с этой командой уже существует';
+    }
+    notification.error({ title: 'Ошибка', content, duration: 5000 });
   } finally {
     exchangeSubmitting.value = false;
   }
