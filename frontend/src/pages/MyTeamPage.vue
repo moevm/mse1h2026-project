@@ -3,7 +3,7 @@
     <n-breadcrumb>
       <n-breadcrumb-item @click="router.push('/courses')">Курсы</n-breadcrumb-item>
       <n-breadcrumb-item @click="router.push(`/courses/${courseId}`)">
-        {{ courseName || 'Курс' }}
+        {{ course?.name || 'Курс' }}
       </n-breadcrumb-item>
       <n-breadcrumb-item>Моя команда</n-breadcrumb-item>
     </n-breadcrumb>
@@ -67,16 +67,41 @@
 
           <template #footer>
             <n-space justify="end">
+              <n-button
+                v-if="isLeader && canSelectProject"
+                type="success"
+                @click="openProjectModal"
+              >
+                Выбрать проект
+              </n-button>
+              <n-button
+                v-if="isLeader && team?.projectId"
+                type="error"
+                :disabled="!isRegistrationOpen"
+                @click="handleUnselectProject"
+              >
+                Отменить выбор проекта
+              </n-button>
+              <n-button
+                v-if="isLeader"
+                type="primary"
+                :disabled="!isRegistrationOpen"
+                @click="openInviteModal"
+              >
+                Пригласить студента
+              </n-button>
               <n-button @click="router.push(`/courses/${courseId}/exchanges`)">
                 Запросы на обмен
               </n-button>
               <n-button v-if="isLeader && team.project" type="warning" @click="openExchangeModal">
                 Предложить обмен
               </n-button>
-              <n-button v-if="isLeader" type="primary" @click="openInviteModal">
-                Пригласить студента
-              </n-button>
-              <n-button v-if="!isLeader" type="error" @click="showLeaveDialog = true">
+              <n-button
+                v-if="!isLeader"
+                type="error"
+                :disabled="!isRegistrationOpen"
+                @click="showLeaveDialog = true"
+              >
                 Покинуть команду
               </n-button>
             </n-space>
@@ -190,15 +215,42 @@
       @confirm="handleLeaveTeam"
       @cancel="showLeaveDialog = false"
     />
+    <div v-if="showProjectModal" class="dialog-overlay" @click="closeProjectModal">
+      <div class="dialog dialog-project" @click.stop>
+        <h3>Выбрать проект</h3>
+        <n-select
+          v-model:value="selectedProjectId"
+          :options="projectOptions"
+          filterable
+          placeholder="Выберите проект..."
+          class="invite-select"
+          :loading="loadingProjects"
+        />
+        <div class="dialog-actions">
+          <n-button @click="closeProjectModal">Отмена</n-button>
+          <n-button type="primary" :disabled="!selectedProjectId" @click="handleSelectProject">
+            Выбрать
+          </n-button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { coursesApi, exchangesApi, invitationsApi, teamsApi, usersApi } from '@/api';
+import {
+  assignmentsApi,
+  coursesApi,
+  exchangesApi,
+  invitationsApi,
+  projectsApi,
+  teamsApi,
+  usersApi,
+} from '@/api';
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue';
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue';
 import { useUserStore } from '@/stores/userStore';
-import type { Team, TeamInvitation, User } from '@/types';
+import type { Course, Project, Team, TeamInvitation, User } from '@/types';
 import {
   NBreadcrumb,
   NBreadcrumbItem,
@@ -223,8 +275,8 @@ const route = useRoute();
 const router = useRouter();
 const notification = useNotification();
 
-const courseName = ref('');
 const courseId = String(route.params.courseId);
+const course = ref<Course | null>(null);
 const team = ref<Team | null>(null);
 const invitations = ref<TeamInvitation[]>([]);
 const loading = ref(true);
@@ -232,6 +284,10 @@ const showInviteModal = ref(false);
 const showLeaveDialog = ref(false);
 const selectedStudentId = ref<string | null>(null);
 const allStudents = ref<User[]>([]);
+const showProjectModal = ref(false);
+const selectedProjectId = ref<string | null>(null);
+const availableProjects = ref<Project[]>([]);
+const loadingProjects = ref(false);
 
 const showExchangeModal = ref(false);
 const exchangeLoadingTeams = ref(false);
@@ -288,6 +344,25 @@ const pendingInvitations = computed(() =>
   })),
 );
 
+const canSelectProject = computed(() => {
+  if (!team.value || !course.value) return false;
+  if (team.value.projectId || team.value.project) return false;
+  if (!isRegistrationOpen.value) return false;
+  return team.value.members.length >= (course.value.minTeamSize ?? 0);
+});
+
+const projectOptions = computed(() => {
+  return availableProjects.value.map((p) => ({
+    label: p.title,
+    value: p.id,
+  }));
+});
+
+const isRegistrationOpen = computed(() => {
+  if (!course.value?.registrationDeadline) return true;
+  return new Date() < new Date(course.value.registrationDeadline);
+});
+
 const loadData = async () => {
   loading.value = true;
   try {
@@ -296,7 +371,7 @@ const loadData = async () => {
       teamsApi.getMyTeam(courseId),
       invitationsApi.getMyInvitations(),
     ]);
-    courseName.value = courseData.name;
+    course.value = courseData;
     team.value = teamData;
     invitations.value = invData.filter((inv) => inv.team.courseId === courseId);
   } catch (error) {
@@ -436,6 +511,85 @@ const handleLeaveTeam = async () => {
     });
   } finally {
     showLeaveDialog.value = false;
+  }
+};
+
+const openProjectModal = async () => {
+  selectedProjectId.value = null;
+  loadingProjects.value = true;
+  showProjectModal.value = true;
+
+  try {
+    availableProjects.value = await projectsApi.getFreeByCourseId(courseId);
+  } catch (error) {
+    console.error('Ошибка загрузки проектов:', error);
+    notification.error({
+      title: 'Ошибка',
+      content: 'Не удалось загрузить список проектов',
+      duration: 5000,
+    });
+    showProjectModal.value = false;
+  } finally {
+    loadingProjects.value = false;
+  }
+};
+
+const closeProjectModal = () => {
+  showProjectModal.value = false;
+  selectedProjectId.value = null;
+  availableProjects.value = [];
+};
+
+const handleSelectProject = async () => {
+  if (!team.value || !selectedProjectId.value) return;
+
+  try {
+    await assignmentsApi.assignTeamManually({
+      courseId: courseId,
+      projectId: selectedProjectId.value,
+      teamId: team.value.id,
+      status: 'active',
+    });
+    notification.success({
+      title: 'Проект выбран',
+      content: 'Проект успешно назначен команде',
+      duration: 3000,
+    });
+    closeProjectModal();
+    await loadData();
+  } catch (error) {
+    console.error('Ошибка выбора проекта:', error);
+    notification.error({
+      title: 'Ошибка',
+      content: error instanceof Error ? error.message : 'Не удалось выбрать проект',
+      duration: 5000,
+    });
+  }
+};
+
+const handleUnselectProject = async () => {
+  const activeAssignment = team.value?.assignments?.find((a) => a.status === 'active');
+
+  if (!activeAssignment?.id) {
+    notification.error({ title: 'Ошибка', content: 'Активный проект не выбран' });
+    return;
+  }
+
+  try {
+    await assignmentsApi.delete(activeAssignment.id);
+    notification.success({
+      title: 'Проект отменён',
+      content: 'Выбранный проект успешно отвязан от команды',
+      duration: 3000,
+    });
+    await loadData();
+  } catch (error) {
+    console.error('Ошибка отмены проекта:', error);
+    notification.error({
+      title: 'Ошибка',
+      content: error instanceof Error ? error.message : 'Не удалось отменить проект',
+      duration: 5000,
+    });
   }
 };
 

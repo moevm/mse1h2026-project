@@ -69,6 +69,7 @@ export class CoursesService {
             members: { include: { user: true } },
             project: true,
             invitations: { where: { status: 'pending' }, select: { id: true, inviteeId: true } },
+            assignments: true,
           },
         },
       },
