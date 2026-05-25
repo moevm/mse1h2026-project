@@ -155,7 +155,9 @@ export class TeamsService {
     if (!team) {
       throw new NotFoundException(`Team ${teamId} not found.`);
     }
-    await this.usersService.checkTeamLeader(user.sub, teamId);
+    if (user.role !== 'admin') {
+      await this.usersService.checkTeamLeader(user.sub, teamId);
+    }
     const newLeaderId = updateLeaderDto.leaderId;
 
     const isMember = team.members.some((member) => member.userId === newLeaderId);

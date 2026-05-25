@@ -65,7 +65,7 @@ export class TeamsController {
   }
 
   @UseGuards(RolesGuard)
-  @Roles(['student'])
+  @Roles(['student', 'admin'])
   @Delete(':teamId/members/:userId')
   deleteMember(
     @Param('teamId') teamId: string,
