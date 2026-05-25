@@ -116,9 +116,7 @@ export class CoursesService {
       ).map((t) => t.id);
 
       const requestIds = (
-        await tx.exchangeRequest.findMany(
-          { where: { courseId: id }, select: { id: true } }
-        )
+        await tx.exchangeRequest.findMany({ where: { courseId: id }, select: { id: true } })
       ).map((r) => r.id);
 
       if (requestIds.length > 0 || teamIds.length > 0) {
@@ -126,9 +124,7 @@ export class CoursesService {
           where: {
             OR: [
               ...(teamIds.length > 0 ? [{ teamId: { in: teamIds } }] : []),
-              ...(requestIds.length > 0
-                ? [{ exchangeRequestId: { in: requestIds } }]
-                : []),
+              ...(requestIds.length > 0 ? [{ exchangeRequestId: { in: requestIds } }] : []),
             ],
           },
         });
@@ -174,18 +170,17 @@ export class CoursesService {
       const teamIds = teams.map((t) => t.id);
 
       if (teamIds.length > 0) {
-        const requests = await tx.exchangeRequest.findMany(
-          { where: { courseId }, select: { id: true } }
-        );
+        const requests = await tx.exchangeRequest.findMany({
+          where: { courseId },
+          select: { id: true },
+        });
         const requestIds = requests.map((r) => r.id);
 
         await tx.exchangeConfirmation.deleteMany({
           where: {
             OR: [
               { teamId: { in: teamIds } },
-              ...(requestIds.length > 0
-                ? [{ exchangeRequestId: { in: requestIds } }]
-                : []),
+              ...(requestIds.length > 0 ? [{ exchangeRequestId: { in: requestIds } }] : []),
             ],
           },
         });
