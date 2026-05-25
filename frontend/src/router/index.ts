@@ -55,6 +55,12 @@ const routes: RouterOptions['routes'] = [
         meta: { requiresAuthentication: true },
       },
       {
+        path: 'courses/:courseId/assignments',
+        component: () => import('@/pages/CourseAssignmentsPage.vue'),
+        name: 'course-assignments',
+        meta: { requiresAuthentication: true },
+      },
+      {
         path: 'courses/:courseId/exchanges',
         component: () => import('@/pages/ExchangeRequestsPage.vue'),
         name: 'course-exchanges',
