@@ -26,4 +26,34 @@ export const coursesApi = {
 
   findExchanges: (id: string) =>
     axiosInstance.get(`${baseEndpoint}/${id}/exchanges`).then((res) => res.data),
+
+  importStudents: (courseId: string, file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return axiosInstance.post(`${baseEndpoint}/${courseId}/import/students`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }).then((res) => res.data);
+  },
+
+  importProjects: (courseId: string, file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return axiosInstance.post(`${baseEndpoint}/${courseId}/import/projects`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }).then((res) => res.data);
+  },
+
+  exportStudents: async (courseId: string): Promise<Blob> => {
+    const response = await axiosInstance.get(`${baseEndpoint}/${courseId}/export/students`, {
+      responseType: 'blob',
+    });
+    return response.data;
+  },
+
+  exportProjects: async (courseId: string): Promise<Blob> => {
+    const response = await axiosInstance.get(`${baseEndpoint}/${courseId}/export/projects`, {
+      responseType: 'blob',
+    });
+    return response.data;
+  },
 };

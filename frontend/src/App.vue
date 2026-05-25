@@ -4,6 +4,7 @@ import {
   NConfigProvider,
   NGlobalStyle,
   NNotificationProvider,
+  NDialogProvider,
   dateRuRU,
   ruRU,
 } from 'naive-ui';
@@ -25,10 +26,12 @@ const themeOverrides: GlobalThemeOverrides = {
   <!-- Все Naive UI компоненты внутри будут на русском -->
   <n-config-provider :locale="ruRU" :date-locale="dateRuRU" :theme-overrides="themeOverrides">
     <!-- Провайдер уведомлений -->
-    <n-notification-provider>
-      <router-view />
-      <n-global-style />
-    </n-notification-provider>
+    <n-dialog-provider>
+      <n-notification-provider>
+        <router-view />
+        <n-global-style />
+      </n-notification-provider>
+    </n-dialog-provider>
   </n-config-provider>
 </template>
 
