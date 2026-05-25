@@ -115,11 +115,36 @@ export class CoursesService {
         await tx.team.findMany({ where: { courseId: id }, select: { id: true } })
       ).map((t) => t.id);
 
-      await tx.exchangeConfirmation.deleteMany({ where: { teamId: { in: teamIds } } });
-      await tx.exchangeRequest.deleteMany({ where: { courseId: id } });
-      await tx.assignment.deleteMany({ where: { teamId: { in: teamIds } } });
-      await tx.teamInvitation.deleteMany({ where: { teamId: { in: teamIds } } });
-      await tx.teamMember.deleteMany({ where: { teamId: { in: teamIds } } });
+      const requestIds = (
+        await tx.exchangeRequest.findMany(
+          { where: { courseId: id }, select: { id: true } }
+        )
+      ).map((r) => r.id);
+
+      if (requestIds.length > 0 || teamIds.length > 0) {
+        await tx.exchangeConfirmation.deleteMany({
+          where: {
+            OR: [
+              ...(teamIds.length > 0 ? [{ teamId: { in: teamIds } }] : []),
+              ...(requestIds.length > 0
+                ? [{ exchangeRequestId: { in: requestIds } }]
+                : []),
+            ],
+          },
+        });
+      }
+
+      if (requestIds.length > 0) {
+        await tx.exchangeRequest.deleteMany({ where: { courseId: id } });
+      }
+
+      if (teamIds.length > 0) {
+        await tx.assignment.deleteMany({ where: { teamId: { in: teamIds } } });
+        await tx.teamInvitation.deleteMany({
+          where: { teamId: { in: teamIds } },
+        });
+        await tx.teamMember.deleteMany({ where: { teamId: { in: teamIds } } });
+      }
       await tx.team.deleteMany({ where: { courseId: id } });
       await tx.import.deleteMany({ where: { courseId: id } });
       await tx.project.deleteMany({ where: { courseId: id } });
@@ -148,10 +173,35 @@ export class CoursesService {
       const teams = await tx.team.findMany({ where: { courseId }, select: { id: true } });
       const teamIds = teams.map((t) => t.id);
 
-      await tx.exchangeConfirmation.deleteMany({ where: { teamId: { in: teamIds } } });
-      await tx.teamInvitation.deleteMany({ where: { teamId: { in: teamIds } } });
-      await tx.teamMember.deleteMany({ where: { teamId: { in: teamIds } } });
-      await tx.team.deleteMany({ where: { courseId } });
+      if (teamIds.length > 0) {
+        const requests = await tx.exchangeRequest.findMany(
+          { where: { courseId }, select: { id: true } }
+        );
+        const requestIds = requests.map((r) => r.id);
+
+        await tx.exchangeConfirmation.deleteMany({
+          where: {
+            OR: [
+              { teamId: { in: teamIds } },
+              ...(requestIds.length > 0
+                ? [{ exchangeRequestId: { in: requestIds } }]
+                : []),
+            ],
+          },
+        });
+
+        if (requestIds.length > 0) {
+          await tx.exchangeRequest.deleteMany({ where: { courseId } });
+        }
+
+        await tx.assignment.deleteMany({ where: { teamId: { in: teamIds } } });
+        await tx.teamInvitation.deleteMany({
+          where: { teamId: { in: teamIds } },
+        });
+        await tx.teamMember.deleteMany({ where: { teamId: { in: teamIds } } });
+
+        await tx.team.deleteMany({ where: { courseId } });
+      }
     });
 
     let successCount = 0;
