@@ -55,7 +55,7 @@
             <n-button @click="handleCourseTeams">Команды курса</n-button>
             <n-button @click="handleExchanges">Запросы на обмен</n-button>
             <n-button @click="handleAssignments">Распределение проектов</n-button>
-            
+
             <n-dropdown trigger="click" :options="adminActionOptions" @select="handleAdminAction">
               <n-button type="primary">
                 Действия
