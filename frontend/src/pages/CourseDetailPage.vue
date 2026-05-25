@@ -403,7 +403,7 @@ const handleExportStudents = async () => {
 
     notification.success({
       title: 'Успешно',
-      content: 'Экспорт студентов начат',
+      content: 'Экспорт студентов прошел успешно',
       duration: 3000,
     });
   } catch (error) {
@@ -433,7 +433,7 @@ const handleExportProjects = async () => {
 
     notification.success({
       title: 'Успешно',
-      content: 'Экспорт проектов начат',
+      content: 'Экспорт проектов прошел успешно',
       duration: 3000,
     });
   } catch (error) {
