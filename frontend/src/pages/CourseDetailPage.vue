@@ -49,14 +49,13 @@
         </n-descriptions-item>
       </n-descriptions>
 
-      <!-- Кнопки действий -->
       <template #footer>
         <n-space justify="end" :size="16">
           <template v-if="userStore.isAdmin">
-            <n-button @click="handleCourseTeams"> Команды курса </n-button>
-            <n-button @click="handleExchanges"> Запросы на обмен </n-button>
-
-            <!-- Выпадающий список действий -->
+            <n-button @click="handleCourseTeams">Команды курса</n-button>
+            <n-button @click="handleExchanges">Запросы на обмен</n-button>
+            <n-button @click="handleAssignments">Распределение проектов</n-button>
+            
             <n-dropdown trigger="click" :options="adminActionOptions" @select="handleAdminAction">
               <n-button type="primary">
                 Действия
@@ -68,19 +67,11 @@
               </n-button>
             </n-dropdown>
           </template>
-          <template v-else>
-            <n-button v-if="userStore.isStudent" @click="handleMyTeam"> Моя команда </n-button>
-            <n-button @click="handleExchanges"> Запросы на обмен </n-button>
+
+          <template v-else-if="userStore.isStudent">
+            <n-button @click="handleMyTeam">Моя команда</n-button>
+            <n-button @click="handleExchanges">Запросы на обмен</n-button>
           </template>
-          <n-button v-if="userStore.isAdmin" @click="handleCourseTeams"> Команды курса </n-button>
-          <n-button v-if="userStore.isAdmin" @click="handleAssignments">
-            Распределение проектов
-          </n-button>
-          <n-button @click="handleExchanges"> Запросы на обмен </n-button>
-          <n-button v-if="userStore.isStudent" @click="handleMyTeam"> Моя команда </n-button>
-          <n-button v-if="userStore.isStudent" @click="handleAssignments">
-            Распределение проектов
-          </n-button>
         </n-space>
       </template>
     </n-card>
