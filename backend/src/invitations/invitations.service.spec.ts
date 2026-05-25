@@ -12,6 +12,7 @@ describe('InvitationsService', () => {
   const mockPrismaService = {
     teamInvitation: {
       update: jest.fn(),
+      deleteMany: jest.fn(),
     },
     team: {
       findUnique: jest.fn(),
@@ -59,6 +60,7 @@ describe('InvitationsService', () => {
         respondedAt: null,
       },
     });
+    expect(prisma.teamInvitation.deleteMany).not.toHaveBeenCalled();
   });
 
   it('sets respondedAt to current date when status is not pending', async () => {
@@ -66,10 +68,23 @@ describe('InvitationsService', () => {
     jest.useFakeTimers();
     jest.setSystemTime(now);
 
-    const invitation = { id: 'inv-2', status: InvitationStatus.accepted, respondedAt: now };
+    const invitation = {
+      id: 'inv-2',
+      teamId: 'team-1',
+      inviteeId: 'user-1',
+      status: InvitationStatus.accepted,
+      respondedAt: now,
+    };
     mockPrismaService.teamInvitation.update.mockResolvedValue(invitation);
-    mockPrismaService.team.findUnique.mockResolvedValue({ courseId: 'course-1' });
-    mockPrismaService.teamMember.findFirst.mockResolvedValue({ id: 'member-1' });
+    mockPrismaService.team.findUnique.mockResolvedValue({
+      id: 'team-1',
+      courseId: 'course-1',
+      members: [],
+      course: { maxTeamSize: 5 },
+    });
+    mockPrismaService.teamMember.findFirst.mockResolvedValue(null);
+    mockPrismaService.teamMember.create.mockResolvedValue({ id: 'member-1' });
+    mockPrismaService.teamInvitation.deleteMany.mockResolvedValue({ count: 1 });
 
     const result = await service.updateInvitation('inv-2', {
       status: InvitationStatus.accepted,
@@ -81,6 +96,14 @@ describe('InvitationsService', () => {
       data: {
         status: InvitationStatus.accepted,
         respondedAt: now,
+      },
+    });
+
+    expect(prisma.teamInvitation.deleteMany).toHaveBeenCalledWith({
+      where: {
+        inviteeId: 'user-1',
+        team: { courseId: 'course-1' },
+        id: { not: 'inv-2' },
       },
     });
 

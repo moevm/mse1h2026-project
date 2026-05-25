@@ -2,7 +2,12 @@ import { UserPayload } from '@/common/interfaces/user.interface';
 import { RequestStatus } from '@/generated/prisma/enums';
 import { PrismaService } from '@/prisma/prisma.service';
 import { UsersService } from '@/users/users.service';
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 
 import { CreateRequestDto } from './dto/create-request.dto';
 
@@ -66,6 +71,21 @@ export class ExchangesService {
 
     if (!initiatorProject || !targetProject) {
       throw new NotFoundException('Initiator or target project is missing.');
+    }
+
+    const existingRequest = await this.prisma.exchangeRequest.findFirst({
+      where: {
+        courseId: createRequestDto.courseId,
+        initiatorTeamId: createRequestDto.initiatorTeamId,
+        targetTeamId: createRequestDto.targetTeamId,
+        status: {
+          notIn: ['approved', 'rejected', 'cancelled'],
+        },
+      },
+    });
+
+    if (existingRequest) {
+      throw new ConflictException('An exchange request already exists between two teams.');
     }
 
     return this.prisma.$transaction(async (tx) => {

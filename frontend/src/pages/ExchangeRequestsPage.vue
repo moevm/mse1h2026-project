@@ -71,6 +71,7 @@ import LoadingSpinner from '@/components/common/LoadingSpinner.vue';
 import ExchangeRequestRow from '@/components/exchanges/ExchangeRequestRow.vue';
 import { useUserStore } from '@/stores/userStore';
 import type { ExchangeRequest, ExchangeRequestStatus, Team } from '@/types';
+import axios from 'axios';
 import {
   NBreadcrumb,
   NBreadcrumbItem,
@@ -145,7 +146,11 @@ const handleConfirm = async (id: string) => {
   } catch (error) {
     notification.error({
       title: 'Ошибка',
-      content: error instanceof Error ? error.message : 'Не удалось подтвердить запрос',
+      content: axios.isAxiosError(error)
+        ? (error.response?.data?.message ?? 'Не удалось подтвердить запрос')
+        : error instanceof Error
+          ? error.message
+          : 'Не удалось подтвердить запрос',
       duration: 5000,
     });
   }
@@ -163,7 +168,11 @@ const handleApprove = async (id: string) => {
   } catch (error) {
     notification.error({
       title: 'Ошибка',
-      content: error instanceof Error ? error.message : 'Не удалось одобрить запрос',
+      content: axios.isAxiosError(error)
+        ? (error.response?.data?.message ?? 'Не удалось одобрить запрос')
+        : error instanceof Error
+          ? error.message
+          : 'Не удалось одобрить запрос',
       duration: 5000,
     });
   }
@@ -177,7 +186,11 @@ const handleReject = async (id: string) => {
   } catch (error) {
     notification.error({
       title: 'Ошибка',
-      content: error instanceof Error ? error.message : 'Не удалось отклонить запрос',
+      content: axios.isAxiosError(error)
+        ? (error.response?.data?.message ?? 'Не удалось отклонить запрос')
+        : error instanceof Error
+          ? error.message
+          : 'Не удалось отклонить запрос',
       duration: 5000,
     });
   }
@@ -191,7 +204,11 @@ const handleCancel = async (id: string) => {
   } catch (error) {
     notification.error({
       title: 'Ошибка',
-      content: error instanceof Error ? error.message : 'Не удалось отменить запрос',
+      content: axios.isAxiosError(error)
+        ? (error.response?.data?.message ?? 'Не удалось отменить запрос')
+        : error instanceof Error
+          ? error.message
+          : 'Не удалось отменить запрос',
       duration: 5000,
     });
   }
