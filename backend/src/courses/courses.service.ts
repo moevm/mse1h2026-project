@@ -134,7 +134,7 @@ export class CoursesService {
     const dataRows = rows.slice(1);
 
     const fNameIdx = headers.indexOf('firstname');
-    const lNameIdx = headers.indexOf('secondname');
+    const lNameIdx = headers.indexOf('lastname');
     const emailIdx = headers.indexOf('email');
     const groupIdx = headers.indexOf('groupnumber');
     const ldapIdx = headers.indexOf('ldapuid');
@@ -260,7 +260,7 @@ export class CoursesService {
       },
     });
 
-    const header = '\uFEFFfirstName;secondName;email;groupNumber;ldapUid\n';
+    const header = '\uFEFFfirstName;lastName;email;groupNumber;ldapUid\n';
 
     const usersMap = new Map();
     teams.forEach((team) => {
