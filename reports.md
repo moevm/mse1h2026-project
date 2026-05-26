@@ -32,7 +32,8 @@
 - [Презентация](iterations/iteration-4/presentation.pdf)
 - [Запланированные задачи](iterations/iteration-4/tasks_planned.md)
 - [Выполненные задачи](iterations/iteration-4/tasks_completed.md)
-
+- [Задачи на следующую итерацию](iterations/iteration-4/next_tasks.md)
+- [Демонстрация программы](iterations/iteration-4/demo.mp4)
 ## Командные синхронизации
 Протоколы внутренних встреч: [team_sync/](team_sync/)
 
