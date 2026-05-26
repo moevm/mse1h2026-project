@@ -29,7 +29,9 @@
 - [Демонстрация программы](iterations/iteration-3/demo.mp4)
 
 ### Итерация 4 (даты: 05.05 – 25.05)
-- 
+- [Презентация](iterations/iteration-4/presentation.pdf)
+- [Запланированные задачи](iterations/iteration-4/tasks_planned.md)
+- [Выполненные задачи](iterations/iteration-4/tasks_completed.md)
 
 ## Командные синхронизации
 Протоколы внутренних встреч: [team_sync/](team_sync/)
